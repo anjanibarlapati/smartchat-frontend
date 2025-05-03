@@ -1,8 +1,18 @@
-# SmartChat Application
+# SmartChat Application 📱
 
 **SmartChat** application is one-to-one chat mobile application developed with React Native for both iOS and Android.
 
-## Description
+## 📚 Table of Contents
+
+- [Description](#📋-description)
+- [Technologies Used](#🛠️-technologies-used)
+- [Requirements](#🗒️-requirements)
+- [Installation](#📥-installation)
+- [Usage](#🚀-usage)
+- [Contribution](#🤝-contribution)
+- [Contact](#📧-contact)
+
+## 📋 Description
 
 1. **User Authentication** 🔐:
    - Sign Up: Register with first name, last name, mobile number and password; email and photo are optional.
@@ -18,24 +28,17 @@
 6. **Contacts and Invitation to the App** 📲:
    - Show contact list and let users invite friends via SMS who are not on the application.
 
-## 📚 Table of Contents
 
-- [Technologies Used](#🛠️-technologies-used)
-- [Requirements](#🗒️-requirements)
-- [Installation](#📥-installation)
-- [Usage](#🚀-usage)
-- [Contribution](#🤝-contribution)
 
 ## 🛠️ Technologies Used
 
-- Node.js
-- React Native
-- Redux
-- Jest and React Native Testing Library
-- Typescript
-- GitHub Actions
-- Socket.io
-- Firebase Cloud Messaging
+- 📱 **React Native (TypeScript):** Framework for building cross-platform mobile apps using native components.
+- ⚙️ **Redux:** State management library for predictable app state handling.
+- 🧪 **Jest and React Native Testing Library:** Tools for unit and component testing.
+- 🌐 **Socket.IO:** Enables real-time, bidirectional communication (used for instant chat).
+- 🔔 **Firebase Cloud Messaging (FCM):** Delivers push notifications to user devices.
+- 🔄 **GitHub Actions:** CI/CD automation for testing, linting, and deployment workflows.
+- 🛠️ **Node.js:** JavaScript runtime for development tooling and scripts.
 
 ## 🗒️ Requirements
 
@@ -93,4 +96,9 @@
     ```
 - Open a Pull Request to *main* branch.
 
-### **Thank You !**
+## 📧 Contact:
+For any questions or queries, 
+
+please contact, [anjanibarlapati@gmail.com](anjanibarlapati@gmail.com)
+
+### Thank You 😃
