@@ -30,4 +30,11 @@ jobs:
       
       - name: Coverage report 
         run: npm test --coverage
+      
+        
+      
+  build-android:
+    needs: install-and-test
+    uses: ./.github/workflows/android-build.yaml
+    secrets: inherit
 
