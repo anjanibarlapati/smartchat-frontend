@@ -1,0 +1,42 @@
+name: "iOS Build"
+
+on:
+    workflow_call:
+        
+jobs:
+    build-ios:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Use Node.js 20
+              uses: actions/setup-node@v3
+              with: 
+                node-version: 20
+                cache: "npm"
+
+            - name: Install node modules
+              run: npm i
+
+            - name: Setup Ruby 
+              uses: ruby/setup-ruby@v1
+              with:
+                ruby-version: 3.2.1
+                bundler-cache: true
+
+            - name: Restore Pods cache
+              uses: actions/cache@v3
+              with:
+                  path: |
+                    ios/Pods
+                    ~/Library/Caches/CocoaPods
+                    ~/.cocoapods
+                  key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+                  restore-keys: |
+                    ${{ runner.os }}-pods-
+                        
+            - name: Install pod dependencies
+              run: cd ios && pod install && cd ..
+            
+            - name: Build ios
+              run: npx react-native build-ios
