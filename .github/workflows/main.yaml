@@ -1,0 +1,33 @@
+name: CI/CD pipeline for SmartChat
+
+on: 
+  push:
+    branches:
+      - main
+
+jobs:
+  install-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Use Node.js 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: "npm"
+      
+      - name: Install node_modules
+        run: npm i
+
+      - name: Linting
+        run: npm run lint
+      
+      - name: Unit & Integration tests
+        run: npm run test
+      
+      - name: Coverage report 
+        run: npm test --coverage
+
