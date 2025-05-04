@@ -37,6 +37,15 @@ jobs:
                   key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
                   restore-keys: |
                     ${{ runner.os }}-pods-
+            
+            - name: Restore Xcode DerivedData cache
+              uses: actions/cache@v3
+              with:
+                path: ~/Library/Developer/Xcode/DerivedData
+                key: ${{ runner.os }}-deriveddata-${{ hashFiles('ios/Podfile.lock') }}
+                restore-keys: |
+                    ${{ runner.os }}-deriveddata-
+                
                         
             - name: Install pod dependencies
               run: cd ios && pod install && cd ..
