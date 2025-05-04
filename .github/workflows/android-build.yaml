@@ -39,12 +39,6 @@ jobs:
             - name: Build Android APK (Release)
               run: cd android && ./gradlew assembleRelease --no-daemon --console=plain
 
-            # Upload APK Artifact for Staging
-            - name: Upload APK Artifact (Release)
-              uses: actions/upload-artifact@v3.4.3
-              with:
-                name: SmartChat-release-apk
-                path: android/app/build/outputs/apk/release/app-release.apk
 
 
                
