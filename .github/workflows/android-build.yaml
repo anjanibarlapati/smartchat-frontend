@@ -1,0 +1,50 @@
+name: "Android Build"
+
+on:
+    workflow_call:
+        
+jobs:
+    build-android:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Use Node.js 20
+              uses: actions/setup-node@v3
+              with: 
+                node-version: 20
+                cache: "npm"
+
+            - name: Install node modules
+              run: npm i
+
+            - name: Cache Gradle Wrapper
+              uses: actions/cache@v2
+              with:
+                 path: ~/.gradle/wrapper
+                 key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+                
+            - name: Cache Gradle Dependencies
+              uses: actions/cache@v2
+              with:
+                   path: ~/.gradle/caches
+                   key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+                   restore-keys: |
+                     ${{ runner.os }}-gradle-caches-
+
+            - name: Make Gradlew Executable
+              run: cd android && chmod +x ./gradlew
+
+
+            - name: Build Android APK (Release)
+              run: cd android && ./gradlew assembleRelease --no-daemon --console=plain
+
+            # Upload APK Artifact for Staging
+            - name: Upload APK Artifact (Release)
+              uses: actions/upload-artifact@v3
+              with:
+                name: SmartChat-release-apk
+                path: android/app/build/outputs/apk/release/app-release.apk
+
+
+               
