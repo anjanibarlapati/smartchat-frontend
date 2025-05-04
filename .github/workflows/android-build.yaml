@@ -41,7 +41,7 @@ jobs:
 
             # Upload APK Artifact for Staging
             - name: Upload APK Artifact (Release)
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v3.1.4
               with:
                 name: SmartChat-release-apk
                 path: android/app/build/outputs/apk/release/app-release.apk
