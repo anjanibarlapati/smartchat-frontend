@@ -20,8 +20,8 @@ describe('WelcomeScreen', () => {
     expect(getByTestId('app-logo')).toBeTruthy();
   });
   test('renders the lets get started button',()=>{
-    const {getByText}=renderWelcomeScreen();
-    const buttonElement=getByText("Let's Get Started");
-    expect(buttonElement).toBeTruthy()
-})
+    const {getByText} = renderWelcomeScreen();
+    const buttonElement = getByText("Let's Get Started");
+    expect(buttonElement).toBeTruthy();
+});
 });

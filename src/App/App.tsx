@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import { View} from 'react-native';
 import {app} from './App.ts';
 import WelcomeScreen from '../screens/Welcome/Welcome.tsx';
 

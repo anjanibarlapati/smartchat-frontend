@@ -11,6 +11,6 @@ const renderApp = () => {
 
 test('renders welcome screen correctly', async () => {
   const { getByText } = renderApp();
-  const smartchatText = getByText('SmartChat'); 
-  expect(smartchatText).toBeTruthy()
+  const smartchatText = getByText('SmartChat');
+  expect(smartchatText).toBeTruthy();
 });

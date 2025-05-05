@@ -31,7 +31,7 @@ export const styles = StyleSheet.create({
     color: '#004747',
     textAlign: 'center',
     fontFamily: 'Nunito',
-    fontWeight:'400'
+    fontWeight:'400',
   },
   getstartButton: {
     width: 250,
