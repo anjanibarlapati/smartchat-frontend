@@ -16,8 +16,8 @@ describe('WelcomeScreen', () => {
   });
 
   test('renders app logo correctly', () => {
-    const {getByTestId} = renderWelcomeScreen();
-    expect(getByTestId('app-logo')).toBeTruthy();
+    const {getByLabelText} = renderWelcomeScreen();
+    expect(getByLabelText('chevronIcon')).toBeTruthy();
   });
   test('renders the lets get started button',()=>{
     const {getByText} = renderWelcomeScreen();
