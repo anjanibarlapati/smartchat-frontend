@@ -1,18 +1,14 @@
 import React from 'react';
-import {
-  Text,
-  View,
-} from 'react-native';
-import { app } from './App.ts';
+import {Text, View} from 'react-native';
+import {app} from './App.ts';
+import WelcomeScreen from '../screens/Welcome/Welcome.tsx';
 
 function App(): React.JSX.Element {
-
   return (
     <View style={app.container}>
-      <Text style = {app.text}>Welcome to SmartChat</Text>
+      <WelcomeScreen />
     </View>
   );
 }
 
 export default App;
-
