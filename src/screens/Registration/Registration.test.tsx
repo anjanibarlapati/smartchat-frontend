@@ -39,6 +39,23 @@ describe('Registration Screen check', ()=>{
         expect(queryByText('Passwords do not match')).toBeTruthy();
       });
     });
+    it('shows error for invalid email address', async () => {
+      const { getByPlaceholderText, getByText, queryByText } = render(<Registration />);
+
+      fireEvent.changeText(getByPlaceholderText('First Name *'), 'Mamatha');
+      fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Niyal');
+      fireEvent.changeText(getByPlaceholderText('Email'), 'mamathagmail.com');
+      fireEvent.changeText(getByPlaceholderText('Mobile Number *'), '1234567890');
+      fireEvent.changeText(getByPlaceholderText('Password *'), 'password123');
+      fireEvent.changeText(getByPlaceholderText('Confirm Password *'), 'password123');
+
+      fireEvent.press(getByText('Register'));
+
+      await waitFor(() => {
+        expect(queryByText('Invalid email address')).toBeTruthy();
+      });
+    });
+
     it('submits the form successfully when all fields are valid', async () => {
       const { getByPlaceholderText, getByText } = render(<Registration />);
       fireEvent.changeText(getByPlaceholderText('First Name *'), 'Anjani');
