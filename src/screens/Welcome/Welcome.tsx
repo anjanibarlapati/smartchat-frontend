@@ -1,6 +1,6 @@
 import React from 'react';
 import {Image, Pressable, Text, View} from 'react-native';
-import {styles} from './Welcome';
+import {styles} from './Welcome.styles';
 
 const WelcomeScreen = ():React.JSX.Element => {
   return (
