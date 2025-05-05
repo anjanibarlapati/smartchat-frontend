@@ -9,7 +9,8 @@ const renderApp = () => {
   );
 };
 
-test('renders welcome message correctly', async () => {
+test('renders welcome screen correctly', async () => {
   const { getByText } = renderApp();
-  expect(getByText(/welcome to smartchat/i)).toBeTruthy();
+  const smartchatText = getByText('SmartChat'); 
+  expect(smartchatText).toBeTruthy()
 });
