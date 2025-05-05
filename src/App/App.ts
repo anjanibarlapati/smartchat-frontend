@@ -11,6 +11,7 @@ export const app = StyleSheet.create({
    text: {
        color: 'black',
        fontWeight: 'bold',
+       fontFamily: 'Nunito'
    },
 });
 
