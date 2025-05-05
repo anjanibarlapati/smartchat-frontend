@@ -41,6 +41,13 @@ const Registration = () => {
       setLastNameError(' Last name is required');
       isValid = false;
     }
+    if(email){
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(email)) {
+        setEmailError('Invalid email address');
+        isValid = false;
+      }
+    }
     if (!contact.trim() ) {
       setContactError('Mobile number is required');
       isValid = false;
