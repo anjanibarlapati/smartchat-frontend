@@ -1,6 +1,6 @@
 import {View} from 'react-native';
 import LottieView from 'lottie-react-native';
-import {loadingImage} from './LoadingScreen.ts';
+import {loadingImage} from './LoadingScreen.styles.ts';
 const LoadingScreen = () => {
   return (
     <View style={loadingImage.container}>
