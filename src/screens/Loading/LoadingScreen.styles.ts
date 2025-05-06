@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 export const loadingImage = StyleSheet.create({
   container: {
     height: '100%',
@@ -11,5 +11,8 @@ export const loadingImage = StyleSheet.create({
   loadingImage: {
     height: 200,
     aspectRatio: 1,
+  },
+  lottieView:{
+    flex:1,
   },
 });

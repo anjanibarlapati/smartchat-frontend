@@ -6,7 +6,7 @@ function LoadingScreen():React.JSX.Element{
     <View style={loadingImage.container}>
       <View style={loadingImage.loadingImage} testID="animation">
         <LottieView
-          style={{flex: 1}}
+          style={loadingImage.lottieView}
           source={require('../../../assets/loadingImages/loadingImage.json')}
           autoPlay
           loop
@@ -14,5 +14,6 @@ function LoadingScreen():React.JSX.Element{
       </View>
     </View>
   );
-};
+}
+
 export default LoadingScreen;
