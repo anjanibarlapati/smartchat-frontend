@@ -28,6 +28,7 @@ export const styles = StyleSheet.create({
       display: 'flex',
       flexDirection: 'row',
       marginBottom: '2%',
+      gap:5,
     },
     loginText: {
       color: '#008080',
