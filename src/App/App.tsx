@@ -4,7 +4,7 @@ import {
   View,
 } from 'react-native';
 import { app } from './App.ts';
-import LoadingScreen from '../screens/Registration/Loading/LoadingScreen.tsx';
+import LoadingScreen from '../screens/Loading/LoadingScreen.tsx';
 
 function App(): React.JSX.Element {
 
