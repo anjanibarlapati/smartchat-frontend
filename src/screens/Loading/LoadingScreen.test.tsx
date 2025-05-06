@@ -1,6 +1,6 @@
+import LoadingScreen from './LoadingScreen.tsx';
 import React from 'react';
 import {render} from '@testing-library/react-native';
-import LoadingScreen from './LoadingScreen.tsx';
 
 describe('LoadingScreen', () => {
   test('renders loading animation correctly', async () => {

@@ -1,6 +1,6 @@
-import {View} from 'react-native';
-import LottieView from 'lottie-react-native';
 import {loadingImage} from './LoadingScreen.styles.ts';
+import LottieView from 'lottie-react-native';
+import {View} from 'react-native';
 function LoadingScreen():React.JSX.Element{
   return (
     <View style={loadingImage.container}>
