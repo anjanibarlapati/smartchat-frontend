@@ -12,7 +12,6 @@ export const app = StyleSheet.create({
        color: 'black',
        fontWeight: 'bold',
        fontFamily: 'Nunito',
-
    },
 });
 

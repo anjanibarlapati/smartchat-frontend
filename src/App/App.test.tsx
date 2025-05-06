@@ -1,12 +1,9 @@
-import React from 'react';
-import { render } from '@testing-library/react-native';
 import App from './App.tsx';
-
+import React from 'react';
+import {render} from '@testing-library/react-native';
 
 const renderApp = () => {
-  return render(
-    <App/>
-  );
+  return render(<App />);
 };
 
 test('renders welcome screen correctly', async () => {
