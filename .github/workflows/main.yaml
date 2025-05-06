@@ -1,13 +1,12 @@
 name: CI/CD pipeline for SmartChat
 
 on: 
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
-    types:
-      - opened
-      - synchronize
-      - closed
 
 jobs:
   install-and-test:
