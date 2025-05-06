@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  Text,
-  View,
-} from 'react-native';
+import { View } from 'react-native';
 import { app } from './App.ts';
 import LoadingScreen from '../screens/Loading/LoadingScreen.tsx';
 
