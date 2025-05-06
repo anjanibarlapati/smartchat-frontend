@@ -4,12 +4,13 @@ import {
   View,
 } from 'react-native';
 import { app } from './App.ts';
+import LoadingScreen from '../screens/Registration/Loading/LoadingScreen.tsx';
 
 function App(): React.JSX.Element {
 
   return (
     <View style={app.container}>
-      <Text style = {app.text}>Welcome to SmartChat</Text>
+      <LoadingScreen/>
     </View>
   );
 }
