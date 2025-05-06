@@ -1,7 +1,7 @@
 import {fireEvent, render, waitFor} from '@testing-library/react-native';
-import Registration from './Registration';
 import {Provider} from 'react-redux';
 import store from '../../redux/store';
+import Registration from './Registration';
 
 describe('Registration Screen check', () => {
   it('renders the registration screen correctly', () => {

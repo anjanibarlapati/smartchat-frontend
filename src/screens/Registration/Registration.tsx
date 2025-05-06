@@ -1,9 +1,10 @@
-import {useState} from 'react';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
-import InputField from '../../components/InputField/InputField';
-import Button from '../../components/Button/Button';
-import {styles} from './Registration.styles';
 import {useDispatch, useSelector} from 'react-redux';
+import {useState} from 'react';
+import Button from '../../components/Button/Button';
+import InputField from '../../components/InputField/InputField';
+import {styles} from './Registration.styles';
+
 import {
   firstNameChanged,
   lastNameChanged,
