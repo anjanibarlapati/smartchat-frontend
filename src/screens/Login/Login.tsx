@@ -48,6 +48,7 @@ const LoginScreen = () => {
           onChangeText={(text) => setForm({ ...form, mobilenumber: text })}
           placeholder="Mobile Number"
           error={errors.mobilenumber}
+          keyboardType="numeric"
         />
         <InputField
           value={form.password}
