@@ -12,7 +12,8 @@
   "dependencies": {
     "lottie-react-native": "^7.2.2",
     "react": "19.0.0",
-    "react-native": "0.79.2"
+    "react-native": "0.79.2",
+    "react-native-splash-screen": "^3.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
