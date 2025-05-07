@@ -8,6 +8,7 @@ interface InputFieldProps {
   error?: string;
   secureTextEntry?: boolean;
   required?: boolean;
+  keyboardType?: 'default' | 'email-address' | 'numeric' ;
 
 }
 
@@ -18,6 +19,7 @@ const InputField = ({
   error,
   secureTextEntry,
   required,
+  keyboardType = 'default',
 }: InputFieldProps) => {
   return (
     <View style={styles.container}>
@@ -27,6 +29,7 @@ const InputField = ({
         placeholder={required ? `${placeholder} *` : placeholder}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
+        keyboardType={keyboardType}
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
