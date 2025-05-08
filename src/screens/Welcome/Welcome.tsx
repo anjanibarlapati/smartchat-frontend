@@ -6,9 +6,9 @@ const WelcomeScreen = ():React.JSX.Element => {
   return (
     <View style={styles.container}>
       <Image
-        testID="app-logo"
         style={styles.logoStyles}
         source={require('../../../assets/images/Applogo.png')}
+        accessibilityLabel="appLogo"
       />
       <View style={styles.appnameTagline}>
         <Text style={styles.appname}>SmartChat</Text>
@@ -19,7 +19,7 @@ const WelcomeScreen = ():React.JSX.Element => {
           <Text style={styles.getstartText}>Let's Get Started</Text>
           <Image
             style={styles.chevronIconStyles}
-            source={require('../../../assets/icons/rightChevron.png')}
+            source={require('../../../assets/icons/rightArrowIcon.png')}
             accessibilityLabel="chevronIcon"
           />
         </View>
