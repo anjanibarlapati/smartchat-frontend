@@ -17,11 +17,13 @@ describe('WelcomeScreen', () => {
 
   test('renders app logo correctly', () => {
     const {getByLabelText} = renderWelcomeScreen();
-    expect(getByLabelText('chevronIcon')).toBeTruthy();
+    expect(getByLabelText('appLogo')).toBeTruthy();
   });
-  test('renders the lets get started button',()=>{
-    const {getByText} = renderWelcomeScreen();
+  test('renders the lets get started button with chevron icon',()=>{
+    const {getByText, getByLabelText} = renderWelcomeScreen();
     const buttonElement = getByText("Let's Get Started");
     expect(buttonElement).toBeTruthy();
+    expect(getByLabelText('chevronIcon')).toBeTruthy();
+
 });
 });
