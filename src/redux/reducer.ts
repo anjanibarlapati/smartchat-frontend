@@ -1,45 +1,32 @@
-import {
-  FIRST_NAME_CHANGED,
-  LAST_NAME_CHANGED,
-  EMAIL_CHANGED,
-  CONTACT_CHANGED,
-  PASSWORD_CHANGED,
-  CONFIRM_PASSWORD_CHANGED,
-} from './action';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { User } from '../types/User';
 
-
-type Action = {
-    type: string;
-    payload?: any;
+const initialState: User = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    mobileNumber: '',
+    countryCode: '',
+    profilePicture: '',
   };
 
-const initialState = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  contact: '',
-  password: '',
-  confirmPassword: '',
-};
+  export const userSlice = createSlice({
+    name: 'user',
+    initialState,
+    reducers: {
+      setUserProperty: (
+        state,
+        action: PayloadAction<{ property: keyof User; value: string }>
+      ) => {
+       const { property, value } = action.payload;
+        state[property] = value;
+      },
+      setUserDetails: (state, action: PayloadAction<User>) => {
+        return action.payload;
+      },
+      resetUser: () => initialState,
+    },
+  });
 
-const registrationReducer = (state = initialState, action: Action) => {
-    switch (action.type) {
-        case FIRST_NAME_CHANGED:
-          return { ...state, firstName: action.payload };
-        case LAST_NAME_CHANGED:
-          return { ...state, lastName: action.payload };
-        case EMAIL_CHANGED:
-          return { ...state, email: action.payload };
-        case CONTACT_CHANGED:
-          return { ...state, contact: action.payload };
-        case PASSWORD_CHANGED:
-          return { ...state, password: action.payload };
-        case CONFIRM_PASSWORD_CHANGED:
-          return { ...state, confirmPassword: action.payload };
-        default:
-          return state;
-    }
-};
-
-
-export default registrationReducer;
+  export const { setUserProperty, setUserDetails, resetUser } = userSlice.actions;
+  export const userReducer = userSlice.reducer;
