@@ -2,6 +2,8 @@ import { Alert } from 'react-native';
 import {act, fireEvent, render, waitFor} from '@testing-library/react-native';
 import Registration from './Registration';
 import * as RegistrationHandler from './Registration.handler';
+import { Provider } from 'react-redux';
+import { store } from '../../redux/store';
 
 jest.mock('../../utils/openCamera', () => ({
   openCamera: jest.fn(),
@@ -30,7 +32,9 @@ describe('Registration Screen check', () => {
 
   it('renders the registration screen correctly', () => {
     const {getByPlaceholderText, getByText, getByLabelText} = render(
-      <Registration />
+      <Provider store={store}>
+         <Registration />
+      </Provider>
     );
     const image = getByLabelText('profile-image');
     expect(image).toBeTruthy();
@@ -44,7 +48,9 @@ describe('Registration Screen check', () => {
   });
   it('shows validation errors when fields are empty', async () => {
     const {getByText, queryByText} = render(
-      <Registration />
+      <Provider store={store}>
+        <Registration />
+      </Provider>
     );
     fireEvent.press(getByText('Register'));
     await waitFor(() => {
@@ -56,7 +62,9 @@ describe('Registration Screen check', () => {
   });
   it('shows error when passwords do not match', async () => {
     const {getByPlaceholderText, getByText, queryByText} = render(
+      <Provider store={store}>
       <Registration />
+    </Provider>
     );
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Mamatha');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Niya;');
@@ -71,7 +79,9 @@ describe('Registration Screen check', () => {
   });
   it('shows error for invalid email address', async () => {
     const {getByPlaceholderText, getByText, queryByText} = render(
+      <Provider store={store}>
       <Registration />
+    </Provider>
     );
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Mamatha');
@@ -94,7 +104,9 @@ describe('Registration Screen check', () => {
 
   it('submits the form successfully when all fields are valid', async () => {
     const {getByPlaceholderText, getByText} = render(
+      <Provider store={store}>
       <Registration />
+    </Provider>
     );
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Anjani');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Barlapati');
@@ -115,7 +127,9 @@ describe('Registration Screen check', () => {
     mockRegister.mockResolvedValue(response);
 
     const { getByPlaceholderText, getByText } = render(
+      <Provider store={store}>
       <Registration />
+    </Provider>
     );
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
@@ -141,7 +155,9 @@ describe('Registration Screen check', () => {
     mockRegister.mockResolvedValue(response);
 
     const { getByPlaceholderText, getByText } = render(
+      <Provider store={store}>
       <Registration />
+    </Provider>
     );
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
@@ -162,7 +178,9 @@ describe('Registration Screen check', () => {
     mockRegister.mockRejectedValue(new Error('Internal server error'));
 
     const { getByPlaceholderText, getByText } = render(
+      <Provider store={store}>
       <Registration />
+    </Provider>
     );
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
