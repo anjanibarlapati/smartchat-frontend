@@ -8,12 +8,16 @@ import {styles} from './Registration.styles';
 import { InputUser } from '../../types/InputUser';
 import { register } from './Registration.handler';
 import { UploadImage } from '../../types/UploadImage';
+import { Dispatch } from 'redux';
+import { useDispatch } from 'react-redux';
+import { setUserDetails } from '../../redux/reducer';
 
 const Registration = () => {
 
   const [showProfilePicSelectModal, setShowProfilePicSelectModal] = useState(false);
   const [profilePic, setProfilePic] = useState<UploadImage | null | string>(null);
   const [isLoading, setLoading] = useState(false);
+  // const userDetails = useSelector((state: userState) => state.user);
   const [user, setUser] = useState<InputUser>({
     firstName: '',
     lastName: '',
@@ -22,6 +26,7 @@ const Registration = () => {
     mobileNumber: '',
     confirmPassword: '',
   });
+  const dispatch: Dispatch = useDispatch();
   const [inputErrors, setInputErrors] = useState<InputUser>({
     firstName: '',
     lastName: '',
@@ -126,6 +131,7 @@ const Registration = () => {
       if(response.ok) {
         Alert.alert('User Registered Successfully!');
         clearFields();
+        dispatch(setUserDetails(result.user));
         return;
       }
       Alert.alert(result.message);
