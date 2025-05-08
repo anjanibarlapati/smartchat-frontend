@@ -1,142 +1,198 @@
-import {Image, Text, TouchableOpacity, View} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {useState} from 'react';
+import { useState } from 'react';
+import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
+import { ProfilePicutrePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
+import LoadingScreen from '../Loading/LoadingScreen';
 import {styles} from './Registration.styles';
-
-import {
-  firstNameChanged,
-  lastNameChanged,
-  emailChanged,
-  contactChanged,
-  passwordChanged,
-  confirmPasswordChanged,
-  REGISTER_REQUEST,
-} from '../../redux/action';
+import { InputUser } from '../../types/InputUser';
+import { register } from './Registration.handler';
+import { UploadImage } from '../../types/UploadImage';
 
 const Registration = () => {
-  const dispatch = useDispatch();
 
-  const {firstName, lastName, email, contact, password, confirmPassword} =
-    useSelector((state: any) => state.registration);
+  const [showProfilePicSelectModal, setShowProfilePicSelectModal] = useState(false);
+  const [profilePic, setProfilePic] = useState<UploadImage | null | string>(null);
+  const [isLoading, setLoading] = useState(false);
+  const [user, setUser] = useState<InputUser>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    mobileNumber: '',
+    confirmPassword: '',
+  });
+  const [inputErrors, setInputErrors] = useState<InputUser>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    mobileNumber: '',
+  });
 
-  const [firstNameError, setFirstNameError] = useState('');
-  const [lastNameError, setLastNameError] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [confirmPasswordError, setConfirmPasswordError] = useState('');
-  const [contactError, setContactError] = useState('');
+  const handleChange = (field: string, value: string) => {
+    setUser((prevValues) => ({
+        ...prevValues,
+        [field]: value,
+    }));
+    setInputErrors((prevValues) => ({
+        ...prevValues,
+        [field]: '',
+    }));
+  };
 
-  const handleRegister = () => {
+  const setErrorMessage = (field: string, message: string) => {
+    setInputErrors((prevValues) => ({
+      ...prevValues,
+      [field]: message,
+    }));
+  };
+
+  const validateFields = () => {
     let isValid = true;
-    setFirstNameError('');
-    setLastNameError('');
-    setEmailError('');
-    setPasswordError('');
-    setConfirmPasswordError('');
-    setContactError('');
 
-    if (!firstName.trim()) {
-      setFirstNameError('First name is required');
+    if (!user.firstName.trim()) {
+      setErrorMessage('firstName', 'First name is required');
       isValid = false;
     }
-    if (!lastName.trim()) {
-      setLastNameError('Last name is required');
+    if (!user.lastName.trim()) {
+      setErrorMessage('lastName', 'Last name is required');
       isValid = false;
     }
-    if (email) {
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailRegex.test(email)) {
-        setEmailError('Invalid email address');
+    if (user.email) {
+      const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/;
+      if (!emailRegex.test(user.email)) {
+        setErrorMessage('email', 'Invalid email address');
         isValid = false;
       }
     } else {
-      setEmailError('Email is required');
+      setErrorMessage('email', 'Email is required');
       isValid = false;
+    }
+    if (!user.mobileNumber.trim()) {
+      setErrorMessage('mobileNumber', 'Mobile number is required');
+      isValid = false;
+    }
+    if (!user.password) {
+      setErrorMessage('password', 'Password is required');
+      isValid = false;
+    }
+    if (user.password !== user.confirmPassword) {
+      setErrorMessage('confirmPassword', 'Passwords do not match');
+      isValid = false;
+    }
+    return isValid;
+  };
+
+  const clearFields = () => {
+    setUser({
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      mobileNumber: '',
+      confirmPassword: '',
+    });
+    setProfilePic(null);
+    setInputErrors({
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      mobileNumber: '',
+      confirmPassword: '',
+    });
+  };
+
+  const handleRegister = async() => {
+    if(!validateFields()) {
+      return;
+    }
+    const formData = new FormData();
+    formData.append('firstName', user.firstName);
+    formData.append('lastName', user.lastName);
+    formData.append('email', user.email);
+    formData.append('mobileNumber', user.mobileNumber);
+    formData.append('password', user.password);
+    if(profilePic) {
+      formData.append('profilePicture', profilePic);
     }
 
-    if (!contact.trim()) {
-      setContactError('Mobile number is required');
-      isValid = false;
-    }
-
-    if (!password) {
-      setPasswordError('Password is required');
-      isValid = false;
-    }
-    if (password !== confirmPassword) {
-      setConfirmPasswordError('Passwords do not match');
-      isValid = false;
-    }
-
-    if (isValid) {
-      dispatch({
-        type: REGISTER_REQUEST,
-        payload: {
-          firstName,
-          lastName,
-          email,
-          contact,
-          password,
-          confirmPassword,
-        },
-      });
+    try{
+      setLoading(true);
+      const response = await register(formData);
+      const result = await response.json();
+      if(response.ok) {
+        Alert.alert('User Registered Successfully!');
+        clearFields();
+        return;
+      }
+      Alert.alert(result.message);
+    } catch(error) {
+      Alert.alert('Invalid error!');
+    } finally{
+      setLoading(false);
     }
   };
 
+  if(isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
-    <View style={styles.window}>
-      <TouchableOpacity>
+    <ScrollView contentContainerStyle={styles.window} keyboardShouldPersistTaps="always">
+      <TouchableOpacity onPress={() => {setShowProfilePicSelectModal(true);}}>
         <Image
           style={styles.img}
-          source={require('../../../assets/images/profileImage.png')}
+          source={profilePic ? typeof profilePic === 'string' ? {uri: profilePic} : {uri: profilePic.uri} : require('../../../assets/images/profileImage.png')}
           accessibilityLabel="profile-image"
+          resizeMode="cover"
         />
       </TouchableOpacity>
 
       <View style={styles.inputfields}>
         <InputField
-          value={firstName}
-          onChangeText={text => dispatch(firstNameChanged(text))}
+          value={user.firstName}
+          onChangeText={(text) => { handleChange('firstName', text); }}
           placeholder="First Name"
-          error={firstNameError}
+          error={inputErrors.firstName}
           required
         />
         <InputField
-          value={lastName}
-          onChangeText={text => dispatch(lastNameChanged(text))}
+          value={user.lastName}
+          onChangeText={(text) => { handleChange('lastName', text); }}
           placeholder="Last Name"
-          error={lastNameError}
+          error={inputErrors.lastName}
           required
         />
         <InputField
-          value={email}
-          onChangeText={text => dispatch(emailChanged(text))}
+          value={user.email}
+          onChangeText={(text) => { handleChange('email', text); }}
           placeholder="Email"
-          error={emailError}
+          error={inputErrors.email}
         />
         <InputField
-          value={contact}
-          onChangeText={text => dispatch(contactChanged(text))}
+          value={user.mobileNumber}
+          onChangeText={(text) => { handleChange('mobileNumber', text); }}
           placeholder="Mobile Number"
-          error={contactError}
+          error={inputErrors.mobileNumber}
           required
         />
         <InputField
-          value={password}
-          onChangeText={text => dispatch(passwordChanged(text))}
+          value={user.password}
+          onChangeText={(text) => { handleChange('password', text); }}
           placeholder="Password"
           secureTextEntry
-          error={passwordError}
+          error={inputErrors.password}
           required
         />
         <InputField
-          value={confirmPassword}
-          onChangeText={text => dispatch(confirmPasswordChanged(text))}
+          value={user.confirmPassword}
+          onChangeText={(text) => { handleChange('confirmPassword', text); }}
           placeholder="Confirm Password"
           secureTextEntry
-          error={confirmPasswordError}
+          error={inputErrors.confirmPassword}
           required
         />
       </View>
@@ -149,7 +205,14 @@ const Registration = () => {
       </View>
 
       <Button label="Register" onPress={handleRegister} />
-    </View>
+      <ProfilePicutrePickerModal
+        isEditingProfilePicture={showProfilePicSelectModal}
+        close={() => {setShowProfilePicSelectModal(false);}}
+        profilePicture={profilePic}
+        openedFrom="registration"
+        setProfilePic={setProfilePic}
+      />
+    </ScrollView>
   );
 };
 
