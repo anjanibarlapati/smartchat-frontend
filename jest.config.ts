@@ -13,6 +13,9 @@ const config: Config.InitialOptions = {
     '/public/assets/',
     '__tests__/',
   ],
+  transformIgnorePatterns: [
+      'node_modules/(?!@react-native|react-native|@react-native/js-polyfills|react-native-image-crop-picker)',
+  ],
 };
 
 export default config;
