@@ -21,11 +21,11 @@ const LoginScreen = () => {
     let isValid = true;
 
     if (!form.mobilenumber.trim()) {
-      newErrors.mobilenumber = 'Mobile number is required';
+      newErrors.mobilenumber = t('Mobile number is required');
       isValid = false;
     }
     if (!form.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = t('Password is required');
       isValid = false;
     }
     setErrors(newErrors);
