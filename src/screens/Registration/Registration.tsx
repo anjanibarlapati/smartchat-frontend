@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
-import { ProfilePicutrePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
+import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
 import LoadingScreen from '../Loading/LoadingScreen';
 import {styles} from './Registration.styles';
 import { InputUser } from '../../types/InputUser';
@@ -205,7 +205,7 @@ const Registration = () => {
       </View>
 
       <Button label="Register" onPress={handleRegister} />
-      <ProfilePicutrePickerModal
+      <ProfilePicturePickerModal
         isEditingProfilePicture={showProfilePicSelectModal}
         close={() => {setShowProfilePicSelectModal(false);}}
         profilePicture={profilePic}

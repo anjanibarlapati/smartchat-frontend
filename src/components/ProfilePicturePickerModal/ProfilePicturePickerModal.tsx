@@ -14,7 +14,7 @@ interface ProfilePicturePickerModalProps {
     openedFrom: 'registration' | 'profile';
 }
 
-export function ProfilePicutrePickerModal(props: ProfilePicturePickerModalProps): React.JSX.Element{
+export function ProfilePicturePickerModal(props: ProfilePicturePickerModalProps): React.JSX.Element{
 
     const validFileTypes = ['image/jpg', 'image/jpeg', 'image/png'];
 

@@ -1,9 +1,9 @@
+import { Alert } from 'react-native';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { ProfilePicutrePickerModal } from './ProfilePicturePickerModal';
+import { ProfilePicturePickerModal } from './ProfilePicturePickerModal';
 import { UploadImage } from '../../types/UploadImage';
 import * as CameraUtil from '../../utils/openCamera';
 import * as GalleryUtil from '../../utils/openPhotoLibrary';
-import { Alert } from 'react-native';
 
 const handleClose = jest.fn(() => {});
 
@@ -17,7 +17,7 @@ jest.mock('../../utils/openPhotoLibrary', () => ({
 
 const renderModal = (isEditing:boolean, close: ()=>void, profilePicture:string, setProfilePic: React.Dispatch<React.SetStateAction<string | UploadImage | null>>, openedFrom: 'registration' | 'profile') => {
     return render(
-      <ProfilePicutrePickerModal isEditingProfilePicture={isEditing} close={close} profilePicture={profilePicture} openedFrom={openedFrom} setProfilePic={setProfilePic}/>
+      <ProfilePicturePickerModal isEditingProfilePicture={isEditing} close={close} profilePicture={profilePicture} openedFrom={openedFrom} setProfilePic={setProfilePic}/>
     );
   };
 
