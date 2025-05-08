@@ -56,8 +56,8 @@ export const styles = StyleSheet.create({
   },
 
   chevronIconStyles: {
-    width: 15,
-    height: 15,
+    width: 22,
+    height: 22,
     resizeMode: 'contain',
   },
 });
