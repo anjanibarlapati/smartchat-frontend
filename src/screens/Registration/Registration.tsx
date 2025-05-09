@@ -8,9 +8,10 @@ import {styles} from './Registration.styles';
 import { InputUser } from '../../types/InputUser';
 import { register } from './Registration.handler';
 import { UploadImage } from '../../types/UploadImage';
+import { useTranslation } from 'react-i18next';
 
 const Registration = () => {
-
+  const { t } = useTranslation('auth');
   const [showProfilePicSelectModal, setShowProfilePicSelectModal] = useState(false);
   const [profilePic, setProfilePic] = useState<UploadImage | null | string>(null);
   const [isLoading, setLoading] = useState(false);
@@ -53,33 +54,33 @@ const Registration = () => {
     let isValid = true;
 
     if (!user.firstName.trim()) {
-      setErrorMessage('firstName', 'First name is required');
+      setErrorMessage('firstName', t('First name is required'));
       isValid = false;
     }
     if (!user.lastName.trim()) {
-      setErrorMessage('lastName', 'Last name is required');
+      setErrorMessage('lastName', t('Last name is required'));
       isValid = false;
     }
     if (user.email) {
       const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/;
       if (!emailRegex.test(user.email)) {
-        setErrorMessage('email', 'Invalid email address');
+        setErrorMessage('email', t('Invalid email address'));
         isValid = false;
       }
     } else {
-      setErrorMessage('email', 'Email is required');
+      setErrorMessage('email', t('Email is required'));
       isValid = false;
     }
     if (!user.mobileNumber.trim()) {
-      setErrorMessage('mobileNumber', 'Mobile number is required');
+      setErrorMessage('mobileNumber', t('Mobile number is required'));
       isValid = false;
     }
     if (!user.password) {
-      setErrorMessage('password', 'Password is required');
+      setErrorMessage('password', t('Password is required'));
       isValid = false;
     }
     if (user.password !== user.confirmPassword) {
-      setErrorMessage('confirmPassword', 'Passwords do not match');
+      setErrorMessage('confirmPassword', t('Passwords do not match'));
       isValid = false;
     }
     return isValid;
@@ -124,13 +125,13 @@ const Registration = () => {
       const response = await register(formData);
       const result = await response.json();
       if(response.ok) {
-        Alert.alert('User Registered Successfully!');
+        Alert.alert(t('User Registered Successfully!'));
         clearFields();
         return;
       }
       Alert.alert(result.message);
     } catch(error) {
-      Alert.alert('Invalid error!');
+      Alert.alert(t('Invalid error!'));
     } finally{
       setLoading(false);
     }
@@ -141,11 +142,17 @@ const Registration = () => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.window} keyboardShouldPersistTaps="always">
-      <TouchableOpacity onPress={() => {setShowProfilePicSelectModal(true);}}>
+     <ScrollView contentContainerStyle={styles.window} keyboardShouldPersistTaps="always">
+      <TouchableOpacity onPress={() => { setShowProfilePicSelectModal(true); }}>
         <Image
           style={styles.img}
-          source={profilePic ? typeof profilePic === 'string' ? {uri: profilePic} : {uri: profilePic.uri} : require('../../../assets/images/profileImage.png')}
+          source={
+            profilePic
+              ? typeof profilePic === 'string'
+                ? { uri: profilePic }
+                : { uri: profilePic.uri }
+              : require('../../../assets/images/profileImage.png')
+          }
           accessibilityLabel="profile-image"
           resizeMode="cover"
         />
@@ -155,34 +162,34 @@ const Registration = () => {
         <InputField
           value={user.firstName}
           onChangeText={(text) => { handleChange('firstName', text); }}
-          placeholder="First Name"
+          placeholder={t('First Name')}
           error={inputErrors.firstName}
           required
         />
         <InputField
           value={user.lastName}
           onChangeText={(text) => { handleChange('lastName', text); }}
-          placeholder="Last Name"
+          placeholder={t('Last Name')}
           error={inputErrors.lastName}
           required
         />
         <InputField
           value={user.email}
           onChangeText={(text) => { handleChange('email', text); }}
-          placeholder="Email"
+          placeholder={t('Email')}
           error={inputErrors.email}
         />
         <InputField
           value={user.mobileNumber}
           onChangeText={(text) => { handleChange('mobileNumber', text); }}
-          placeholder="Mobile Number"
+          placeholder={t('Mobile Number')}
           error={inputErrors.mobileNumber}
           required
         />
         <InputField
           value={user.password}
           onChangeText={(text) => { handleChange('password', text); }}
-          placeholder="Password"
+          placeholder={t('Password')}
           secureTextEntry
           error={inputErrors.password}
           required
@@ -190,7 +197,7 @@ const Registration = () => {
         <InputField
           value={user.confirmPassword}
           onChangeText={(text) => { handleChange('confirmPassword', text); }}
-          placeholder="Confirm Password"
+          placeholder={t('Confirm Password')}
           secureTextEntry
           error={inputErrors.confirmPassword}
           required
@@ -198,16 +205,16 @@ const Registration = () => {
       </View>
 
       <View style={styles.loginView}>
-        <Text style={styles.text}>Already have an account?</Text>
+        <Text style={styles.text}>{t('Already have an account?')}</Text>
         <TouchableOpacity>
-          <Text style={styles.loginText}>Login</Text>
+          <Text style={styles.loginText}>{t('Login')}</Text>
         </TouchableOpacity>
       </View>
 
-      <Button label="Register" onPress={handleRegister} />
+      <Button label={t('Register')} onPress={handleRegister} />
       <ProfilePicturePickerModal
         isEditingProfilePicture={showProfilePicSelectModal}
-        close={() => {setShowProfilePicSelectModal(false);}}
+        close={() => { setShowProfilePicSelectModal(false); }}
         profilePicture={profilePic}
         openedFrom="registration"
         setProfilePic={setProfilePic}

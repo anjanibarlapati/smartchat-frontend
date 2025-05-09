@@ -1,8 +1,10 @@
 import React from 'react';
-import {Image, Pressable, Text, View} from 'react-native';
+import {Image, Pressable, Text,View} from 'react-native';
 import {styles} from './Welcome.styles';
-
+import { useTranslation } from 'react-i18next';
 const WelcomeScreen = ():React.JSX.Element => {
+  const {t} = useTranslation();
+
   return (
     <View style={styles.container}>
       <Image
@@ -11,12 +13,12 @@ const WelcomeScreen = ():React.JSX.Element => {
         accessibilityLabel="appLogo"
       />
       <View style={styles.appnameTagline}>
-        <Text style={styles.appname}>SmartChat</Text>
-        <Text style={styles.apptagline}>Where conversations evolve</Text>
+        <Text style={styles.appname}>{t('SmartChat')}</Text>
+        <Text style={styles.apptagline}>{t('Where conversations evolve')}</Text>
       </View>
       <Pressable style={styles.getstartButton}>
         <View style={styles.buttonContent}>
-          <Text style={styles.getstartText}>Let's Get Started</Text>
+          <Text style={styles.getstartText}>{t("Let's Get Started")}</Text>
           <Image
             style={styles.chevronIconStyles}
             source={require('../../../assets/icons/rightArrowIcon.png')}
