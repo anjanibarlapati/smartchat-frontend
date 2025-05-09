@@ -50,11 +50,6 @@ jobs:
                 key: ${{ runner.os }}-deriveddata-${{ hashFiles('ios/Podfile.lock') }}
                 restore-keys: |
                     ${{ runner.os }}-deriveddata-
-                        
-            - name: Remove DerivedData and Pods
-              run: |
-                rm -rf ios/Pods ios/Podfile.lock ~/Library/Developer/Xcode/DerivedData
-                cd ios && pod deintegrate && cd ..
               
             - name: Install Pods cleanly
               run: |
