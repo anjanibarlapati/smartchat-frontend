@@ -4,12 +4,23 @@ import LoginScreen from './Login';
 import * as LoginHandler from './Login.handler';
 import React, { act } from 'react';
 import { Alert } from 'react-native';
+import { Provider } from 'react-redux';
+import { store } from '../../redux/store';
 
 const renderLoginScreen = ()=>{
     return render(
-        <LoginScreen/>
-    );
+      <Provider store={store}>
+         <LoginScreen />
+      </Provider>    );
 };
+
+jest.mock('react-native-encrypted-storage', () => ({
+  setItem: jest.fn(),
+  getItem: jest.fn(),
+  removeItem: jest.fn(),
+  getAllKeys: jest.fn(),
+  clear: jest.fn(),
+}));
 
 describe('Login Screen check', ()=>{
 
