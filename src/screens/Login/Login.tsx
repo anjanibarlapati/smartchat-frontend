@@ -1,39 +1,94 @@
+
 import Button from '../../components/Button/Button';
+import { Credentials } from '../../types/Credentials';
 import InputField from '../../components/InputField/InputField';
-import { LoginFormErrors, LoginFormInputs } from '../../types/LoginCredentials';
 import React, { useState } from 'react';
 import { styles } from './Login.styles';
-import { View, Image, Text, TouchableOpacity } from 'react-native';
+import { View, Image, Text, TouchableOpacity, Alert } from 'react-native';
+import LoadingScreen from '../Loading/LoadingScreen';
+import { login } from './Login.handler';
 
 
 const LoginScreen = () => {
-  const [form, setForm] = useState<LoginFormInputs>({ mobilenumber: '', password: '' });
-  const [errors, setErrors] = useState<LoginFormErrors>({
-    mobilenumber: '',
+  const [credentials, setCredentials] = useState<Credentials>({ mobileNumber: '', password: '' });
+  const [errors, setErrors] = useState<Credentials>({
+    mobileNumber: '',
     password: '',
   });
+  const [isLoading, setLoading] = useState(false);
+  const handleChange = (field: string, value: string) => {
+    setCredentials((prevValues) => ({
+        ...prevValues,
+        [field]: value,
+    }));
+    setErrors((prevValues) => ({
+        ...prevValues,
+        [field]: '',
+    }));
+  };
+
+  const setErrorMessage = (field: string, message: string) => {
+    setErrors((prevValues) => ({
+      ...prevValues,
+      [field]: message,
+    }));
+  };
+
 
   const validateForm = () => {
-    const newErrors: LoginFormErrors = {};
     let isValid = true;
 
-    if (!form.mobilenumber.trim()) {
-      newErrors.mobilenumber = 'Mobile number is required';
+    if (!credentials.mobileNumber.trim()) {
+      setErrorMessage('mobileNumber', 'Mobile number is required');
       isValid = false;
     }
-    if (!form.password) {
-      newErrors.password = 'Password is required';
+    if (!credentials.password) {
+      setErrorMessage('password', 'Password is required');
       isValid = false;
     }
-    setErrors(newErrors);
     return isValid;
   };
 
-  const handleLogin = () => {
+
+  const clearFields = () => {
+    setCredentials({
+      mobileNumber: '',
+      password: '',
+    });
+    setErrors({
+      mobileNumber: '',
+      password: '',
+    });
+  };
+
+  const handleLogin = async () => {
     if (!validateForm()) {
         return;
     }
+
+    try{
+      setLoading(true);
+
+      const response = await login(credentials);
+      const result = await response.json();
+      if(response.ok) {
+        Alert.alert('User Login Successfully!');
+        clearFields();
+        return;
+      }
+      Alert.alert(result.message);
+      } catch(error) {
+        Alert.alert('Invalid error!');
+        // clearFields();
+      } finally{
+        setLoading(false);
+    }
   };
+
+  if(isLoading) {
+    return <LoadingScreen />;
+  }
+
 
   return (
     <View style={styles.container}>
@@ -44,15 +99,15 @@ const LoginScreen = () => {
       />
       <View style={styles.inputfields}>
         <InputField
-          value={form.mobilenumber}
-          onChangeText={(text) => setForm({ ...form, mobilenumber: text })}
+          value={credentials.mobileNumber}
+          onChangeText={(text) => handleChange('mobileNumber', text)}
           placeholder="Mobile Number"
-          error={errors.mobilenumber}
+          error={errors.mobileNumber}
           keyboardType="numeric"
         />
         <InputField
-          value={form.password}
-          onChangeText={(text) => setForm({ ...form, password: text })}
+          value={credentials.password}
+          onChangeText={(text) => handleChange('password', text)}
           placeholder="Password"
           secureTextEntry
           error={errors.password}
