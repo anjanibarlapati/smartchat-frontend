@@ -60,12 +60,5 @@ jobs:
               run: |
                 cd ios && pod install --repo-update && cd ..
 
-            - name: Build iOS with Xcode
-              run: |
-                cd ios
-                xcodebuild -workspace SmartChat.xcworkspace \
-                            -scheme SmartChat \
-                            -sdk iphonesimulator \
-                            -configuration Debug \
-                            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.4' \
-                            clean build | xcpretty
+            - name: Build iOS 
+              run: npx react-native build-ios
