@@ -79,7 +79,7 @@ const LoginScreen = () => {
       Alert.alert(result.message);
       } catch(error) {
         Alert.alert('Invalid error!');
-        // clearFields();
+        clearFields();
       } finally{
         setLoading(false);
     }
