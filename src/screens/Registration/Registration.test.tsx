@@ -12,6 +12,13 @@ jest.mock('../../utils/openCamera', () => ({
 jest.mock('../../utils/openPhotoLibrary', () => ({
   openPhotoLibrary: jest.fn(),
 }));
+jest.mock('react-native-encrypted-storage', () => ({
+  setItem: jest.fn(),
+  getItem: jest.fn(),
+  removeItem: jest.fn(),
+  getAllKeys: jest.fn(),
+  clear: jest.fn(),
+}));
 
 describe('Registration Screen check', () => {
 
