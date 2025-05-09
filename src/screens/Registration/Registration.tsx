@@ -9,15 +9,17 @@ import { InputUser } from '../../types/InputUser';
 import { register } from './Registration.handler';
 import { UploadImage } from '../../types/UploadImage';
 import { Dispatch } from 'redux';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setUserDetails } from '../../redux/reducer';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { userState } from '../../types/User';
 
 const Registration = () => {
 
   const [showProfilePicSelectModal, setShowProfilePicSelectModal] = useState(false);
   const [profilePic, setProfilePic] = useState<UploadImage | null | string>(null);
   const [isLoading, setLoading] = useState(false);
-  // const userDetails = useSelector((state: userState) => state.user);
+  const userDetails = useSelector((state: userState) => state.user);
   const [user, setUser] = useState<InputUser>({
     firstName: '',
     lastName: '',
@@ -109,7 +111,6 @@ const Registration = () => {
       confirmPassword: '',
     });
   };
-
   const handleRegister = async() => {
     if(!validateFields()) {
       return;
@@ -132,6 +133,13 @@ const Registration = () => {
         Alert.alert('User Registered Successfully!');
         clearFields();
         dispatch(setUserDetails(result.user));
+        await EncryptedStorage.setItem(
+            userDetails.mobileNumber,
+            JSON.stringify({
+              access_token: result.access_token,
+              refresh_token: result.refresh_token,
+            })
+         );
         return;
       }
       Alert.alert(result.message);
