@@ -145,6 +145,7 @@ const Registration = () => {
       Alert.alert(result.message);
     } catch(error) {
       Alert.alert('Invalid error!');
+      clearFields();
     } finally{
       setLoading(false);
     }
