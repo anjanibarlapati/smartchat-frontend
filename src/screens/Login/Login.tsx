@@ -7,6 +7,11 @@ import { styles } from './Login.styles';
 import { View, Image, Text, TouchableOpacity, Alert } from 'react-native';
 import LoadingScreen from '../Loading/LoadingScreen';
 import { login } from './Login.handler';
+import { useDispatch, useSelector } from 'react-redux';
+import { Dispatch } from 'redux';
+import { setUserDetails } from '../../redux/reducer';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { userState } from '../../types/User';
 
 
 const LoginScreen = () => {
@@ -16,6 +21,10 @@ const LoginScreen = () => {
     password: '',
   });
   const [isLoading, setLoading] = useState(false);
+
+  const dispatch: Dispatch = useDispatch();
+  const userDetails = useSelector((state: userState) => state.user);
+
   const handleChange = (field: string, value: string) => {
     setCredentials((prevValues) => ({
         ...prevValues,
@@ -65,15 +74,21 @@ const LoginScreen = () => {
     if (!validateForm()) {
         return;
     }
-
     try{
       setLoading(true);
-
       const response = await login(credentials);
       const result = await response.json();
       if(response.ok) {
         Alert.alert('User Login Successfully!');
         clearFields();
+        dispatch(setUserDetails(result.user));
+        await EncryptedStorage.setItem(
+            userDetails.mobileNumber,
+            JSON.stringify({
+              access_token: result.access_token,
+              refresh_token: result.refresh_token,
+            })
+        );
         return;
       }
       Alert.alert(result.message);
