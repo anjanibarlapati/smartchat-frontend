@@ -5,8 +5,6 @@ export const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        width: 450,
-        height: 750,
     },
     logoStyles: {
         width: 250,
@@ -18,7 +16,7 @@ export const styles = StyleSheet.create({
         gap: 1,
         marginTop: '-10%',
         marginBottom: '5%',
-        width: '80%',
+        width: '90%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
