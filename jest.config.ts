@@ -14,7 +14,7 @@ const config: Config.InitialOptions = {
     '__tests__/',
   ],
   transformIgnorePatterns: [
-      'node_modules/(?!@react-native|react-native|@react-native/js-polyfills|react-native-image-crop-picker)',
+      'node_modules/(?!@react-native|react-native|@react-native/js-polyfills|react-native-image-crop-picker|@react-navigation)',
   ],
 };
 
