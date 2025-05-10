@@ -1,20 +1,25 @@
 
-import Button from '../../components/Button/Button';
-import { Credentials } from '../../types/Credentials';
-import InputField from '../../components/InputField/InputField';
 import React, { useState } from 'react';
-import { styles } from './Login.styles';
-import { View, Image, Text, TouchableOpacity, Alert } from 'react-native';
-import LoadingScreen from '../Loading/LoadingScreen';
-import { login } from './Login.handler';
+import { Alert, Image, Text, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from 'redux';
+import Button from '../../components/Button/Button';
+import InputField from '../../components/InputField/InputField';
+import LoadingScreen from '../Loading/LoadingScreen';
+import { login } from './Login.handler';
+import { styles } from './Login.styles';
 import { setUserDetails } from '../../redux/reducer';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import { Credentials } from '../../types/Credentials';
+import { RegistrationScreenNavigationProps } from '../../types/Navigations';
 import { userState } from '../../types/User';
 
 
+
 const LoginScreen = () => {
+    const navigation = useNavigation<RegistrationScreenNavigationProps>();
+
   const [credentials, setCredentials] = useState<Credentials>({ mobileNumber: '', password: '' });
   const [errors, setErrors] = useState<Credentials>({
     mobileNumber: '',
@@ -89,6 +94,11 @@ const LoginScreen = () => {
               refresh_token: result.refresh_token,
             })
         );
+        await EncryptedStorage.setItem(
+          'User Data',
+          JSON.stringify(result.user)
+        );
+        navigation.replace('Tabs');
         return;
       }
       Alert.alert(result.message);
@@ -131,7 +141,7 @@ const LoginScreen = () => {
       <Button label="Login" onPress={handleLogin}/>
       <View style={styles.registerView}>
         <Text style={styles.text}>Don't have an account?</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('RegistrationScreen')}>
           <Text style={styles.registerText}>Register</Text>
         </TouchableOpacity>
       </View>
