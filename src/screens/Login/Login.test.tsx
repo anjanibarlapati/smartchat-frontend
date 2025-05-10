@@ -1,17 +1,19 @@
-
-import {fireEvent, render, waitFor} from '@testing-library/react-native';
-import LoginScreen from './Login';
-import * as LoginHandler from './Login.handler';
 import React, { act } from 'react';
 import { Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
+import LoginScreen from './Login';
+import * as LoginHandler from './Login.handler';
 import { store } from '../../redux/store';
+
 
 const renderLoginScreen = ()=>{
     return render(
       <Provider store={store}>
          <LoginScreen />
-      </Provider>    );
+      </Provider>
+    );
 };
 
 jest.mock('react-native-encrypted-storage', () => ({
@@ -22,30 +24,42 @@ jest.mock('react-native-encrypted-storage', () => ({
   clear: jest.fn(),
 }));
 
+jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
+  useNavigation: jest.fn(),
+}));
+
 describe('Login Screen check', ()=>{
 
     let mockRegister: jest.SpyInstance;
+    const mockNavigate = jest.fn();
+    const mockReplace = jest.fn();
+
     beforeAll(() => {
       mockRegister = jest.spyOn(LoginHandler, 'login');
     });
     beforeEach(() => {
       jest.resetAllMocks();
+      (useNavigation as jest.Mock).mockReturnValue({
+        navigate: mockNavigate,
+        replace: mockReplace,
+      });
       jest.spyOn(Alert, 'alert').mockImplementation(() => {});
     });
     afterAll(() => {
       mockRegister.mockRestore();
     });
-    test('renders app logo correctly',()=>{
+    test('Should render app logo correctly',()=>{
       const {getByLabelText} = renderLoginScreen();
       expect(getByLabelText('appLogo')).toBeTruthy();
     });
-    test('checking the input fields', ()=>{
+    test('Should render input fields', ()=>{
       const {getByPlaceholderText, getByText} = renderLoginScreen();
       expect(getByPlaceholderText('Mobile Number')).toBeTruthy();
       expect(getByPlaceholderText('Password')).toBeTruthy();
       expect(getByText('Login')).toBeTruthy();
     });
-    test('show validattion errors when fileds are empty', async()=>{
+    test('Should show validattion errors when fileds are empty', async()=>{
       const{getByText, queryByText} = renderLoginScreen();
         fireEvent.press(getByText('Login'));
             await waitFor(() => {
@@ -53,7 +67,7 @@ describe('Login Screen check', ()=>{
               expect(queryByText('Password is required')).toBeTruthy();
             });
     });
-    test('no errors with valid inputs', async () => {
+    test('Should not show errors for valid inputs', async () => {
       const { getByText, getByPlaceholderText, queryByText } = renderLoginScreen();
       fireEvent.changeText(getByPlaceholderText('Mobile Number'), '1234567890');
       fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
@@ -64,7 +78,7 @@ describe('Login Screen check', ()=>{
       });
     });
 
-    it('should give an alert on successful login with message', async () => {
+    it('Should give an alert on successful login with message', async () => {
       const response = {
         ok: true,
         json: async () => ({ message: 'Login Successfully' }),
@@ -79,8 +93,8 @@ describe('Login Screen check', ()=>{
       await waitFor(() => {
         expect(Alert.alert).toHaveBeenCalledWith('User Login Successfully!');
       });
-  });
-  it('should give an alert with error message if the API gives an error', async () => {
+    });
+    it('Should give an alert with error message if the API gives an error', async () => {
       const response = {
         ok: false,
         json: async () => ({ message: 'User do not exist' }),
@@ -96,7 +110,7 @@ describe('Login Screen check', ()=>{
         expect(Alert.alert).toHaveBeenCalledWith('User do not exist');
       });
     });
-  it('should give an alert with Invalid error shows if API throws an error', async () => {
+    it('Should give an alert with Invalid error shows if API throws an error', async () => {
       mockRegister.mockRejectedValue(new Error('Internal server error'));
       const { getByPlaceholderText, getByText } = renderLoginScreen();
       fireEvent.changeText(getByPlaceholderText('Mobile Number'), '5432123456');
@@ -107,5 +121,27 @@ describe('Login Screen check', ()=>{
       await waitFor(() => {
         expect(Alert.alert).toHaveBeenCalledWith('Invalid error!');
       });
-  });
+    });
+    it('Should navigate to Registration Screen on pressing login text', () => {
+      const { getByText } = renderLoginScreen();
+
+      fireEvent.press(getByText(/register/i));
+      expect(mockNavigate).toHaveBeenCalledWith('RegistrationScreen');
+    });
+
+    it('Should navigate to Home Screen on successful login', async () => {
+      const response = {
+        ok: true,
+        json: async () => ({ message: 'Login Successfully' }),
+      };
+      mockRegister.mockResolvedValue(response);
+      const { getByPlaceholderText, getByText } = renderLoginScreen();
+      fireEvent.changeText(getByPlaceholderText('Mobile Number'), '1234567890');
+      fireEvent.changeText(getByPlaceholderText('Password'), '1234');
+      await act(async ()=> {
+        fireEvent.press(getByText('Login'));
+      });
+      expect(mockReplace).toHaveBeenCalledWith('Tabs');
+
+    });
 });
