@@ -1,6 +1,13 @@
-import {render} from '@testing-library/react-native';
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { fireEvent, render } from '@testing-library/react-native';
 import WelcomeScreen from './Welcome.tsx';
+
+
+jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
+  useNavigation: jest.fn(),
+}));
 
 const renderWelcomeScreen = () => {
   return render(
@@ -9,6 +16,15 @@ const renderWelcomeScreen = () => {
 };
 
 describe('WelcomeScreen', () => {
+  const mockReplace = jest.fn();
+
+  beforeEach(() => {
+    (useNavigation as jest.Mock).mockReturnValue({
+      replace: mockReplace,
+    });
+    jest.clearAllMocks();
+  });
+
   test('renders welcome screen messages correctly', () => {
     const {getByText} = renderWelcomeScreen();
     expect(getByText(/SmartChat/i)).toBeTruthy();
@@ -25,5 +41,11 @@ describe('WelcomeScreen', () => {
     expect(buttonElement).toBeTruthy();
     expect(getByLabelText('chevronIcon')).toBeTruthy();
 
-});
+  });
+  test('navigates to RegistrationScreen on button press', () => {
+    const { getByText } = render(<WelcomeScreen />);
+
+    fireEvent.press(getByText("Let's Get Started"));
+    expect(mockReplace).toHaveBeenCalledWith('RegistrationScreen');
+  });
 });
