@@ -1,20 +1,23 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import LoadingScreen from '../Loading/LoadingScreen';
+import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
-import LoadingScreen from '../Loading/LoadingScreen';
-import {styles} from './Registration.styles';
-import { InputUser } from '../../types/InputUser';
-import { register } from './Registration.handler';
-import { UploadImage } from '../../types/UploadImage';
-import { Dispatch } from 'redux';
-import { useDispatch, useSelector } from 'react-redux';
 import { setUserDetails } from '../../redux/reducer';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import { register } from './Registration.handler';
+import { styles } from './Registration.styles';
+import { InputUser } from '../../types/InputUser';
+import { RegistrationScreenNavigationProps } from '../../types/Navigations';
+import { UploadImage } from '../../types/UploadImage';
 import { userState } from '../../types/User';
+import { Dispatch } from 'redux';
 
 const Registration = () => {
+  const navigation = useNavigation<RegistrationScreenNavigationProps>();
 
   const [showProfilePicSelectModal, setShowProfilePicSelectModal] = useState(false);
   const [profilePic, setProfilePic] = useState<UploadImage | null | string>(null);
@@ -140,6 +143,11 @@ const Registration = () => {
               refresh_token: result.refresh_token,
             })
          );
+         await EncryptedStorage.setItem(
+          'User Data',
+          JSON.stringify(result.user)
+        );
+        navigation.replace('Tabs');
         return;
       }
       Alert.alert(result.message);
@@ -214,7 +222,7 @@ const Registration = () => {
 
       <View style={styles.loginView}>
         <Text style={styles.text}>Already have an account?</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
           <Text style={styles.loginText}>Login</Text>
         </TouchableOpacity>
       </View>
