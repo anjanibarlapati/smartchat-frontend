@@ -1,9 +1,11 @@
 import { Alert } from 'react-native';
-import {act, fireEvent, render, waitFor} from '@testing-library/react-native';
+import { useNavigation } from '@react-navigation/native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { Provider } from 'react-redux';
 import Registration from './Registration';
 import * as RegistrationHandler from './Registration.handler';
-import { Provider } from 'react-redux';
 import { store } from '../../redux/store';
+
 
 jest.mock('../../utils/openCamera', () => ({
   openCamera: jest.fn(),
@@ -12,6 +14,7 @@ jest.mock('../../utils/openCamera', () => ({
 jest.mock('../../utils/openPhotoLibrary', () => ({
   openPhotoLibrary: jest.fn(),
 }));
+
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),
@@ -20,9 +23,25 @@ jest.mock('react-native-encrypted-storage', () => ({
   clear: jest.fn(),
 }));
 
+jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
+  useNavigation: jest.fn(),
+}));
+
+const renderRegistrationScreen = ()=>{
+  return render(
+    <Provider store={store}>
+       <Registration />
+    </Provider>
+  );
+};
+
 describe('Registration Screen check', () => {
 
   let mockRegister: jest.SpyInstance;
+  const mockNavigate = jest.fn();
+  const mockReplace = jest.fn();
+
 
   beforeAll(() => {
     mockRegister = jest.spyOn(RegistrationHandler, 'register');
@@ -30,6 +49,10 @@ describe('Registration Screen check', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    (useNavigation as jest.Mock).mockReturnValue({
+      navigate: mockNavigate,
+      replace: mockReplace,
+    });
     jest.spyOn(Alert, 'alert').mockImplementation(() => {});
   });
 
@@ -37,12 +60,8 @@ describe('Registration Screen check', () => {
     mockRegister.mockRestore();
   });
 
-  it('renders the registration screen correctly', () => {
-    const {getByPlaceholderText, getByText, getByLabelText} = render(
-      <Provider store={store}>
-         <Registration />
-      </Provider>
-    );
+  it('Should render the registration screen correctly', () => {
+    const {getByPlaceholderText, getByText, getByLabelText} = renderRegistrationScreen();
     const image = getByLabelText('profile-image');
     expect(image).toBeTruthy();
     expect(getByPlaceholderText('First Name *')).toBeTruthy();
@@ -53,12 +72,8 @@ describe('Registration Screen check', () => {
     expect(getByPlaceholderText('Confirm Password *')).toBeTruthy();
     expect(getByText('Register')).toBeTruthy();
   });
-  it('shows validation errors when fields are empty', async () => {
-    const {getByText, queryByText} = render(
-      <Provider store={store}>
-        <Registration />
-      </Provider>
-    );
+  it('Should show validation errors when fields are empty', async () => {
+    const {getByText, queryByText} = renderRegistrationScreen();
     fireEvent.press(getByText('Register'));
     await waitFor(() => {
       expect(queryByText('First name is required')).toBeTruthy();
@@ -68,11 +83,7 @@ describe('Registration Screen check', () => {
     });
   });
   it('shows error when passwords do not match', async () => {
-    const {getByPlaceholderText, getByText, queryByText} = render(
-      <Provider store={store}>
-      <Registration />
-    </Provider>
-    );
+    const {getByPlaceholderText, getByText, queryByText} = renderRegistrationScreen();
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Mamatha');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Niya;');
     fireEvent.changeText(getByPlaceholderText('Mobile Number *'), '1234567890');
@@ -84,12 +95,8 @@ describe('Registration Screen check', () => {
       expect(queryByText('Passwords do not match')).toBeTruthy();
     });
   });
-  it('shows error for invalid email address', async () => {
-    const {getByPlaceholderText, getByText, queryByText} = render(
-      <Provider store={store}>
-      <Registration />
-    </Provider>
-    );
+  it('Should show error for invalid email address', async () => {
+    const {getByPlaceholderText, getByText, queryByText} = renderRegistrationScreen();
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Mamatha');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Niyal');
@@ -109,12 +116,8 @@ describe('Registration Screen check', () => {
     });
   });
 
-  it('submits the form successfully when all fields are valid', async () => {
-    const {getByPlaceholderText, getByText} = render(
-      <Provider store={store}>
-      <Registration />
-    </Provider>
-    );
+  it('Should submit the form successfully when all fields are valid', async () => {
+    const {getByPlaceholderText, getByText} = renderRegistrationScreen();
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Anjani');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Barlapati');
     fireEvent.changeText(getByPlaceholderText('Email'), 'anju@gmail.com');
@@ -124,20 +127,16 @@ describe('Registration Screen check', () => {
     await act(async ()=> {
         fireEvent.press(getByText('Register'));
       });
-    });
+  });
 
-  it('should give an alert on successful registration with message', async () => {
+  it('Should give an alert on successful registration with message', async () => {
     const response = {
       ok: true,
       json: async () => ({ message: 'Registered Successfully' }),
     };
     mockRegister.mockResolvedValue(response);
 
-    const { getByPlaceholderText, getByText } = render(
-      <Provider store={store}>
-      <Registration />
-    </Provider>
-    );
+    const { getByPlaceholderText, getByText } = renderRegistrationScreen();
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
@@ -154,18 +153,14 @@ describe('Registration Screen check', () => {
     });
   });
 
-  it('should give an alert with error message if the API gives an error', async () => {
+  it('Should give an alert with error message if the API gives an error', async () => {
     const response = {
       ok: false,
       json: async () => ({ message: 'User already exists' }),
     };
     mockRegister.mockResolvedValue(response);
 
-    const { getByPlaceholderText, getByText } = render(
-      <Provider store={store}>
-      <Registration />
-    </Provider>
-    );
+    const { getByPlaceholderText, getByText } = renderRegistrationScreen();
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
@@ -181,15 +176,10 @@ describe('Registration Screen check', () => {
     });
   });
 
-  it('should give an alert with Invalid error shows if API throws an error', async () => {
+  it('Should give an alert with Invalid error shows if API throws an error', async () => {
     mockRegister.mockRejectedValue(new Error('Internal server error'));
 
-    const { getByPlaceholderText, getByText } = render(
-      <Provider store={store}>
-      <Registration />
-    </Provider>
-    );
-
+    const { getByPlaceholderText, getByText } = renderRegistrationScreen();
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
     fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
@@ -202,6 +192,36 @@ describe('Registration Screen check', () => {
     await waitFor(() => {
       expect(Alert.alert).toHaveBeenCalledWith('Invalid error!');
     });
+  });
+
+  it('Should navigate to Login Screen on pressing login text', () => {
+    const { getByText } = renderRegistrationScreen();
+
+    fireEvent.press(getByText(/login/i));
+    expect(mockNavigate).toHaveBeenCalledWith('LoginScreen');
+  });
+
+  it('Should navigate to Home Screen on successful registration', async () => {
+    const response = {
+      ok: true,
+      json: async () => ({ message: 'Registered Successfully' }),
+    };
+    mockRegister.mockResolvedValue(response);
+
+    const { getByPlaceholderText, getByText } = renderRegistrationScreen();
+
+    fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
+    fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
+    fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
+    fireEvent.changeText(getByPlaceholderText('Mobile Number *'), '1234567890');
+    fireEvent.changeText(getByPlaceholderText('Password *'), '1234');
+    fireEvent.changeText(getByPlaceholderText('Confirm Password *'), '1234');
+
+    await act(async ()=> {
+      fireEvent.press(getByText('Register'));
+    });
+    expect(mockReplace).toHaveBeenCalledWith('Tabs');
+
   });
 
 });
