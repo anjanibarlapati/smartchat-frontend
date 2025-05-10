@@ -12,6 +12,7 @@ const config: Config.InitialOptions = {
     '/node_modules/',
     '/public/assets/',
     '__tests__/',
+    'src/App/App.tsx',
   ],
   transformIgnorePatterns: [
       'node_modules/(?!@react-native|react-native|@react-native/js-polyfills|react-native-image-crop-picker|@react-navigation)',
