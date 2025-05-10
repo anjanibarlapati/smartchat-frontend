@@ -31,11 +31,11 @@ export function AppNavigator(): React.JSX.Element {
             const user = JSON.parse(storedUser);
             dispatch(setUserDetails(user));
             setIsUserStored(true);
-            setIsReady(true);
           }
         } catch (error) {
           Alert.alert('Failed to load user from storage');
         } finally {
+          setIsReady(true);
           SplashScreen.hide();
         }
       };
