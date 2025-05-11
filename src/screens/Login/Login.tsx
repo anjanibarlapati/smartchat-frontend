@@ -84,7 +84,7 @@ const LoginScreen = () => {
       const response = await login(credentials);
       const result = await response.json();
       if(response.ok) {
-        Alert.alert('User Login Successfully!');
+        Alert.alert('User Login Successful!');
         clearFields();
         dispatch(setUserDetails(result.user));
         await EncryptedStorage.setItem(
