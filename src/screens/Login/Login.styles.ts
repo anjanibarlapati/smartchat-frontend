@@ -2,6 +2,10 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
     container:{
+      flex:1,
+    },
+    body:{
+        display:'flex',
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -27,6 +31,8 @@ export const styles = StyleSheet.create({
       registerView: {
         display: 'flex',
         flexDirection: 'row',
+        justifyContent:'center',
+        alignItems:'center',
         marginBottom: '2%',
         gap:5,
         marginTop:17,

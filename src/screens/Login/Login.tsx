@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Alert, Image, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
@@ -116,7 +116,8 @@ const LoginScreen = () => {
 
 
   return (
-    <View style={styles.container}>
+ <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+    <ScrollView contentContainerStyle={styles.body}>
       <Image
         style={styles.logoStyles}
         source={require('../../../assets/images/Applogo.png')}
@@ -145,7 +146,8 @@ const LoginScreen = () => {
           <Text style={styles.registerText}>Register</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
