@@ -39,7 +39,6 @@ const renderRegistrationScreen = ()=>{
 describe('Registration Screen check', () => {
 
   let mockRegister: jest.SpyInstance;
-  const mockNavigate = jest.fn();
   const mockReplace = jest.fn();
 
 
@@ -50,7 +49,6 @@ describe('Registration Screen check', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     (useNavigation as jest.Mock).mockReturnValue({
-      navigate: mockNavigate,
       replace: mockReplace,
     });
     jest.spyOn(Alert, 'alert').mockImplementation(() => {});
@@ -198,7 +196,7 @@ describe('Registration Screen check', () => {
     const { getByText } = renderRegistrationScreen();
 
     fireEvent.press(getByText(/login/i));
-    expect(mockNavigate).toHaveBeenCalledWith('LoginScreen');
+    expect(mockReplace).toHaveBeenCalledWith('LoginScreen');
   });
 
   it('Should navigate to Home Screen on successful registration', async () => {
