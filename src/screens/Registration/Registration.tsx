@@ -133,7 +133,7 @@ const Registration = () => {
       const response = await register(formData);
       const result = await response.json();
       if(response.ok) {
-        Alert.alert('User Registered Successfully!');
+        Alert.alert('You’ve successfully joined SmartChat!');
         clearFields();
         dispatch(setUserDetails(result.user));
         await EncryptedStorage.setItem(
@@ -152,7 +152,7 @@ const Registration = () => {
       }
       Alert.alert(result.message);
     } catch(error) {
-      Alert.alert('Invalid error!');
+      Alert.alert('Something went wrong. Please try again');
       clearFields();
     } finally{
       setLoading(false);

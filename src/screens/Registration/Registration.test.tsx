@@ -147,7 +147,7 @@ describe('Registration Screen check', () => {
       fireEvent.press(getByText('Register'));
     });
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith('User Registered Successfully!');
+      expect(Alert.alert).toHaveBeenCalledWith('You’ve successfully joined SmartChat!');
     });
   });
 
@@ -174,7 +174,7 @@ describe('Registration Screen check', () => {
     });
   });
 
-  it('Should give an alert with Invalid error shows if API throws an error', async () => {
+  it('Should give an alert with Something went wrong. Please try again message if API throws an error', async () => {
     mockRegister.mockRejectedValue(new Error('Internal server error'));
 
     const { getByPlaceholderText, getByText } = renderRegistrationScreen();
@@ -188,7 +188,7 @@ describe('Registration Screen check', () => {
       fireEvent.press(getByText('Register'));
     });
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith('Invalid error!');
+      expect(Alert.alert).toHaveBeenCalledWith('Something went wrong. Please try again');
     });
   });
 

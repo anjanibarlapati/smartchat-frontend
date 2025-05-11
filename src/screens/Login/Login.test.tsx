@@ -89,7 +89,7 @@ describe('Login Screen check', ()=>{
         fireEvent.press(getByText('Login'));
       });
       await waitFor(() => {
-        expect(Alert.alert).toHaveBeenCalledWith('User Login Successful!');
+        expect(Alert.alert).toHaveBeenCalledWith('You’ve successfully logged in to SmartChat!');
       });
     });
     it('Should give an alert with error message if the API gives an error', async () => {
@@ -108,7 +108,7 @@ describe('Login Screen check', ()=>{
         expect(Alert.alert).toHaveBeenCalledWith('User do not exist');
       });
     });
-    it('Should give an alert with Invalid error shows if API throws an error', async () => {
+    it('Should give an alert with Something went wrong. Please try again message if API throws an error', async () => {
       mockRegister.mockRejectedValue(new Error('Internal server error'));
       const { getByPlaceholderText, getByText } = renderLoginScreen();
       fireEvent.changeText(getByPlaceholderText('Mobile Number'), '5432123456');
@@ -117,7 +117,7 @@ describe('Login Screen check', ()=>{
         fireEvent.press(getByText('Login'));
       });
       await waitFor(() => {
-        expect(Alert.alert).toHaveBeenCalledWith('Invalid error!');
+        expect(Alert.alert).toHaveBeenCalledWith('Something went wrong. Please try again');
       });
     });
     it('Should navigate to Registration Screen on pressing login text', () => {

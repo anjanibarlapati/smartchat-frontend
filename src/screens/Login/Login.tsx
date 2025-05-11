@@ -84,7 +84,7 @@ const LoginScreen = () => {
       const response = await login(credentials);
       const result = await response.json();
       if(response.ok) {
-        Alert.alert('User Login Successful!');
+        Alert.alert('You’ve successfully logged in to SmartChat!');
         clearFields();
         dispatch(setUserDetails(result.user));
         await EncryptedStorage.setItem(
@@ -103,7 +103,7 @@ const LoginScreen = () => {
       }
       Alert.alert(result.message);
       } catch(error) {
-        Alert.alert('Invalid error!');
+        Alert.alert('Something went wrong. Please try again');
         clearFields();
       } finally{
         setLoading(false);
