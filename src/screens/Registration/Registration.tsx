@@ -222,7 +222,7 @@ const Registration = () => {
 
       <View style={styles.loginView}>
         <Text style={styles.text}>Already have an account?</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
+        <TouchableOpacity onPress={() => navigation.replace('LoginScreen')}>
           <Text style={styles.loginText}>Login</Text>
         </TouchableOpacity>
       </View>
