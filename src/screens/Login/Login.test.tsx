@@ -32,7 +32,6 @@ jest.mock('@react-navigation/native', () => ({
 describe('Login Screen check', ()=>{
 
     let mockRegister: jest.SpyInstance;
-    const mockNavigate = jest.fn();
     const mockReplace = jest.fn();
 
     beforeAll(() => {
@@ -41,7 +40,6 @@ describe('Login Screen check', ()=>{
     beforeEach(() => {
       jest.resetAllMocks();
       (useNavigation as jest.Mock).mockReturnValue({
-        navigate: mockNavigate,
         replace: mockReplace,
       });
       jest.spyOn(Alert, 'alert').mockImplementation(() => {});
@@ -126,7 +124,7 @@ describe('Login Screen check', ()=>{
       const { getByText } = renderLoginScreen();
 
       fireEvent.press(getByText(/register/i));
-      expect(mockNavigate).toHaveBeenCalledWith('RegistrationScreen');
+      expect(mockReplace).toHaveBeenCalledWith('RegistrationScreen');
     });
 
     it('Should navigate to Home Screen on successful login', async () => {
