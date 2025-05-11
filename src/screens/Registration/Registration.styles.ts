@@ -1,9 +1,12 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-    window: {
-      flex: 1,
+    container:{
+      flex:1,
+    },
+    body: {
       display: 'flex',
+      flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
       gap: 10,
@@ -28,6 +31,8 @@ export const styles = StyleSheet.create({
     loginView: {
       display: 'flex',
       flexDirection: 'row',
+      justifyContent:'center',
+      alignItems:'center',
       marginBottom: '2%',
       gap:5,
     },

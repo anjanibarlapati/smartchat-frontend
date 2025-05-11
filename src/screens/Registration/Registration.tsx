@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import LoadingScreen from '../Loading/LoadingScreen';
 import { useNavigation } from '@react-navigation/native';
@@ -164,7 +164,8 @@ const Registration = () => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.window} keyboardShouldPersistTaps="always">
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+      <ScrollView contentContainerStyle={styles.body}>
       <TouchableOpacity onPress={() => {setShowProfilePicSelectModal(true);}}>
         <Image
           style={styles.img}
@@ -235,7 +236,8 @@ const Registration = () => {
         openedFrom="registration"
         setProfilePic={setProfilePic}
       />
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
