@@ -81,7 +81,7 @@ describe('Login Screen check', ()=>{
     it('Should give an alert on successful login with message', async () => {
       const response = {
         ok: true,
-        json: async () => ({ message: 'Login Successfully' }),
+        json: async () => ({ message: 'Login Successful' }),
       };
       mockRegister.mockResolvedValue(response);
       const { getByPlaceholderText, getByText } = renderLoginScreen();
@@ -91,7 +91,7 @@ describe('Login Screen check', ()=>{
         fireEvent.press(getByText('Login'));
       });
       await waitFor(() => {
-        expect(Alert.alert).toHaveBeenCalledWith('User Login Successfully!');
+        expect(Alert.alert).toHaveBeenCalledWith('User Login Successful!');
       });
     });
     it('Should give an alert with error message if the API gives an error', async () => {
@@ -132,7 +132,7 @@ describe('Login Screen check', ()=>{
     it('Should navigate to Home Screen on successful login', async () => {
       const response = {
         ok: true,
-        json: async () => ({ message: 'Login Successfully' }),
+        json: async () => ({ message: 'Login Successful' }),
       };
       mockRegister.mockResolvedValue(response);
       const { getByPlaceholderText, getByText } = renderLoginScreen();
