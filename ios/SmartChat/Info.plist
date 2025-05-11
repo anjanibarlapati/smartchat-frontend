@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>NSPhotoLibraryUsageDescription</key>
-  	<string>[REASON]</string>
+  	<string>SmartChat needs access to your photo library</string>
   	<key>NSPhotoLibraryAddUsageDescription</key>
-  	<string>[REASON]</string>
+  	<string>SmartChat needs access to save images to your photo library</string>
 	<key>NSCameraUsageDescription</key>
-	<string>[REASON]</string>
+	<string>SmartChat needs access your camera</string>
 	<key>NSContactsUsageDescription</key>
-	<string>[REASON]</string>
+	<string>SmartChat needs access your contacts</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
