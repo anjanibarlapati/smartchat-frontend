@@ -7,9 +7,27 @@ import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {Theme} from '../../utils/themes';
 import {useAppTheme} from '../../hooks/appTheme';
 import '../../screens/Contact/Contact.styles';
+import { getStyles as getHomeScreenStyles } from '../../screens/Home/Home.styles';
+
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
+
+function GetHomeScreenOptions () {
+    const theme: Theme = useAppTheme();
+    const styles = getHomeScreenStyles(theme);
+    return {
+        headerStyle: {
+        backgroundColor: theme.primaryBackground,
+        },
+        headerTitle: '',
+        headerLeft: () => (
+        <View>
+            <Text style={styles.headerText}>SmartChat</Text>
+        </View>
+        ),
+    };
+}
 
 function getContactScreenOptions(navigation: ContactScreenNavigationProps, theme:Theme): NativeStackNavigationOptions {
     const styles = getStyles(theme);
@@ -50,7 +68,7 @@ export function HomeStack(): React.JSX.Element {
 
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="Home" component={Home} options={GetHomeScreenOptions()}/>
       <Stack.Screen name="Contact" component={Contact} options={({ navigation }) => getContactScreenOptions(navigation, theme)} />
     </Stack.Navigator>
   );
