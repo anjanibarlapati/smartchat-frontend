@@ -1,11 +1,14 @@
 {
-    "All Chats": "అన్ని చాట్లు",
-    "Profile": "ప్రొఫైల్",
-    "Unread": "చదవనివి",
-    "You do not have permissions to select the picture": "చిత్రాన్ని ఎంచుకునేందుకు మీకు అనుమతులు లేవు",
-    "File should be JPG/PNG/JPEG format": "ఫైల్ JPG/PNG/JPEG ఫార్మాట్‌లో ఉండాలి",
-    "Profile Photo": "ప్రొఫైల్ ఫోటో",
-    "Camera": "కెమెరా",
-    "Gallery": "గ్యాలరీ",
-    "Remove": "తొలగించు"
+  "All Chats": "అన్ని చాట్లు",
+  "Profile": "ప్రొఫైల్",
+  "Unread": "చదవనివి",
+  "You do not have permissions to select the picture": "చిత్రాన్ని ఎంచుకునేందుకు మీకు అనుమతులు లేవు",
+  "File should be JPG/PNG/JPEG format": "ఫైల్ JPG/PNG/JPEG ఫార్మాట్‌లో ఉండాలి",
+  "Profile Photo": "ప్రొఫైల్ ఫోటో",
+  "Camera": "కెమెరా",
+  "Gallery": "గ్యాలరీ",
+  "Remove": "తొలగించు",
+  "Select contact": "ఫోన్ నెంబరు ఎంచుకోండి",
+  "Contacts on SmartChat": "స్మార్ట్‌చాట్‌లో ఉన్న ఫ్రెండ్స్",
+  "Invite to SmartChat": "స్మార్ట్‌చాట్‌కు పిలవండి"
 }
