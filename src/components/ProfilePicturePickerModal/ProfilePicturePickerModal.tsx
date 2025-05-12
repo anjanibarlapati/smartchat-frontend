@@ -6,15 +6,8 @@ import { openPhotoLibrary } from '../../utils/openPhotoLibrary';
 import { openCamera } from '../../utils/openCamera';
 import { Theme } from '../../utils/themes';
 import { useAppTheme } from '../../hooks/appTheme';
+import { ProfilePicturePickerModalProps } from '../../types/ProfilePicturePickerModalProps';
 
-
-interface ProfilePicturePickerModalProps {
-    isEditingProfilePicture: boolean;
-    close: () => void;
-    profilePicture: UploadImage | null | string,
-    setProfilePic:  React.Dispatch<React.SetStateAction<string | UploadImage | null>>
-    openedFrom: 'registration' | 'profile';
-}
 
 export function ProfilePicturePickerModal(props: ProfilePicturePickerModalProps): React.JSX.Element{
 
