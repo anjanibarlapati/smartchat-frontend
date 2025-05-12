@@ -1,0 +1,58 @@
+import { StyleSheet } from 'react-native';
+import { Theme } from '../../utils/themes';
+
+export const getStyles = (theme: Theme) => StyleSheet.create({
+  box: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row',
+    maxWidth: '100%',
+    padding: 10,
+    gap: 20,
+  },
+  image: {
+    height: 30,
+    width: 30,
+  },
+  detailBox: {
+    display: 'flex',
+    gap: 5,
+  },
+  headerText: {
+    fontSize: 12,
+    color: theme.primaryTextColor,
+    fontFamily: 'Nunito',
+  },
+  valueText: {
+    fontSize: 15,
+    color: theme.secondaryTextColor,
+    fontFamily: 'Nunito',
+  },
+  inputBox: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#008080',
+    padding: 2,
+    width: '60%',
+  },
+  tickImage: {
+    height: 20,
+    width: 20,
+  },
+  closeImage: {
+    height: 16,
+    width: 16,
+  },
+  editTileBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '90%',
+  },
+  statusBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+});
