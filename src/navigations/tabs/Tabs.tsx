@@ -6,6 +6,7 @@ import { getStyles } from './Tabs';
 import { useAppTheme } from '../../hooks/appTheme';
 import { Theme } from '../../utils/themes';
 import { HomeStack } from '../stacks/HomeStack';
+import { Profile } from '../../screens/Profile/Profile';
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -80,7 +81,7 @@ export function Tabs(): React.JSX.Element {
     <Tab.Navigator screenOptions={({ route }) => getScreenOptions(route, theme)}>
       <Tab.Screen name="AllChatsTab" component={HomeStack} />
       <Tab.Screen name="UnreadTab" component={HomeStack} />
-      <Tab.Screen name="ProfileScreen" component={HomeStack} />
+      <Tab.Screen name="ProfileScreen" component={Profile} options={{headerShown: true}} />
     </Tab.Navigator>
   );
 }
