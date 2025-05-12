@@ -12,7 +12,7 @@ export type BottomTabParamList = {
     AllChatsTab: undefined;
     UnreadTab: undefined;
     ProfileScreen: undefined;
-  };
+};
 
 export type WelcomeScreenNavigationProps = NativeStackNavigationProp<RootStackParamList, 'WelcomeScreen'>;
 
@@ -27,3 +27,12 @@ export type tabBarIconProps = {
 }
 
 
+export type HomeStackParamList = {
+    Home: undefined;
+    Contact: undefined;
+};
+
+export type HomeScreenNavigationProps = NativeStackNavigationProp<HomeStackParamList, 'Home'>;
+export type ContactScreenNavigationProps = NativeStackNavigationProp<HomeStackParamList, 'Contact'>;
+
+export type ProfileScreenNavigationProps = NativeStackNavigationProp<HomeStackParamList, 'Contact'>;
