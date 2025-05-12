@@ -10,7 +10,7 @@ const config: Config.InitialOptions = {
   collectCoverage: true,
   coveragePathIgnorePatterns: [
     '/node_modules/',
-    '/public/assets/',
+    '/assets/',
     '__tests__/',
     'src/App/App.tsx',
   ],
