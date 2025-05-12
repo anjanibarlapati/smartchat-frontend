@@ -2,6 +2,8 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { fireEvent, render } from '@testing-library/react-native';
 import WelcomeScreen from './Welcome.tsx';
+import { Provider } from 'react-redux';
+import { store } from '../../redux/store.ts';
 
 
 jest.mock('@react-navigation/native', () => ({
@@ -11,11 +13,14 @@ jest.mock('@react-navigation/native', () => ({
 
 const renderWelcomeScreen = () => {
   return render(
-    <WelcomeScreen/>
+    <Provider store={store}>
+      <WelcomeScreen/>
+    </Provider>
+
   );
 };
 
-describe('WelcomeScreen', () => {
+describe('Welcome Screen', () => {
   const mockReplace = jest.fn();
 
   beforeEach(() => {
@@ -25,25 +30,25 @@ describe('WelcomeScreen', () => {
     jest.clearAllMocks();
   });
 
-  test('renders welcome screen messages correctly', () => {
+  test('Should render welcome screen messages correctly', () => {
     const {getByText} = renderWelcomeScreen();
     expect(getByText(/SmartChat/i)).toBeTruthy();
     expect(getByText(/Where conversations evolve/i)).toBeTruthy();
   });
 
-  test('renders app logo correctly', () => {
+  test('Should render app logo correctly', () => {
     const {getByLabelText} = renderWelcomeScreen();
     expect(getByLabelText('appLogo')).toBeTruthy();
   });
-  test('renders the lets get started button with chevron icon',()=>{
+  test('Should render the lets get started button with chevron icon',()=>{
     const {getByText, getByLabelText} = renderWelcomeScreen();
     const buttonElement = getByText("Let's Get Started");
     expect(buttonElement).toBeTruthy();
     expect(getByLabelText('chevronIcon')).toBeTruthy();
 
   });
-  test('navigates to RegistrationScreen on button press', () => {
-    const { getByText } = render(<WelcomeScreen />);
+  test('Should navigate to RegistrationScreen on button press', () => {
+    const { getByText } = renderWelcomeScreen();
 
     fireEvent.press(getByText("Let's Get Started"));
     expect(mockReplace).toHaveBeenCalledWith('RegistrationScreen');

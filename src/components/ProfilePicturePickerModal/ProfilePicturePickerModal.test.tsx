@@ -4,6 +4,8 @@ import { ProfilePicturePickerModal } from './ProfilePicturePickerModal';
 import { UploadImage } from '../../types/UploadImage';
 import * as CameraUtil from '../../utils/openCamera';
 import * as GalleryUtil from '../../utils/openPhotoLibrary';
+import { Provider } from 'react-redux';
+import { store } from '../../redux/store';
 
 const handleClose = jest.fn(() => {});
 
@@ -17,7 +19,9 @@ jest.mock('../../utils/openPhotoLibrary', () => ({
 
 const renderModal = (isEditing:boolean, close: ()=>void, profilePicture:string, setProfilePic: React.Dispatch<React.SetStateAction<string | UploadImage | null>>, openedFrom: 'registration' | 'profile') => {
     return render(
-      <ProfilePicturePickerModal isEditingProfilePicture={isEditing} close={close} profilePicture={profilePicture} openedFrom={openedFrom} setProfilePic={setProfilePic}/>
+      <Provider store={store}>
+        <ProfilePicturePickerModal isEditingProfilePicture={isEditing} close={close} profilePicture={profilePicture} openedFrom={openedFrom} setProfilePic={setProfilePic}/>
+      </Provider>
     );
   };
 

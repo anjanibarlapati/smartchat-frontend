@@ -1,23 +1,24 @@
 import React from 'react';
 import {render} from '@testing-library/react-native';
 import InputField from './InputField';
+import { Provider } from 'react-redux';
+import { store } from '../../redux/store';
 
-describe('InputField Component', () => {
-  it('renders correctly with given placeholder', () => {
-    const {getByPlaceholderText} = render(
-      <InputField value="" placeholder="First Name" onChangeText={() => {}} />,
+const renderInputField = (value: string, placeholder: string, error?:string) => {
+    return render(
+        <Provider store={store}>
+            <InputField value={value} placeholder={placeholder} onChangeText={() => {}} error={error}/>,
+        </Provider>
     );
+};
+
+describe('Input Field Component', () => {
+  it('Should render correctly with given placeholder', () => {
+    const {getByPlaceholderText} = renderInputField('', 'First Name');
     expect(getByPlaceholderText('First Name')).toBeTruthy();
   });
-  it('displays an error message when error occurs', () => {
-    const {getByText} = render(
-      <InputField
-        value=""
-        placeholder="Email"
-        onChangeText={() => {}}
-        error="Email is required"
-      />,
-    );
+  it('Should display an error message when error occurs', () => {
+    const {getByText} = renderInputField('', 'Email', 'Email is required');
     expect(getByText('Email is required')).toBeTruthy();
   });
 });
