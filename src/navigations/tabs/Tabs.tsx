@@ -1,11 +1,11 @@
 import React from 'react';
 import { Image, Text, View } from 'react-native';
 import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home } from '../../screens/Home/Home';
 import { BottomTabParamList, tabBarIconProps } from '../../types/Navigations';
 import { getStyles } from './Tabs';
 import { useAppTheme } from '../../hooks/appTheme';
 import { Theme } from '../../utils/themes';
+import { HomeStack } from '../stacks/HomeStack';
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -78,9 +78,9 @@ export function Tabs(): React.JSX.Element {
   const theme: Theme = useAppTheme();
   return (
     <Tab.Navigator screenOptions={({ route }) => getScreenOptions(route, theme)}>
-      <Tab.Screen name="AllChatsTab" component={Home} />
-      <Tab.Screen name="UnreadTab" component={Home} />
-      <Tab.Screen name="ProfileScreen" component={Home} />
+      <Tab.Screen name="AllChatsTab" component={HomeStack} />
+      <Tab.Screen name="UnreadTab" component={HomeStack} />
+      <Tab.Screen name="ProfileScreen" component={HomeStack} />
     </Tab.Navigator>
   );
 }
