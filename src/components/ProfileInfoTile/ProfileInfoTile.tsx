@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Image, ImageSourcePropType, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { getStyles } from './ProfileInfoTile.styles';
 import { useAppTheme } from '../../hooks/appTheme';
+import { getStyles } from './ProfileInfoTile.styles';
 import { Theme } from '../../utils/themes';
 
 interface ProfileInfoTileProps {

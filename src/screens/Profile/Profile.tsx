@@ -1,12 +1,12 @@
+import { useEffect } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTile';
-import { userState } from '../../types/User';
-import { getStyles } from './Profile.styles';
-import { Theme } from '../../utils/themes';
-import { useAppTheme } from '../../hooks/appTheme';
-import { useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTile';
+import { useAppTheme } from '../../hooks/appTheme';
+import { getStyles } from './Profile.styles';
+import { userState } from '../../types/User';
+import { Theme } from '../../utils/themes';
 
 export const Profile = (): React.JSX.Element => {
 
