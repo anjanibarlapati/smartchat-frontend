@@ -1,16 +1,57 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Contact } from '../../screens/Contact/Contact';
-import { Home } from '../../screens/Home/Home';
-import { HomeStackParamList } from '../../types/Navigations';
+import {createNativeStackNavigator, NativeStackNavigationOptions} from '@react-navigation/native-stack';
+import {Contact} from '../../screens/Contact/Contact';
+import {getStyles} from '../../screens/Contact/Contact.styles';
+import {Home} from '../../screens/Home/Home';
+import { ContactScreenNavigationProps, HomeStackParamList} from '../../types/Navigations';
+import {Image, Text, TouchableOpacity, View} from 'react-native';
+import {Theme} from '../../utils/themes';
+import {useAppTheme} from '../../hooks/appTheme';
+import '../../screens/Contact/Contact.styles';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
-export function HomeStack (): React.JSX.Element{
-    return(
 
-        <Stack.Navigator >
-            <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen name="Contact" component={Contact} />
-        </Stack.Navigator>
-    );
+function getContactScreenOptions(navigation: ContactScreenNavigationProps, theme:Theme): NativeStackNavigationOptions {
+    const styles = getStyles(theme);
+
+    const handleNavigation = () =>{
+      navigation.goBack();
+    };
+    return {
+        headerShown: true,
+        headerStyle: {
+        backgroundColor: '#FFFFF',
+        },
+        headerTitle: '',
+        headerLeft: () => (
+            <View style={styles.headerLeft}>
+            <TouchableOpacity onPress={handleNavigation}>
+                <Image
+                    style={styles.backIcon}
+                    source={require('../../../assets/images/chevron.png')}
+                />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Select contact</Text>
+            </View>
+        ),
+        headerRight: () => (
+            <TouchableOpacity style={styles.headerRight}>
+            <Image
+                style={styles.userIcon}
+                source={theme.images.contactUser}
+            />
+            </TouchableOpacity>
+        ),
+    };
+}
+
+export function HomeStack(): React.JSX.Element {
+    const theme: Theme = useAppTheme();
+
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="Contact" component={Contact} options={({ navigation }) => getContactScreenOptions(navigation, theme)} />
+    </Stack.Navigator>
+  );
 }
