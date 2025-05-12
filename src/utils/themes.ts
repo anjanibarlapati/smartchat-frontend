@@ -7,6 +7,7 @@ export const LightTheme = {
   primaryShadowColor: '#000000',
   primaryTextColor: '#000000',
   secondaryTextColor: 'rgb(98, 98, 98)',
+  secondaryBackgroundColor:'lightgrey',
   primaryInputBackground: 'rgb(232, 232, 232)',
   primaryErrorText: 'rgb(215, 50, 50)',
   tabBackgroundColor: 'rgba(0, 128, 128, 0.25)',
@@ -15,6 +16,7 @@ export const LightTheme = {
     gallery: require('../../assets/icons/gallery-icon.png'),
     delete: require('../../assets/icons/delete-icon.png'),
     close: require('../../assets/icons/close-icon.png'),
+    contactUser: require('../../assets/images/contacts-icon.png'),
     tabs: {
         allChats: require('../../assets/icons/all-chats-icon.png'),
         allChatsFocused: require('../../assets/icons/highlighted-all-chats-icon.png'),
@@ -36,6 +38,7 @@ export const DarkTheme = {
   primaryTextColor: '#ffffff',
   secondaryTextColor: 'rgb(114, 113, 113)',
   primaryInputBackground: 'rgb(33, 40, 43)',
+  secondaryBackgroundColor:'',
   primaryErrorText: 'rgb(224, 92, 92)',
   tabBackgroundColor: 'rgba(101, 225, 225, 0.5)',
   images: {
@@ -43,6 +46,7 @@ export const DarkTheme = {
     gallery: require('../../assets/icons/gallery-icon-dark-theme.png'),
     delete: require('../../assets/icons/delete-icon-dark-theme.png'),
     close: require('../../assets/icons/close-icon-dark-theme.png'),
+    contactUser: require('../../assets/images/contacts-icon-dark-theme.png'),
     tabs: {
         allChats: require('../../assets/icons/all-chats-icon-dark-theme.png'),
         allChatsFocused: require('../../assets/icons/highlighted-all-chats-icon-dark-theme.png'),
