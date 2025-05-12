@@ -1,5 +1,7 @@
 import { Text, TextInput, View} from 'react-native';
-import { styles } from './InputField.styles';
+import { getStyles } from './InputField.styles';
+import { Theme } from '../../utils/themes';
+import { useAppTheme } from '../../hooks/appTheme';
 
 interface InputFieldProps {
   value: string;
@@ -21,6 +23,9 @@ const InputField = ({
   required,
   keyboardType = 'default',
 }: InputFieldProps) => {
+
+  const theme: Theme = useAppTheme();
+  const styles = getStyles(theme);
   return (
     <View style={styles.container}>
       <TextInput

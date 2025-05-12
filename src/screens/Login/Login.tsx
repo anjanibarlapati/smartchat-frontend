@@ -7,18 +7,23 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from 'redux';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
-import LoadingScreen from '../Loading/LoadingScreen';
+import LoadingScreen from '../Loading/Loading';
 import { login } from './Login.handler';
-import { styles } from './Login.styles';
-import { setUserDetails } from '../../redux/reducer';
+import { getStyles } from './Login.styles';
+import { setUserDetails } from '../../redux/userReducer';
 import { Credentials } from '../../types/Credentials';
 import { RegistrationScreenNavigationProps } from '../../types/Navigations';
 import { userState } from '../../types/User';
+import { useAppTheme } from '../../hooks/appTheme';
+import { Theme } from '../../utils/themes';
 
 
 
 const LoginScreen = () => {
-    const navigation = useNavigation<RegistrationScreenNavigationProps>();
+  const navigation = useNavigation<RegistrationScreenNavigationProps>();
+
+  const theme: Theme = useAppTheme();
+  const styles = getStyles(theme);
 
   const [credentials, setCredentials] = useState<Credentials>({ mobileNumber: '', password: '' });
   const [errors, setErrors] = useState<Credentials>({

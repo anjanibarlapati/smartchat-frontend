@@ -3,19 +3,22 @@ import { Image, Text, View } from 'react-native';
 import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home } from '../../screens/Home/Home';
 import { BottomTabParamList, tabBarIconProps } from '../../types/Navigations';
-import { styles } from './Tabs';
+import { getStyles } from './Tabs';
+import { useAppTheme } from '../../hooks/appTheme';
+import { Theme } from '../../utils/themes';
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
-const getTabIcon = (routeName: string, focused: boolean) => {
+const getTabIcon = (routeName: string, focused: boolean, theme: Theme) => {
+  const tabs = theme.images.tabs;
   switch (routeName) {
     case 'AllChatsTab':
-      return focused ? require('../../../assets/icons/highlighted-all-chats-icon.png') : require('../../../assets/icons/all-chats-icon.png');
+      return focused ? tabs.allChatsFocused : tabs.allChats;
     case 'UnreadTab':
-      return focused ? require('../../../assets/icons/highlighted-unread-message-icon.png') : require('../../../assets/icons/unread-message-icon.png');
+      return focused ? tabs.unreadFocused : tabs.unread;
     case 'ProfileScreen':
-      return focused ? require('../../../assets/icons/highlighted-profile-tab-icon.png') : require('../../../assets/icons/profile-tab-icon.png');
+      return focused ? tabs.profileFocused : tabs.profile;
   }
 };
 
@@ -32,8 +35,11 @@ const getTabLabel = (routeName: string) => {
 
 
 const TabBarIcon = ({ routeName, focused}: tabBarIconProps): React.JSX.Element => {
-  const iconPath = getTabIcon(routeName, focused);
+  const theme: Theme = useAppTheme();
+  const styles = getStyles(theme);
+  const iconPath = getTabIcon(routeName, focused, theme);
   const label = getTabLabel(routeName);
+
 
   return (
     <View style={styles.container}>
@@ -48,17 +54,18 @@ const TabBarIcon = ({ routeName, focused}: tabBarIconProps): React.JSX.Element =
   );
 };
 
-const getScreenOptions = (route: { name: string }): BottomTabNavigationOptions => {
+const getScreenOptions = (route: { name: string }, theme: Theme): BottomTabNavigationOptions => {
+
   return {
     headerShown: false,
     tabBarStyle: {
-      backgroundColor: 'white',
-      height: '11%',
-      shadowColor: 'black',
-      shadowOffset: { width: 1, height: 1 },
+      backgroundColor: theme.primaryBackground,
+      height: '12%',
+      shadowColor: theme.primaryShadowColor,
+      shadowOffset: { width: 1, height: 0.4 },
       shadowOpacity: 0.1,
-      shadowRadius: 5,
-      elevation: 5,
+      shadowRadius: 2,
+      elevation: 1,
     },
     tabBarLabel: '',
     tabBarIcon: (props: { focused: boolean }) => (
@@ -68,8 +75,9 @@ const getScreenOptions = (route: { name: string }): BottomTabNavigationOptions =
 };
 
 export function Tabs(): React.JSX.Element {
+  const theme: Theme = useAppTheme();
   return (
-    <Tab.Navigator screenOptions={({ route }) => getScreenOptions(route)}>
+    <Tab.Navigator screenOptions={({ route }) => getScreenOptions(route, theme)}>
       <Tab.Screen name="AllChatsTab" component={Home} />
       <Tab.Screen name="UnreadTab" component={Home} />
       <Tab.Screen name="ProfileScreen" component={Home} />

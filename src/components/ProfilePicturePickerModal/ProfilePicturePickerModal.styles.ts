@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
+import { Theme } from '../../utils/themes';
 
-export const styles = StyleSheet.create({
+export const getStyles = (theme: Theme) => StyleSheet.create({
     container:{
         display:'flex',
         height:'100%',
@@ -9,12 +10,12 @@ export const styles = StyleSheet.create({
     body:{
         display:'flex',
         padding:'2%',
-        backgroundColor:'rgb(186, 224, 224)',
+        backgroundColor: theme.primaryModalBackground,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        shadowColor:'black',
+        shadowColor: theme.primaryShadowColor,
         shadowOffset:{width:1, height:1},
-        shadowOpacity:3,
+        shadowOpacity:0.4,
         shadowRadius:3,
         elevation:4,
         gap:20,
@@ -24,9 +25,9 @@ export const styles = StyleSheet.create({
         alignItems:'center',
     },
     subBar:{
-        backgroundColor:'black',
+        backgroundColor:theme.secondaryTextColor,
         borderRadius:10,
-        width:50,
+        width:35,
         height:5,
     },
     header:{
@@ -42,7 +43,7 @@ export const styles = StyleSheet.create({
         height:15,
     },
     text: {
-        color: 'black',
+        color: theme.primaryTextColor,
         fontSize:18,
         fontWeight: 'bold',
         fontFamily: 'Nunito',
@@ -66,7 +67,7 @@ export const styles = StyleSheet.create({
         gap:0,
     },
     iconText:{
-        color: 'black',
+        color: theme.primaryTextColor,
         fontSize:12,
         fontWeight: 'bold',
         fontFamily: 'Nunito',

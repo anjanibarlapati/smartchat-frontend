@@ -1,53 +1,48 @@
 import { StyleSheet } from 'react-native';
+import { Theme } from '../../utils/themes';
 
-export const styles = StyleSheet.create({
-    container:{
-      flex:1,
-    },
-    body: {
-      display: 'flex',
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: 10,
-    },
-    img: {
-      height: 120,
-      width: 120,
-      borderRadius: 60,
-    },
-    inputfields: {
-      gap: 1,
-      marginTop: '5%',
-      marginBottom: '5%',
-      width: '100%',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    text: {
-      fontFamily: 'Nunito',
-    },
-    loginView: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent:'center',
-      alignItems:'center',
-      marginBottom: '2%',
-      gap:5,
-    },
-    loginText: {
-      color: '#008080',
-      fontWeight: 'bold',
-      fontFamily: 'Nunito',
-    },
-    phoneContainer: {
-      width: '75%',
-      height: 55,
-      borderRadius: 5,
-      borderWidth: 1,
-      borderColor: '#F2F2F2',
-      marginTop: 10,
-      backgroundColor: '#F2F2F2',
-    },
-  });
+export const getStyles = (theme: Theme) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.primaryBackground,
+  },
+  body: {
+    display: 'flex',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+  },
+  img: {
+    height: 120,
+    width: 120,
+    borderRadius: 60,
+  },
+  inputfields: {
+    gap: 1,
+    marginTop: '5%',
+    marginBottom: '5%',
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    fontFamily: 'Nunito',
+    color: theme.primaryTextColor,
+
+  },
+  loginView: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: '2%',
+    gap: 5,
+  },
+  loginText: {
+    color: theme.primaryColor,
+    fontWeight: 'bold',
+    fontFamily: 'Nunito',
+  },
+});

@@ -1,6 +1,7 @@
 import { Platform, StyleSheet } from 'react-native';
+import { Theme } from '../../utils/themes';
 
-export const styles = StyleSheet.create({
+export const getStyles = (theme: Theme) => StyleSheet.create({
     container:{
         display:'flex',
         flexDirection:'column',
@@ -8,7 +9,7 @@ export const styles = StyleSheet.create({
         justifyContent:'center',
         height: 55,
         width: 65,
-        marginTop: 35,
+        marginTop: 45,
         gap:5,
     },
     tabIconContainer:{
@@ -19,7 +20,7 @@ export const styles = StyleSheet.create({
        borderRadius:20,
     },
     focused: {
-        backgroundColor: 'rgba(0, 128, 128, 0.25)',
+        backgroundColor: theme.tabBackgroundColor,
       },
       unfocused: {
         backgroundColor: 'transparent',
@@ -30,7 +31,7 @@ export const styles = StyleSheet.create({
         resizeMode:'contain',
     },
     label:{
-        color: 'black',
+        color: theme.primaryTextColor,
         fontSize: 12,
         fontWeight: '500',
         fontFamily: Platform.OS === 'ios' ? 'Nunito' : '',

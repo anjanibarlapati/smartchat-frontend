@@ -7,12 +7,12 @@ import SplashScreen from 'react-native-splash-screen';
 import { useDispatch } from 'react-redux';
 import { Tabs } from './tabs/Tabs.tsx';
 import WelcomeScreen from '../screens/Welcome/Welcome.tsx';
-import LoadingScreen from '../screens/Loading/LoadingScreen.tsx';
+import LoadingScreen from '../screens/Loading/Loading.tsx';
 import Registration from '../screens/Registration/Registration.tsx';
 import Login from '../screens/Login/Login.tsx';
 
 import { RootStackParamList } from '../types/Navigations.ts';
-import { setUserDetails } from '../redux/reducer.ts';
+import { setUserDetails } from '../redux/userReducer.ts';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

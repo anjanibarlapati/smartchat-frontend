@@ -1,12 +1,17 @@
 import React from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useAppTheme } from '../../hooks/appTheme';
 import { WelcomeScreenNavigationProps } from '../../types/Navigations';
-import { styles } from './Welcome.styles';
+import { Theme } from '../../utils/themes';
+import { getStyles } from './Welcome.styles';
 
 const WelcomeScreen = ():React.JSX.Element => {
 
   const navigation = useNavigation<WelcomeScreenNavigationProps>();
+
+  const theme: Theme = useAppTheme();
+  const styles = getStyles(theme);
   return (
     <View style={styles.container}>
       <Image

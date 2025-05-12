@@ -1,9 +1,11 @@
 import React from 'react';
 import { Alert, Image, Modal, Pressable, Text, View } from 'react-native';
-import { styles } from './ProfilePicturePickerModal.styles';
+import { getStyles } from './ProfilePicturePickerModal.styles';
 import { UploadImage } from '../../types/UploadImage';
 import { openPhotoLibrary } from '../../utils/openPhotoLibrary';
 import { openCamera } from '../../utils/openCamera';
+import { Theme } from '../../utils/themes';
+import { useAppTheme } from '../../hooks/appTheme';
 
 
 interface ProfilePicturePickerModalProps {
@@ -15,6 +17,9 @@ interface ProfilePicturePickerModalProps {
 }
 
 export function ProfilePicturePickerModal(props: ProfilePicturePickerModalProps): React.JSX.Element{
+
+    const theme: Theme = useAppTheme();
+    const styles = getStyles(theme);
 
     const validFileTypes = ['image/jpg', 'image/jpeg', 'image/png'];
 
@@ -68,22 +73,22 @@ export function ProfilePicturePickerModal(props: ProfilePicturePickerModalProps)
                         <View style={styles.bar}><View style={styles.subBar}/></View>
                         <View style={styles.header}>
                             <Pressable onPress={props.close}>
-                                <Image source={require('../../../assets/icons/close-icon.png')} style={styles.cancelIcon} accessibilityLabel="cancel-icon"/>
+                                <Image source={theme.images.close} style={styles.cancelIcon} accessibilityLabel="cancel-icon"/>
                             </Pressable>
                             <Text style={styles.text}>Profile Photo</Text>
                         </View>
                         <View style={styles.icons}>
                             <Pressable style={styles.iconContainer} onPress={capturePicture}>
-                                <Image source={require('../../../assets/icons/camera-icon.png')} style={styles.icon} accessibilityLabel="camera-icon" />
+                                <Image source={theme.images.camera} style={styles.icon} accessibilityLabel="camera-icon" />
                                 <Text style={styles.iconText}>Camera</Text>
                             </Pressable>
                             <Pressable style={styles.iconContainer} onPress={selectPicture}>
-                                <Image source={require('../../../assets/icons/gallery-icon.png')} style={styles.icon} accessibilityLabel="gallery-icon" />
+                                <Image source={theme.images.gallery} style={styles.icon} accessibilityLabel="gallery-icon" />
                                 <Text style={styles.iconText}>Gallery</Text>
                             </Pressable>
                             { props.profilePicture &&
                                 <Pressable style={styles.iconContainer} onPress={removePicture}>
-                                    <Image source={require('../../../assets/icons/delete-icon.png')} style={styles.icon} accessibilityLabel="delete-icon" />
+                                    <Image source={theme.images.delete} style={styles.icon} accessibilityLabel="delete-icon" />
                                     <Text style={styles.iconText}>Remove</Text>
                                 </Pressable>
                             }

@@ -1,8 +1,9 @@
 import { StyleSheet } from 'react-native';
+import { Theme } from '../../utils/themes';
 
-export const styles = StyleSheet.create({
+export const getStyles = (theme: Theme) => StyleSheet.create({
     buttonColor: {
-      backgroundColor: '#008080',
+      backgroundColor: theme.primaryColor,
       borderRadius: 5,
       padding: 12,
       width:'30%',
@@ -10,9 +11,8 @@ export const styles = StyleSheet.create({
       alignItems:'center',
     },
     buttonText: {
-      color: 'white',
+      color: theme.primaryButtonTextColor,
       fontSize: 14,
       fontWeight:'bold',
-
     },
   });

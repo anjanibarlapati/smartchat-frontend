@@ -1,23 +1,28 @@
 import React, { useState } from 'react';
 import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import LoadingScreen from '../Loading/LoadingScreen';
+import LoadingScreen from '../Loading/Loading';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
-import { setUserDetails } from '../../redux/reducer';
+import { setUserDetails } from '../../redux/userReducer';
 import { register } from './Registration.handler';
-import { styles } from './Registration.styles';
+import { getStyles } from './Registration.styles';
 import { InputUser } from '../../types/InputUser';
 import { RegistrationScreenNavigationProps } from '../../types/Navigations';
 import { UploadImage } from '../../types/UploadImage';
 import { userState } from '../../types/User';
 import { Dispatch } from 'redux';
+import { useAppTheme } from '../../hooks/appTheme';
+import { Theme } from '../../utils/themes';
 
 const Registration = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();
+
+    const theme: Theme = useAppTheme();
+    const styles = getStyles(theme);
 
   const [showProfilePicSelectModal, setShowProfilePicSelectModal] = useState(false);
   const [profilePic, setProfilePic] = useState<UploadImage | null | string>(null);

@@ -1,8 +1,11 @@
 import { StyleSheet } from 'react-native';
+import { Theme } from '../../utils/themes';
 
-export const styles = StyleSheet.create({
+export const getStyles = (theme: Theme) => StyleSheet.create({
     container:{
       flex:1,
+      backgroundColor: theme.primaryBackground,
+
     },
     body:{
         display:'flex',
@@ -27,6 +30,7 @@ export const styles = StyleSheet.create({
       },
       text: {
         fontFamily: 'Nunito',
+        color: theme.primaryTextColor,
       },
       registerView: {
         display: 'flex',
@@ -38,7 +42,7 @@ export const styles = StyleSheet.create({
         marginTop:17,
       },
       registerText: {
-        color: '#008080',
+        color: theme.primaryColor,
         fontWeight: 'bold',
         fontFamily: 'Nunito',
       },
