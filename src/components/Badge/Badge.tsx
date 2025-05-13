@@ -5,15 +5,18 @@ import {Theme} from '../../utils/themes';
 import {useAppTheme} from '../../hooks/appTheme';
 
 type BadgeProps = {
-  value: string;
+  value?: string;
 };
 
 export function Badge({value}: BadgeProps) {
   const theme: Theme = useAppTheme();
   const styles = Badgestyles(theme);
+  if (!value) {
+    return null;
+  }
   return (
     <View style={styles.container}>
-      {value ? <Text style={styles.text}>{value}</Text> : null}
+      <Text style={styles.text}>{value}</Text>
     </View>
   );
 }
