@@ -13,6 +13,10 @@ export const LightTheme = {
   tabBackgroundColor: 'rgba(0, 128, 128, 0.25)',
   badgeBackground: '#008080',
   badgeTextColor: 'white',
+  chatInputBackground: '#fff',
+  chatInputBorderColor: '#ddd',
+  chatTextColor: '#000',
+  chatSendIconColor: '#008080',
   images: {
     camera: require('../../assets/icons/camera-icon.png'),
     gallery: require('../../assets/icons/gallery-icon.png'),
@@ -45,6 +49,10 @@ export const DarkTheme = {
   tabBackgroundColor: 'rgba(101, 225, 225, 0.5)',
   badgeBackground: '#008b8b',
   badgeTextColor: 'white',
+  chatInputBackground: '#333',
+  chatInputBorderColor: '#2a2a2a',
+  chatTextColor: '#eaeaea',
+  chatSendIconColor: '#008080',
   images: {
     camera: require('../../assets/icons/camera-icon-dark-theme.png'),
     gallery: require('../../assets/icons/gallery-icon-dark-theme.png'),
