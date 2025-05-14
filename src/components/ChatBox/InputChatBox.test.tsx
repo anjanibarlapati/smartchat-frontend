@@ -1,7 +1,7 @@
 import React from 'react';
+import {Provider} from 'react-redux';
 import {render, screen} from '@testing-library/react-native';
 import {InputChatBox} from './InputChatBox';
-import {Provider} from 'react-redux';
 import {store} from '../../redux/store';
 
 describe('InputChatBox', () => {
