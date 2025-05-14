@@ -5,7 +5,7 @@ import { useAppTheme } from '../../hooks/appTheme';
 import { Theme } from '../../utils/themes';
 import { useNavigation } from '@react-navigation/native';
 import { ContactScreenNavigationProps } from '../../types/Navigations';
-import { Badge } from '../../components/Badge/Badge';
+
 
 export function Home(): React.JSX.Element {
     const theme : Theme = useAppTheme();
@@ -13,7 +13,7 @@ export function Home(): React.JSX.Element {
     const navigation = useNavigation<ContactScreenNavigationProps >();
   return (
       <View style={styles.container}>
-        <Badge value="3" />
+ 
         <View style={styles.totalContainer}>
           <ScrollView contentContainerStyle={styles.bodyContainer}>
             <View style={styles.textContainer}>
