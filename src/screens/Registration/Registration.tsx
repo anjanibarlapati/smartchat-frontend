@@ -3,7 +3,7 @@ import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, Touchab
 import EncryptedStorage from 'react-native-encrypted-storage';
 import LoadingScreen from '../Loading/Loading';
 import { useNavigation } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
@@ -13,10 +13,11 @@ import { getStyles } from './Registration.styles';
 import { InputUser } from '../../types/InputUser';
 import { RegistrationScreenNavigationProps } from '../../types/Navigations';
 import { UploadImage } from '../../types/UploadImage';
-import { userState } from '../../types/User';
+// import { userState } from '../../types/User';
 import { Dispatch } from 'redux';
 import { useAppTheme } from '../../hooks/appTheme';
 import { Theme } from '../../utils/themes';
+import { socketConnection } from '../../utils/socket';
 
 const Registration = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();
@@ -27,7 +28,7 @@ const Registration = () => {
   const [showProfilePicSelectModal, setShowProfilePicSelectModal] = useState(false);
   const [profilePic, setProfilePic] = useState<UploadImage | null | string>(null);
   const [isLoading, setLoading] = useState(false);
-  const userDetails = useSelector((state: userState) => state.user);
+  // const userDetails = useSelector((state: userState) => state.user);
   const [user, setUser] = useState<InputUser>({
     firstName: '',
     lastName: '',
@@ -142,7 +143,7 @@ const Registration = () => {
         clearFields();
         dispatch(setUserDetails(result.user));
         await EncryptedStorage.setItem(
-            userDetails.mobileNumber,
+            'token',
             JSON.stringify({
               access_token: result.access_token,
               refresh_token: result.refresh_token,
@@ -152,6 +153,7 @@ const Registration = () => {
           'User Data',
           JSON.stringify(result.user)
         );
+        socketConnection();
         navigation.replace('Tabs');
         return;
       }
