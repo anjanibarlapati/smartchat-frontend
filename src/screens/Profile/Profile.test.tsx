@@ -181,7 +181,6 @@ describe('Tests related to the Profile Screen', () => {
             ...navigation,
             navigate: jest.fn(),
         });
-        // (tokenUtil.getTokens as jest.Mock).mockResolvedValue(null);
         RenderProfileScreen();
         await waitFor(async() => {
             fireEvent.press(await screen.findByText('Delete Account'));
