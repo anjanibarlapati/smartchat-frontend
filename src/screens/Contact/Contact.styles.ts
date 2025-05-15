@@ -65,8 +65,20 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   },
   contactsBody:{
     display:'flex',
+    flex:1,
     flexDirection:'column',
     paddingBottom:'10%',
+  },
+  messageContainer:{
+    display:'flex',
+    flex:1,
+    alignItems:'center',
+    justifyContent:'center',
+    padding:25,
+  },
+  messageText:{
+    color: theme.primaryColor,
+    fontSize:16,
   },
 });
 

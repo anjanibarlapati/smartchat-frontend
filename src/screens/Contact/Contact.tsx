@@ -40,6 +40,10 @@ export function Contact(): React.JSX.Element {
         const parsedTokens = JSON.parse(tokens);
         try {
           const deviceContacts = await Contacts.getAll();
+          if(deviceContacts.length === 0 ){
+            dispatch(setContacts([]));
+            return;
+          }
           const resultantContacts = await getContactsDetails(deviceContacts, parsedTokens.access_token);
           dispatch(setContacts(resultantContacts));
         } catch (error) {
@@ -101,16 +105,22 @@ export function Contact(): React.JSX.Element {
         </View>
         <View style={styles.contactsContainer}>
           <ScrollView contentContainerStyle={styles.contactsBody}>
-            {
-              filteredContacts.map((contact: ContactType) => (
-                <ContactCard key={contact.mobileNumber} contact={contact}/>
-              ))
-            }
+              { contacts.length === 0 ? (
+                <View style={styles.messageContainer}><Text style={styles.messageText}>Add your friends to contacts and invite them to SmartChat</Text></View>
+                ) : filteredContacts.length === 0 ? (
+                  selectedTab === 'Contacts' ? (
+                   <View style={styles.messageContainer}><Text style={styles.messageText}>Invite your contacts to SmartChat and start your conversations</Text></View>
+                  ) : (
+                    <View style={styles.messageContainer}><Text style={styles.messageText}>All your contacts are on SmartChat. Continue your conversations with them</Text></View>
+                  )
+                ) : (
+                  filteredContacts.map((contact: ContactType) => (
+                    <ContactCard key={contact.mobileNumber} contact={contact} />
+                  ))
+              )}
           </ScrollView>
-
         </View>
       </View>
     </>
   );
 }
-
