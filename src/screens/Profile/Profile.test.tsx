@@ -150,6 +150,9 @@ describe('Tests related to the Profile Screen', () => {
         await waitFor(async() => {
             fireEvent.press(await screen.findByText('Delete Account'));
         });
+        await waitFor(async() => {
+            fireEvent.press(await screen.findByText('Delete'));
+        });
         await waitFor(() => {
             expect(EncryptedStorage.clear).toHaveBeenCalled();
         });
@@ -165,8 +168,29 @@ describe('Tests related to the Profile Screen', () => {
         await waitFor(async() => {
             fireEvent.press(await screen.findByText('Delete Account'));
         });
+        await waitFor(async() => {
+            fireEvent.press(await screen.findByText('Delete'));
+        });
         await waitFor(() => {
             expect(Alert.alert).toHaveBeenCalledWith('Invalid Access tokens');
+        });
+    });
+
+    it('Should go back to profile screen when clicks on No in delete modal', async() => {
+        (useNavigation as jest.Mock).mockReturnValue({
+            ...navigation,
+            navigate: jest.fn(),
+        });
+        // (tokenUtil.getTokens as jest.Mock).mockResolvedValue(null);
+        RenderProfileScreen();
+        await waitFor(async() => {
+            fireEvent.press(await screen.findByText('Delete Account'));
+        });
+        await waitFor(async() => {
+            fireEvent.press(await screen.findByText('No'));
+        });
+        await waitFor(() => {
+            expect(screen.findByText('Delete Account')).toBeTruthy();
         });
     });
 
@@ -180,6 +204,9 @@ describe('Tests related to the Profile Screen', () => {
         RenderProfileScreen();
         await waitFor(async() => {
             fireEvent.press(await screen.findByText('Delete Account'));
+        });
+        await waitFor(async() => {
+            fireEvent.press(await screen.findByText('Delete'));
         });
         await waitFor(() => {
             expect(Alert.alert).toHaveBeenCalledWith('Failed to delete');
@@ -197,6 +224,9 @@ describe('Tests related to the Profile Screen', () => {
         await waitFor(async() => {
             fireEvent.press(await screen.findByText('Delete Account'));
         });
+        await waitFor(async() => {
+            fireEvent.press(await screen.findByText('Delete'));
+        });
         await waitFor(() => {
             expect(Alert.alert).toHaveBeenCalledWith('Failed to delete!');
         });
@@ -211,8 +241,28 @@ describe('Tests related to the Profile Screen', () => {
         await waitFor(async() => {
             fireEvent.press(await screen.findByText('Sign out'));
         });
+        await waitFor(async() => {
+            fireEvent.press(await screen.findByText('Yes'));
+        });
         await waitFor(() => {
             expect(EncryptedStorage.clear).toHaveBeenCalled();
+        });
+    });
+
+    it('Should go back to profile screen when clicks on Cancel in signout modal', async() => {
+        (useNavigation as jest.Mock).mockReturnValue({
+            ...navigation,
+            navigate: jest.fn(),
+        });
+        RenderProfileScreen();
+        await waitFor(async() => {
+            fireEvent.press(await screen.findByText('Sign out'));
+        });
+        await waitFor(async() => {
+            fireEvent.press(await screen.findByText('Cancel'));
+        });
+        await waitFor(() => {
+            expect(screen.findByText('Sign out')).toBeTruthy();
         });
     });
 
