@@ -1,9 +1,13 @@
-import { render } from '@testing-library/react-native';
+import { fireEvent, render} from '@testing-library/react-native';
 import { ContactCard } from './ContactCard.tsx';
 import { store } from '../../redux/store';
 import { Provider } from 'react-redux';
 import { Contact } from '../../types/Contacts.ts';
+import { sendSmsInvite } from '../../utils/sendSmsInvite.ts';
 
+jest.mock('../../permissions/permissions.ts', () => ({
+  requestPermission: jest.fn(),
+}));
 
 const renderContactCard = (contact: Contact) => {
     return render(
@@ -12,6 +16,9 @@ const renderContactCard = (contact: Contact) => {
         </Provider>
     );
 };
+jest.mock('../../utils/sendSmsInvite.ts',()=> ({
+  sendSmsInvite: jest.fn(),
+}));
 
 const contact:Contact = {
     name:'Anjani',
@@ -36,4 +43,12 @@ describe('Contact Card Component', () => {
       expect(getByText(contact.mobileNumber)).toBeTruthy();
       expect(getByText(/invite/i)).toBeTruthy();
    });
+
+     test('should send sms invite on clicking invite button', async () => {
+        const { getByText } = renderContactCard(contact);
+        const inviteButton = getByText(/invite/i);
+         expect(inviteButton).toBeTruthy();
+        fireEvent.press(inviteButton);
+        expect(sendSmsInvite).toHaveBeenCalledWith(contact.mobileNumber);
+  });
 });
