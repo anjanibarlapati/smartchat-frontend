@@ -3,8 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { Profile } from './Profile';
 import { store } from '../../redux/store';
-import { setUserDetails } from '../../redux/userReducer';
 import { User } from '../../types/User';
+import { setUserDetails } from '../../redux/reducers/user.reducer';
 
 jest.mock('../../utils/openCamera', () => ({
   openCamera: jest.fn(),
