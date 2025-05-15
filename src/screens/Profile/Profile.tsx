@@ -15,6 +15,7 @@ import { WelcomeScreenNavigationProps } from '../../types/Navigations';
 import { UploadImage } from '../../types/UploadImage';
 import { getTokens } from '../../utils/getTokens';
 import { Theme } from '../../utils/themes';
+import { AlertModal } from '../../components/Modal/AlertModal';
 
 export const Profile = (): React.JSX.Element => {
 
@@ -26,6 +27,8 @@ export const Profile = (): React.JSX.Element => {
 
   const [editField, setEditField] = useState('');
   const [isLoading, setLoading] = useState(false);
+  const [signoutModal, setSignoutModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const [profilePicUrl, setProfilePicUrl] = useState<string | null>(userDetails.profilePicture || null);
   const [uploadImage, setUploadImage] = useState<UploadImage | string | null>(null);
   const [visibleProfilePicModal, setVisibleProfilePicModal] = useState(false);
@@ -199,7 +202,7 @@ export const Profile = (): React.JSX.Element => {
           editField={editField}
           setEditField={setEditField}
         />
-        <TouchableOpacity style={styles.box} onPress={() => {accountDelete();}}>
+        <TouchableOpacity style={styles.box} onPress={() => {setDeleteModal(true);}}>
           <Image
             source={require('../../../assets/icons/delete.png')}
             resizeMode="contain"
@@ -207,7 +210,7 @@ export const Profile = (): React.JSX.Element => {
           />
           <Text style={styles.deleteText}>Delete Account</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.box} onPress={signout}>
+        <TouchableOpacity style={styles.box} onPress={() => {setSignoutModal(true);}}>
           <Image
             source={require('../../../assets/icons/logout.png')}
             resizeMode="contain"
@@ -221,6 +224,32 @@ export const Profile = (): React.JSX.Element => {
           profilePicture={userDetails.profilePicture || null}
           setProfilePic={setUploadImage}
           remove={handleRemoveProfile}
+        />
+        <AlertModal
+          message={'Do you want to sign out?'}
+          visible={signoutModal}
+          confirmText={'Yes'}
+          cancelText={'Cancel'}
+          onConfirm={ () => {
+            setSignoutModal(false);
+            signout();
+          }}
+          onCancel={() => {
+            setSignoutModal(false);
+          }}
+        />
+        <AlertModal
+          message={'Do you really want to delete your account?'}
+          visible={deleteModal}
+          confirmText={'Delete'}
+          cancelText={'No'}
+          onConfirm={ () => {
+            setDeleteModal(false);
+            accountDelete();
+          }}
+          onCancel={() => {
+            setDeleteModal(false);
+          }}
         />
       </View>
     </View>
