@@ -5,12 +5,12 @@ import { useNavigation } from '@react-navigation/native';
 import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTile';
 import { useAppTheme } from '../../hooks/appTheme';
 import { getStyles } from './Profile.styles';
-import { userState } from '../../types/User';
 import { Theme } from '../../utils/themes';
+import { storeState } from '../../redux/store';
 
 export const Profile = (): React.JSX.Element => {
 
-  const userDetails = useSelector((state: userState) => state.user);
+  const userDetails = useSelector((state: storeState) => state.user);
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme);
   const navigation = useNavigation();
