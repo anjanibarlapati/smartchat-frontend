@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 import { store } from '../../redux/store';
 
 const handleClose = jest.fn(() => {});
+const handleRemove = jest.fn(() => {});
 
 jest.mock('../../utils/openCamera', () => ({
     openCamera: jest.fn(),
@@ -17,10 +18,10 @@ jest.mock('../../utils/openPhotoLibrary', () => ({
     openPhotoLibrary: jest.fn(),
 }));
 
-const renderModal = (isEditing:boolean, close: ()=>void, profilePicture:string, setProfilePic: React.Dispatch<React.SetStateAction<string | UploadImage | null>>, openedFrom: 'registration' | 'profile') => {
+const renderModal = (isEditing:boolean, close: ()=>void, profilePicture:string, setProfilePic: React.Dispatch<React.SetStateAction<string | UploadImage | null>>, remove: () => void) => {
     return render(
       <Provider store={store}>
-        <ProfilePicturePickerModal isEditingProfilePicture={isEditing} close={close} profilePicture={profilePicture} openedFrom={openedFrom} setProfilePic={setProfilePic}/>
+        <ProfilePicturePickerModal isEditingProfilePicture={isEditing} close={close} profilePicture={profilePicture} setProfilePic={setProfilePic} remove={remove}/>
       </Provider>
     );
   };
@@ -34,7 +35,7 @@ describe('Profile Picture Picker Modal', ()=> {
     });
 
     test('Should render elements correctly', ()=> {
-        const { getByText, getByLabelText} = renderModal(true, handleClose, '/image.jpg', setProfilePic, 'registration');
+        const { getByText, getByLabelText} = renderModal(true, handleClose, '/image.jpg', setProfilePic, handleRemove);
         expect(getByText('Profile Photo')).toBeTruthy();
         expect(getByLabelText('cancel-icon')).toBeTruthy();
         expect(getByLabelText('camera-icon')).toBeTruthy();
@@ -46,18 +47,18 @@ describe('Profile Picture Picker Modal', ()=> {
     });
 
     test('Should hide delete icon when profile picture is not there', () => {
-        const { queryByLabelText, queryByText} = renderModal(true, handleClose, '', setProfilePic, 'registration');
+        const { queryByLabelText, queryByText} = renderModal(true, handleClose, '', setProfilePic, handleRemove);
         expect(queryByLabelText('delete-icon')).toBeNull();
-        expect(queryByText('Remove')).toBeNull();
+        expect(queryByText('handleRemove')).toBeNull();
     });
 
     test('Should close modal when isEditingProfilePicture is false', () => {
-        const { queryByLabelText} = renderModal(false, handleClose, '', setProfilePic, 'registration');
+        const { queryByLabelText} = renderModal(false, handleClose, '', setProfilePic, handleRemove);
         expect(queryByLabelText('Profile Photo')).toBeNull();
     });
 
     test('Should click on close icon', () => {
-        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, 'registration');
+        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, handleRemove);
         fireEvent.press(getByLabelText('cancel-icon'));
         expect(handleClose).toHaveBeenCalled();
     });
@@ -68,7 +69,7 @@ describe('Profile Picture Picker Modal', ()=> {
             mime: 'image/jpeg',
             filename: 'cameraPicture.jpg',
         });
-        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, 'registration');
+        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, handleRemove);
         fireEvent.press(getByLabelText('camera-icon'));
         expect(CameraUtil.openCamera).toHaveBeenCalled();
         await waitFor(() => {
@@ -86,7 +87,7 @@ describe('Profile Picture Picker Modal', ()=> {
             mime: 'image/jpeg',
             filename: 'pic.jpg',
         });
-        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, 'registration');
+        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, handleRemove);
         fireEvent.press(getByLabelText('gallery-icon'));
         expect(GalleryUtil.openPhotoLibrary).toHaveBeenCalled();
         await waitFor(() => {
@@ -98,15 +99,15 @@ describe('Profile Picture Picker Modal', ()=> {
         });
     });
 
-    test('Should remove picture when remove button is clicked', () => {
-        const { getByLabelText } = renderModal(true, handleClose, '/image.jpg', setProfilePic, 'registration');
+    test('Should handleRemove picture when handleRemove button is clicked', () => {
+        const { getByLabelText } = renderModal(true, handleClose, '/image.jpg', setProfilePic, handleRemove);
         fireEvent.press(getByLabelText('delete-icon'));
-        expect(setProfilePic).toHaveBeenCalledWith(null);
+        expect(handleRemove).toHaveBeenCalled();
     });
 
     test('Should show alert when permissions are denied for camera', async () => {
         (CameraUtil.openCamera as jest.Mock).mockResolvedValue(null);
-        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, 'registration');
+        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, handleRemove);
         fireEvent.press(getByLabelText('camera-icon'));
         await waitFor(() => {
             expect(Alert.alert).toHaveBeenCalledWith('You do not have permissions to select the picture');
@@ -115,7 +116,7 @@ describe('Profile Picture Picker Modal', ()=> {
 
     test('Should show alert when permissions are denied for gallery', async () => {
         (GalleryUtil.openPhotoLibrary as jest.Mock).mockResolvedValue(null);
-        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, 'registration');
+        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, handleRemove);
         fireEvent.press(getByLabelText('gallery-icon'));
         await waitFor(() => {
             expect(Alert.alert).toHaveBeenCalledWith('You do not have permissions to select the picture');
@@ -128,7 +129,7 @@ describe('Profile Picture Picker Modal', ()=> {
             mime: 'text/plain',
             filename: 'invalid-file.txt',
         });
-        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, 'registration');
+        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, handleRemove);
         fireEvent.press(getByLabelText('camera-icon'));
         await waitFor(() => {
             expect(Alert.alert).toHaveBeenCalledWith('File should be JPG/PNG/JPEG format');
@@ -141,7 +142,7 @@ describe('Profile Picture Picker Modal', ()=> {
             mime: 'text/plain',
             filename: 'invalid-file.txt',
         });
-        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, 'registration');
+        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, handleRemove);
         fireEvent.press(getByLabelText('gallery-icon'));
         await waitFor(() => {
             expect(Alert.alert).toHaveBeenCalledWith('File should be JPG/PNG/JPEG format');
