@@ -34,13 +34,6 @@ export function ProfilePicturePickerModal(props: ProfilePicturePickerModalProps)
         } as UploadImage);
     };
 
-    const removePicture = () => {
-        if(props.openedFrom === 'registration') {
-            props.setProfilePic(null);
-            props.close();
-        }
-    };
-
     const capturePicture = async() => {
         const selectedPicture = await openCamera();
         if(selectedPicture === null) {
@@ -80,7 +73,7 @@ export function ProfilePicturePickerModal(props: ProfilePicturePickerModalProps)
                                 <Text style={styles.iconText}>Gallery</Text>
                             </Pressable>
                             { props.profilePicture &&
-                                <Pressable style={styles.iconContainer} onPress={removePicture}>
+                                <Pressable style={styles.iconContainer} onPress={() => {props.remove();}}>
                                     <Image source={theme.images.delete} style={styles.icon} accessibilityLabel="delete-icon" />
                                     <Text style={styles.iconText}>Remove</Text>
                                 </Pressable>
