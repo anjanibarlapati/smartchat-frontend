@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useAppTheme } from '../../hooks/appTheme';
 import { getStyles } from './ProfileInfoTile.styles';
 import { storeState } from '../../redux/store';
-import { setUserProperty } from '../../redux/userReducer';
+import { setUserProperty } from '../../redux/reducers/user.reducer';
 import { updateProfileDetails } from '../../screens/Profile/Profile.handler';
 import { User } from '../../types/User';
 import { getTokens } from '../../utils/getTokens';

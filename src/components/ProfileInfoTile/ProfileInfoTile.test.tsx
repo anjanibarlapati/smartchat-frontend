@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { ProfileInfoTile } from './ProfileInfoTile';
 import { store } from '../../redux/store';
-import { setUserProperty } from '../../redux/userReducer';
+import { setUserProperty } from '../../redux/reducers/user.reducer';
 import * as ProfileHandler from '../../screens/Profile/Profile.handler';
 import * as tokenUtil from '../../utils/getTokens';
 
