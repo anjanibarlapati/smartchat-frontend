@@ -9,7 +9,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     alignItems: 'center',
   },
   modalContainer: {
-    backgroundColor: 'white',
+    backgroundColor: theme.primaryBackground,
     borderRadius: 10,
     padding: 25,
     width: '80%',
@@ -27,7 +27,7 @@ buttonContainer: {
     justifyContent: 'space-around',
   },
   cancelText: {
-    color: '#333',
+    color: theme.secondaryTextColor,
     fontWeight:'bold',
   },
   confirmText: {
