@@ -163,6 +163,11 @@ const Registration = () => {
     }
   };
 
+  const removePicture = () => {
+    setProfilePic(null);
+    setShowProfilePicSelectModal(false);
+  };
+
   if(isLoading) {
     return <LoadingScreen />;
   }
@@ -237,8 +242,8 @@ const Registration = () => {
         isEditingProfilePicture={showProfilePicSelectModal}
         close={() => {setShowProfilePicSelectModal(false);}}
         profilePicture={profilePic}
-        openedFrom="registration"
         setProfilePic={setProfilePic}
+        remove={removePicture}
       />
       </ScrollView>
     </KeyboardAvoidingView>
