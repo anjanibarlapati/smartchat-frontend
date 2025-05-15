@@ -5,5 +5,5 @@ export type ProfilePicturePickerModalProps = {
     close: () => void;
     profilePicture: UploadImage | null | string,
     setProfilePic:  React.Dispatch<React.SetStateAction<string | UploadImage | null>>
-    openedFrom: 'registration' | 'profile';
+    remove: () => void
 }
