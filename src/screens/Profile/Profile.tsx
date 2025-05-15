@@ -3,6 +3,7 @@ import { Alert, Image, Text, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
+import { AlertModal } from '../../components/Modal/AlertModal';
 import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTile';
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
 import { useAppTheme } from '../../hooks/appTheme';
@@ -15,7 +16,6 @@ import { WelcomeScreenNavigationProps } from '../../types/Navigations';
 import { UploadImage } from '../../types/UploadImage';
 import { getTokens } from '../../utils/getTokens';
 import { Theme } from '../../utils/themes';
-import { AlertModal } from '../../components/Modal/AlertModal';
 
 export const Profile = (): React.JSX.Element => {
 
