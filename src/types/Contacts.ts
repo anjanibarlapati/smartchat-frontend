@@ -4,3 +4,7 @@ export type Contact = {
   doesHaveAccount: boolean,
   profilePicture: string | null
 }
+
+export type Contacts = {
+  contacts: Contact[];
+}
