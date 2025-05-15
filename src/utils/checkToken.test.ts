@@ -36,7 +36,7 @@ describe('checkAccessToken', () => {
 
     await checkAccessToken();
 
-    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('checkToken'), {
+    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('token'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
