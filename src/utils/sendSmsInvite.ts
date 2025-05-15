@@ -1,6 +1,6 @@
 import { Alert, Linking, Platform } from 'react-native';
 import { requestPermission } from '../permissions/permissions';
-import SendSMS from 'react-native-sms'
+import SendSMS from 'react-native-sms';
 
 export const requestSmsPermission = async () => {
     const isPermissionGranted = await requestPermission('send-sms');
