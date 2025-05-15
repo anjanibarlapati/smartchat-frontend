@@ -20,6 +20,8 @@ export type LogincreenNavigationProps = NativeStackNavigationProp<RootStackParam
 
 export type RegistrationScreenNavigationProps = NativeStackNavigationProp<RootStackParamList, 'RegistrationScreen'>;
 
+export type AllChatsTabScreenNavigationProps=NativeStackNavigationProp<BottomTabParamList, 'AllChatsTab'>
+
 
 export type tabBarIconProps = {
     routeName: string;
@@ -30,6 +32,7 @@ export type tabBarIconProps = {
 export type HomeStackParamList = {
     Home: undefined;
     Contact: undefined;
+    Unread:undefined;
 };
 
 export type HomeScreenNavigationProps = NativeStackNavigationProp<HomeStackParamList, 'Home'>;
