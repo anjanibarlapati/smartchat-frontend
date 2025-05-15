@@ -13,5 +13,12 @@
     "Invite to SmartChat":"Invite to SmartChat",
     "Invite":"Invite",
     "No unread chats here":"No unread chats here",
-    "View all chats":"View all chats"
+    "View all chats":"View all chats",
+    "Do you really want to delete this account?":"Do you really want to delete this account?",
+    "Delete":"Delete",
+    "Cancel":"Cancel",
+    "Do you really want to sign out":"Do you really want to sign out",
+    "Sign Out":"Sign Out",
+    "Do you really want to clear this chat?":"Do you really want to clear this chat?",
+    "Clear chat":"Clear chat"
 }

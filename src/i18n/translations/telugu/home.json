@@ -13,5 +13,12 @@
   "Invite to SmartChat": "స్మార్ట్‌చాట్‌కు ఆహ్వానించండి",
   "Invite":"ఆహ్వానించు",
   "No unread chats here":"ఇక్కడ చదవని చాట్‌లు లేవు",
-  "View all chats":"అన్ని చాట్‌లను వీక్షించండి"
+  "View all chats":"అన్ని చాట్‌లను వీక్షించండి",
+  "Do you really want to delete this account?":"మీరు నిజంగా ఈ ఖాతాను తొలగించాలనుకుంటున్నారా?",
+  "Delete":"తొలగించు",
+  "Cancel":"తీసేయాండి",
+  "Do you really want to sign out?":"మీరు నిజంగా సైన్ అవుట్ చేయాలనుకుంటున్నారా?",
+  "Sign Out":"సైన్ అవుట్ చేయండి",
+  "Do you really want to clear this chat?":"మీరు నిజంగా ఈ చాట్‌ను క్లియర్ చేయాలనుకుంటున్నారా?",
+  "Clear chat":"చాట్‌ను క్లియర్ చేయండి"
 }
