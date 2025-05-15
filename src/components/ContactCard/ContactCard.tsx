@@ -3,6 +3,7 @@ import { useAppTheme } from '../../hooks/appTheme';
 import { Theme } from '../../utils/themes';
 import {getStyles} from './ContactCard';
 import { Contact } from '../../types/Contacts';
+import { sendSmsInvite } from '../../utils/sendSmsInvite';
 
 function ContactCard ({contact}: {contact: Contact}):React.JSX.Element {
 
@@ -23,7 +24,7 @@ function ContactCard ({contact}: {contact: Contact}):React.JSX.Element {
                     <Text style={styles.contactNumber}>{contact.mobileNumber}</Text>
                 </View>
             </View>
-            { !contact.doesHaveAccount && <Pressable>
+            { !contact.doesHaveAccount && <Pressable onPress= {()=> sendSmsInvite(contact.mobileNumber)}>
                 <Text style={styles.inviteText}>Invite</Text>
             </Pressable> }
         </View>
