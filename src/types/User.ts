@@ -4,5 +4,6 @@ export type User = {
     email: string,
     mobileNumber: string,
     countryCode: string,
-    profilePicture?: string
+    profilePicture?: string,
+    password?: string
 }
