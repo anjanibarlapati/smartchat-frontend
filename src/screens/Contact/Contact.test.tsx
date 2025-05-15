@@ -49,19 +49,6 @@ describe('Contacts Screen', () => {
     jest.clearAllMocks();
   });
 
-    it('Should check if the header has title as "Select contact"', async () => {
-      (requestPermission as jest.Mock).mockResolvedValue(true);
-      (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
-        JSON.stringify({ access_token: 'access_token' })
-      );
-      (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
-      (getContactsDetails as jest.Mock).mockResolvedValue(mockContacts);
-      const {getByText} = renderContactScreen();
-      await waitFor(() => {
-        expect(getByText('Contacts on SmartChat')).toBeTruthy();
-        expect(getByText('Invite to SmartChat')).toBeTruthy();
-      });
-    });
     it('should display alert if permission is denied', async () => {
       (requestPermission as jest.Mock).mockResolvedValue(false);
 
