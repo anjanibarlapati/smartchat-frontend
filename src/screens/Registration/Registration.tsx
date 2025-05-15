@@ -2,20 +2,19 @@ import React, { useState } from 'react';
 import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useNavigation } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
-import { Dispatch } from 'redux';
+import { useDispatch } from 'react-redux';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
 import { useAppTheme } from '../../hooks/appTheme';
 import LoadingScreen from '../Loading/Loading';
+import { setUserDetails } from '../../redux/reducers/user.reducer';
 import { register } from './Registration.handler';
 import { getStyles } from './Registration.styles';
-import { setUserDetails } from '../../redux/userReducer';
 import { InputUser } from '../../types/InputUser';
 import { RegistrationScreenNavigationProps } from '../../types/Navigations';
 import { UploadImage } from '../../types/UploadImage';
-import { userState } from '../../types/User';
+import { Dispatch } from 'redux';
 import { Theme } from '../../utils/themes';
 
 
@@ -28,7 +27,6 @@ const Registration = () => {
   const [showProfilePicSelectModal, setShowProfilePicSelectModal] = useState(false);
   const [profilePic, setProfilePic] = useState<UploadImage | null | string>(null);
   const [isLoading, setLoading] = useState(false);
-  const userDetails = useSelector((state: userState) => state.user);
   const [user, setUser] = useState<InputUser>({
     firstName: '',
     lastName: '',
@@ -143,7 +141,7 @@ const Registration = () => {
         clearFields();
         dispatch(setUserDetails(result.user));
         await EncryptedStorage.setItem(
-            userDetails.mobileNumber,
+            result.user.mobileNumber,
             JSON.stringify({
               access_token: result.access_token,
               refresh_token: result.refresh_token,

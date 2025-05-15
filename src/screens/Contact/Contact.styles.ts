@@ -5,13 +5,8 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     container: {
     flex: 1,
     backgroundColor:theme.primaryBackground,
-  },
-  header: {
-    marginTop: '20%',
-    display: 'flex',
-    flexDirection: 'row',
-    height: '5%',
-    gap:'40%',
+    display:'flex',
+    gap:15,
   },
   headerLeft: {
     display: 'flex',
@@ -32,7 +27,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     fontFamily: 'Nunito',
   },
   userIcon: {
-    height: 25,
+    height: 30,
     width:30,
   },
   switchTabs: {
@@ -40,7 +35,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     height: '8%',
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
   },
   content: {
     alignItems: 'center',
@@ -61,9 +56,29 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     fontWeight:'bold',
   },
   line:{
-    height:2,
+    height:4,
     width:'100%',
     backgroundColor:theme.primaryColor,
+  },
+  contactsContainer:{
+    flex:1,
+  },
+  contactsBody:{
+    display:'flex',
+    flex:1,
+    flexDirection:'column',
+    paddingBottom:'10%',
+  },
+  messageContainer:{
+    display:'flex',
+    flex:1,
+    alignItems:'center',
+    justifyContent:'center',
+    padding:25,
+  },
+  messageText:{
+    color: theme.primaryColor,
+    fontSize:16,
   },
 });
 

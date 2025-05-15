@@ -12,7 +12,7 @@ import Registration from '../screens/Registration/Registration.tsx';
 import Login from '../screens/Login/Login.tsx';
 
 import { RootStackParamList } from '../types/Navigations.ts';
-import { setUserDetails } from '../redux/userReducer.ts';
+import { setUserDetails } from '../redux/reducers/user.reducer.ts';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

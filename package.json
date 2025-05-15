@@ -19,6 +19,7 @@
     "react": "19.0.0",
     "react-i18next": "^15.5.1",
     "react-native": "0.79.2",
+    "react-native-contacts": "^8.0.5",
     "react-native-encrypted-storage": "^4.0.3",
     "react-native-image-crop-picker": "^0.42.0",
     "react-native-localize": "^3.4.1",

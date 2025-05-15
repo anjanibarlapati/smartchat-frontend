@@ -130,7 +130,16 @@ describe('Login Screen check', ()=>{
     it('Should navigate to Home Screen on successful login', async () => {
       const response = {
         ok: true,
-        json: async () => ({ message: 'Login Successful' }),
+        json: async () => ({
+            user: {
+            firstName: 'Varun',
+            lastName: 'Kumar',
+            email: 'varun@gmail.com',
+            mobileNumber: '1234567890',
+          },
+        access_token: 'access_token',
+        refresh_token: 'refresh_token',
+        }),
       };
       mockRegister.mockResolvedValue(response);
       const { getByPlaceholderText, getByText } = renderLoginScreen();

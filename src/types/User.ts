@@ -1,5 +1,3 @@
-import { store } from '../redux/store';
-
 export type User = {
     firstName: string,
     lastName: string,
@@ -8,4 +6,3 @@ export type User = {
     countryCode: string,
     profilePicture?: string
 }
-export type userState = ReturnType<typeof store.getState>

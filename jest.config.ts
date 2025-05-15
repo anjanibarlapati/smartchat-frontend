@@ -15,7 +15,7 @@ const config: Config.InitialOptions = {
     'src/App/App.tsx',
   ],
   transformIgnorePatterns: [
-      'node_modules/(?!@react-native|react-native|@react-native/js-polyfills|react-native-image-crop-picker|@react-navigation)',
+      'node_modules/(?!@react-native|react-native|@react-native/js-polyfills|react-native-image-crop-picker|@react-navigation|react-native-permissions|react-native-contacts)',
   ],
 };
 
