@@ -77,6 +77,7 @@ export const Profile = (): React.JSX.Element => {
         } finally {
           setUploadImage(null);
           setLoading(false);
+          imageUploaded.current = false;
         }
       };
 
