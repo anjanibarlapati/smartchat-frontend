@@ -23,6 +23,16 @@ const requestPermission = async(permissionType: string) => {
                     android: PERMISSIONS.ANDROID.READ_CONTACTS,
                 });
                 break;
+            case 'send-sms':
+                permission = Platform.select({
+                    ios: undefined,
+                    android: PERMISSIONS.ANDROID.SEND_SMS,
+                });
+                break;
+
+        }
+        if(!permission){
+            return true;
         }
         if(permission){
             const result = await check(permission);
