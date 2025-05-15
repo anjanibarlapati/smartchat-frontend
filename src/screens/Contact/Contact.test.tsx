@@ -108,7 +108,7 @@ describe('Contacts Screen', () => {
       (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
         JSON.stringify({ access_token: 'access_token' })
       );
-      (Contacts.getAll as jest.Mock).mockResolvedValue([]);
+      (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
       (getContactsDetails as jest.Mock).mockResolvedValue(mockContacts);
 
       const { getByText, queryByText } = renderContactScreen();
@@ -127,7 +127,7 @@ describe('Contacts Screen', () => {
       (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
         JSON.stringify({ access_token: 'access_token' })
       );
-      (Contacts.getAll as jest.Mock).mockResolvedValue([]);
+      (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
       (getContactsDetails as jest.Mock).mockResolvedValue(mockContacts);
 
       const { getByText, queryByText } = renderContactScreen();
@@ -138,5 +138,56 @@ describe('Contacts Screen', () => {
 
       expect(getByText('Anjani')).toBeTruthy();
       expect(queryByText('Anj')).toBeNull();
+    });
+
+    it('should show a message when no device contacts are available', async () => {
+      (requestPermission as jest.Mock).mockResolvedValue(true);
+      (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+        JSON.stringify({ access_token: 'access_token' })
+      );
+      (Contacts.getAll as jest.Mock).mockResolvedValue([]);
+      (getContactsDetails as jest.Mock).mockResolvedValue([]);
+
+      const { getByText } = renderContactScreen();
+
+      await waitFor(() => {
+        expect(getByText('Add your friends to contacts and invite them to SmartChat')).toBeTruthy();
+      });
+    });
+
+    it('should show a message when no contacts are on app', async () => {
+      (requestPermission as jest.Mock).mockResolvedValue(true);
+      (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+        JSON.stringify({ access_token: 'access_token' })
+      );
+      (Contacts.getAll as jest.Mock).mockResolvedValue([mockContacts[1]]);
+      (getContactsDetails as jest.Mock).mockResolvedValue([mockContacts[1]]);
+
+      const { getByText } = renderContactScreen();
+      await waitFor(() => {
+        fireEvent.press(getByText('Contacts on SmartChat'));
+      });
+
+      await waitFor(() => {
+        expect(getByText('Invite your contacts to SmartChat and start your conversations')).toBeTruthy();
+      });
+    });
+
+    it('should show a message when all contacts are on app', async () => {
+      (requestPermission as jest.Mock).mockResolvedValue(true);
+      (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+        JSON.stringify({ access_token: 'access_token' })
+      );
+      (Contacts.getAll as jest.Mock).mockResolvedValue([mockContacts[0]]);
+      (getContactsDetails as jest.Mock).mockResolvedValue([mockContacts[0]]);
+
+      const { getByText } = renderContactScreen();
+      await waitFor(() => {
+        fireEvent.press(getByText('Invite to SmartChat'));
+      });
+
+      await waitFor(() => {
+        expect(getByText('All your contacts are on SmartChat. Continue your conversations with them')).toBeTruthy();
+      });
     });
 });
