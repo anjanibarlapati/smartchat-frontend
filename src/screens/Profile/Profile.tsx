@@ -60,13 +60,13 @@ export const Profile = (): React.JSX.Element => {
           if (response.ok) {
             const updatedUser = {
               ...userDetails,
-              profilePicture: result.user.profilePicture,
+              profilePicture: result.profilePicture,
             };
             dispatch(setUserProperty({
               property: 'profilePicture',
-              value: result.user.profilePicture,
+              value: result.profilePicture,
             }));
-            setProfilePicUrl(result.user.profilePicture);
+            setProfilePicUrl(result.profilePicture);
             await EncryptedStorage.setItem('User Data', JSON.stringify(updatedUser));
             Alert.alert('Profile picture updated');
           } else {

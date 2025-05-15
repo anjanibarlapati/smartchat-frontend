@@ -266,7 +266,7 @@ describe('Tests related to the Profile Screen', () => {
         const mockResponse = {
             ok: true,
             json: async () => ({
-                user: { profilePicture: imageUri },
+                profilePicture: imageUri,
             }),
         };
         (openPhotoLibrary as jest.Mock).mockResolvedValue(mockImage);
