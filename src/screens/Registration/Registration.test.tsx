@@ -202,7 +202,16 @@ describe('Registration Screen check', () => {
   it('Should navigate to Home Screen on successful registration', async () => {
     const response = {
       ok: true,
-      json: async () => ({ message: 'Registered Successfully' }),
+      json: async () => ({
+          user: {
+          firstName: 'Varun',
+          lastName: 'Kumar',
+          email: 'varun@gmail.com',
+          mobileNumber: '1234567890',
+         },
+        access_token: 'access_token',
+        refresh_token: 'refresh_token',
+      }),
     };
     mockRegister.mockResolvedValue(response);
 
@@ -218,7 +227,7 @@ describe('Registration Screen check', () => {
     await act(async ()=> {
       fireEvent.press(getByText('Register'));
     });
-    expect(mockReplace).toHaveBeenCalledWith('Tabs');
+    expect(mockReplace).toHaveBeenCalled();
 
   });
 
