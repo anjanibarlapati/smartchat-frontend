@@ -1,20 +1,66 @@
 import { useState } from 'react';
-import { Image, ImageSourcePropType, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, ImageSourcePropType, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { useDispatch, useSelector } from 'react-redux';
 import { useAppTheme } from '../../hooks/appTheme';
 import { getStyles } from './ProfileInfoTile.styles';
+import { storeState } from '../../redux/store';
+import { setUserProperty } from '../../redux/userReducer';
+import { updateProfileDetails } from '../../screens/Profile/Profile.handler';
+import { User } from '../../types/User';
+import { getTokens } from '../../utils/getTokens';
+import { Properties } from '../../utils/Properties';
 import { Theme } from '../../utils/themes';
-
 interface ProfileInfoTileProps {
   label: string;
   value: string;
   image: ImageSourcePropType;
+  editField: string;
+  setEditField: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
-  const [isEdit, setIsEdit] = useState(false);
-  const [newValue, setValue] = useState('');
+
+  const userDetails = useSelector((state: storeState) => state.user);
   const theme: Theme = useAppTheme();
-    const styles = getStyles(theme);
+  const styles = getStyles(theme);
+  const dispatch = useDispatch();
+  const [newValue, setValue] = useState('');
+  const isEdit = props.editField === props.label;
+
+  const updateDetails = async() => {
+    if(!newValue.trim() || newValue.trim() === props.value) {
+      Alert.alert('Give appropriate value');
+      return;
+    }
+    if(props.label === 'Email' && !/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/.test(newValue)) {
+      Alert.alert('Invalid email format');
+      setValue('');
+      return;
+    }
+    const field = Properties[props.label as keyof typeof Properties] as keyof User;
+    const tokens = await getTokens(userDetails.mobileNumber);
+    console.log(tokens);
+    if(!tokens) {
+      Alert.alert('Invalid Access tokens');
+      setValue('');
+      return;
+    }
+    const response = await updateProfileDetails(field, newValue, userDetails.mobileNumber, tokens.access_token);
+    console.log(response);
+    if(response.ok) {
+      const updatedUser = {
+          ...userDetails,
+          [field]: newValue,
+      };
+      dispatch(setUserProperty({
+          property: field,
+          value: newValue,
+      }));
+      await EncryptedStorage.setItem('User Data', JSON.stringify(updatedUser));
+    }
+    props.setEditField('');
+  };
 
   return (
     <View style={styles.box}>
@@ -24,7 +70,10 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
         {!isEdit ? (
           <TouchableOpacity
             onPress={() => {
-              props.label !== 'Contact' && setIsEdit(true);
+              if (props.label !== 'Contact') {
+                props.setEditField(props.label);
+                setValue('');
+              }
             }}>
             <Text style={styles.valueText}>{props.value}</Text>
           </TouchableOpacity>
@@ -39,7 +88,7 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
               style={styles.inputBox}
             />
             <View style={styles.statusBox}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => {updateDetails();}}>
                 <Image
                   source={require('../../../assets/icons/tick.png')}
                   resizeMode="contain"
@@ -50,7 +99,7 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
               <TouchableOpacity
                 onPress={() => {
                   setValue('');
-                  setIsEdit(false);
+                  props.setEditField('');
                 }}>
                 <Image
                   source={require('../../../assets/icons/close.png')}
