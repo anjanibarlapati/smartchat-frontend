@@ -3,17 +3,16 @@ import React, { useState } from 'react';
 import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
 import LoadingScreen from '../Loading/Loading';
 import { login } from './Login.handler';
 import { getStyles } from './Login.styles';
-import { setUserDetails } from '../../redux/userReducer';
+import { setUserDetails } from '../../redux/reducers/user.reducer';
 import { Credentials } from '../../types/Credentials';
 import { RegistrationScreenNavigationProps } from '../../types/Navigations';
-import { userState } from '../../types/User';
 import { useAppTheme } from '../../hooks/appTheme';
 import { Theme } from '../../utils/themes';
 
@@ -33,7 +32,6 @@ const LoginScreen = () => {
   const [isLoading, setLoading] = useState(false);
 
   const dispatch: Dispatch = useDispatch();
-  const userDetails = useSelector((state: userState) => state.user);
 
   const handleChange = (field: string, value: string) => {
     setCredentials((prevValues) => ({
@@ -93,7 +91,7 @@ const LoginScreen = () => {
         clearFields();
         dispatch(setUserDetails(result.user));
         await EncryptedStorage.setItem(
-            userDetails.mobileNumber,
+            result.user.mobileNumber,
             JSON.stringify({
               access_token: result.access_token,
               refresh_token: result.refresh_token,
