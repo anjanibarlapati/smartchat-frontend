@@ -13,6 +13,7 @@ import Login from '../screens/Login/Login.tsx';
 
 import { RootStackParamList } from '../types/Navigations.ts';
 import { setUserDetails } from '../redux/userReducer.ts';
+import { checkAccessToken } from '../utils/checkToken.ts';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -26,7 +27,9 @@ export function AppNavigator(): React.JSX.Element {
     useEffect(() => {
       const loadUser = async () => {
         try {
-          const storedUser = await EncryptedStorage.getItem('User Data');
+
+        await checkAccessToken();
+         const storedUser = await EncryptedStorage.getItem('User Data');
           if (storedUser) {
             const user = JSON.parse(storedUser);
             dispatch(setUserDetails(user));
