@@ -39,92 +39,92 @@ describe('Tests related to the Profile Info Tile component', () => {
         setEditField: jest.fn(),
     };
 
-    const renderUI = (label: string, value: string) => {
+    const renderUI = (label: string, value: string, editField: string = '') => {
         return render(
             <Provider store={store}>
                 <ProfileInfoTile
                     label={label}
                     value={value}
-                    editField={label}
+                    editField={editField}
                     {...defaultProps}
                 />
             </Provider>
         );
     };
 
-    it('Should call setEditField when non-Contact field is pressed', () => {
-        const setEditFieldMock = jest.fn();
-        render(
-            <Provider store={store}>
-            <ProfileInfoTile
-                label="First Name"
-                value="Varun"
-                image={require('../../../assets/icons/user-icon.png')}
-                editField="" // not in edit mode
-                setEditField={setEditFieldMock}
-            />
-            </Provider>
-        );
-        fireEvent.press(screen.getByText('Varun'));
-        expect(setEditFieldMock).toHaveBeenCalledWith('First Name');
-    });
-
     it('Should show validation error on same value', async () => {
-        renderUI('First Name', 'Varun');
-        fireEvent.press(screen.getByPlaceholderText('Varun'));
-        fireEvent.changeText(screen.getByPlaceholderText('Varun'), 'Varun');
+        renderUI('First Name', 'Varun', 'First Name');
+        const firstNameValue = screen.getByPlaceholderText('Varun');
+        expect(firstNameValue).toBeTruthy();
+        fireEvent.changeText(firstNameValue, 'Varun');
         fireEvent.press(screen.getByLabelText('edit'));
-        await waitFor(() =>
-            expect(screen.getByText('First Name')).toBeTruthy()
-        );
+        await waitFor(() => {
+            expect(screen.getByText('First Name')).toBeTruthy();
+        });
     });
 
     it('Should show error for invalid email', async () => {
-        renderUI('Email', 'varun@gmail.com');
-        fireEvent.changeText(screen.getByPlaceholderText('varun@gmail.com'), 'virat');
+        renderUI('Email', 'varun@gmail.com', 'Email');
+        const email = screen.getByPlaceholderText('varun@gmail.com');
+        expect(email).toBeTruthy();
+        fireEvent.changeText(email, 'email');
         fireEvent.press(screen.getByLabelText('edit'));
         await waitFor(() => {
-            expect(screen.getByPlaceholderText('varun@gmail.com')).toBeTruthy();
+            expect(email.props.value).toBe('');
         });
     });
 
     it('Should handle token failure', async () => {
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue(null);
-        renderUI('First Name', 'Varun');
-        fireEvent.changeText(screen.getByPlaceholderText('Varun'), 'NewName');
+
+        renderUI('First Name', 'Varun', 'First Name');
+
+        const input = screen.getByPlaceholderText('Varun');
+        fireEvent.changeText(input, 'ChangedName');
         fireEvent.press(screen.getByLabelText('edit'));
+
         await waitFor(() => {
-            expect(screen.getByPlaceholderText('Varun')).toBeTruthy();
+            expect(input.props.value).toBe('');
         });
     });
 
-    it('Should handle API update and storage', async () => {
-        (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'accesss-tokeenn' });
+    it('Should update details, dispatch action and set encrypted storage on success', async () => {
+        (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'access-token' });
         (ProfileHandler.updateProfileDetails as jest.Mock).mockResolvedValue({ ok: true });
-        renderUI('First Name', 'Varun');
-        fireEvent.changeText(screen.getByPlaceholderText('Varun'), 'UpdatedName');
+        renderUI('First Name', 'Varun', 'First Name');
+        const firtsNameValue = screen.getByPlaceholderText('Varun');
+        fireEvent.changeText(firtsNameValue, 'Virat');
         fireEvent.press(screen.getByLabelText('edit'));
         await waitFor(() => {
             expect(mockDispatch).toHaveBeenCalledWith(
-                setUserProperty({ property: 'firstName', value: 'UpdatedName' })
+                setUserProperty({ property: 'firstName', value: 'Virat' })
             );
             expect(EncryptedStorage.setItem).toHaveBeenCalled();
         });
     });
-
+    it('Should not update the user details if response is not ok', async () => {
+        (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
+        (ProfileHandler.updateProfileDetails as jest.Mock).mockResolvedValue({ ok: false});
+        renderUI('First Name', 'Varun', 'First Name');
+        const firtsNameValue = screen.getByPlaceholderText('Varun');
+        fireEvent.changeText(firtsNameValue, 'Virat');
+        fireEvent.press(screen.getByLabelText('edit'));
+        await waitFor(() => {
+            expect(defaultProps.setEditField).toHaveBeenCalled();
+        });
+    });
     it('Should not enter edit mode for Contact field', () => {
-        render(
-            <Provider store={store}>
-                <ProfileInfoTile
-                    label="Contact"
-                    value="+91 9999999999"
-                    editField=""
-                    {...defaultProps}
-                />
-            </Provider>
-        );
-        fireEvent.press(screen.getByText('+91 9999999999'));
-        expect(screen.queryByLabelText('edit')).toBeNull();
+        renderUI('Contact', '+91 9999999999');
+        const editIcon = screen.queryByLabelText('edit-text');
+        expect(editIcon).toBeNull();
+    });
+
+    it('Should set editField to its label value', () => {
+        renderUI('First Name', 'Varun');
+        const editIcon = screen.getByLabelText('edit-text');
+        expect(editIcon).toBeTruthy();
+        fireEvent.press(editIcon);
+        expect(defaultProps.setEditField).toHaveBeenCalled();
     });
 
     it('Should cancel editing when close button is pressed', async () => {
@@ -140,8 +140,11 @@ describe('Tests related to the Profile Info Tile component', () => {
                 />
             </Provider>
         );
-        fireEvent.changeText(screen.getByPlaceholderText('Varun'), 'Virat');
+        const value = screen.getByPlaceholderText('Varun');
+        fireEvent.changeText(value, 'Virat');
         fireEvent.press(screen.getByLabelText('cancel'));
-        expect(setEditFieldMock).toHaveBeenCalledWith('');
+        await waitFor(() => {
+            expect(setEditFieldMock).toHaveBeenCalledWith('');
+        });
     });
 });

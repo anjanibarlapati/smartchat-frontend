@@ -40,14 +40,12 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
     }
     const field = Properties[props.label as keyof typeof Properties] as keyof User;
     const tokens = await getTokens(userDetails.mobileNumber);
-    console.log(tokens);
     if(!tokens) {
       Alert.alert('Invalid Access tokens');
       setValue('');
       return;
     }
     const response = await updateProfileDetails(field, newValue, userDetails.mobileNumber, tokens.access_token);
-    console.log(response);
     if(response.ok) {
       const updatedUser = {
           ...userDetails,
@@ -65,52 +63,54 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
   return (
     <View style={styles.box}>
       <Image source={props.image} resizeMode="contain" style={styles.image} accessibilityLabel={props.label} />
-      <View style={styles.detailBox}>
-        <Text style={styles.headerText}>{props.label}</Text>
-        {!isEdit ? (
-          <TouchableOpacity
+      <View style={styles.fieldBox}>
+        <View style={styles.detailBox}>
+          <Text style={styles.headerText}>{props.label}</Text>
+          {!isEdit ? (
+            <Text style={styles.valueText}>{props.value}</Text>
+          ) : (
+            <View style={styles.editTileBox}>
+              <TextInput
+                value={newValue}
+                onChangeText={value => {
+                  setValue(value);
+                }}
+                placeholder={props.value}
+                style={styles.inputBox}
+              />
+              <View style={styles.statusBox}>
+                <TouchableOpacity onPress={() => {updateDetails();}}>
+                  <Image
+                    source={require('../../../assets/icons/tick.png')}
+                    resizeMode="contain"
+                    style={styles.tickImage}
+                    accessibilityLabel="edit"
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    setValue('');
+                    props.setEditField('');
+                  }}>
+                  <Image
+                    source={require('../../../assets/icons/close.png')}
+                    resizeMode="contain"
+                    style={styles.closeImage}
+                    accessibilityLabel="cancel"
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+        </View>
+        { props.label !== 'Contact' && !isEdit && <TouchableOpacity
             onPress={() => {
-              if (props.label !== 'Contact') {
                 props.setEditField(props.label);
                 setValue('');
-              }
             }}>
-            <Text style={styles.valueText}>{props.value}</Text>
+            <Image source={require('../../../assets/icons/edit-text-icon.png')} style={styles.editTextIcon} accessibilityLabel="edit-text"/>
           </TouchableOpacity>
-        ) : (
-          <View style={styles.editTileBox}>
-            <TextInput
-              value={newValue}
-              onChangeText={value => {
-                setValue(value);
-              }}
-              placeholder={props.value}
-              style={styles.inputBox}
-            />
-            <View style={styles.statusBox}>
-              <TouchableOpacity onPress={() => {updateDetails();}}>
-                <Image
-                  source={require('../../../assets/icons/tick.png')}
-                  resizeMode="contain"
-                  style={styles.tickImage}
-                  accessibilityLabel="edit"
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setValue('');
-                  props.setEditField('');
-                }}>
-                <Image
-                  source={require('../../../assets/icons/close.png')}
-                  resizeMode="contain"
-                  style={styles.closeImage}
-                  accessibilityLabel="cancel"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
+        }
       </View>
     </View>
   );

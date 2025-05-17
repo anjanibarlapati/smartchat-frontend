@@ -40,7 +40,8 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     paddingTop: 20,
     padding: 2,
     gap: 2,
-    width: '80%',
+    width: '90%',
+    paddingRight: 30,
   },
   image: {
     height: 30,
@@ -57,7 +58,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   },
   valueText: {
     fontSize: 15,
-    color: theme.secondaryTextColor,
+    color: theme.primaryTextColor,
     fontFamily: 'Nunito',
   },
   box: {
