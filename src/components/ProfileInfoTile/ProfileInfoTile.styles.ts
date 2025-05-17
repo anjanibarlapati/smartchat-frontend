@@ -65,9 +65,5 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '90%',
-    // paddingTop:2,
-    // paddingBottom: 2,
-    // borderBottomWidth:1,
-    // borderBottomColor: theme.primaryInputBackground,
   },
 });
