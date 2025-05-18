@@ -13,7 +13,6 @@ import { getStyles } from './Registration.styles';
 import { InputUser } from '../../types/InputUser';
 import { RegistrationScreenNavigationProps } from '../../types/Navigations';
 import { UploadImage } from '../../types/UploadImage';
-// import { userState } from '../../types/User';
 import { Dispatch } from 'redux';
 import { useAppTheme } from '../../hooks/appTheme';
 import { Theme } from '../../utils/themes';
@@ -28,7 +27,6 @@ const Registration = () => {
   const [showProfilePicSelectModal, setShowProfilePicSelectModal] = useState(false);
   const [profilePic, setProfilePic] = useState<UploadImage | null | string>(null);
   const [isLoading, setLoading] = useState(false);
-  // const userDetails = useSelector((state: userState) => state.user);
   const [user, setUser] = useState<InputUser>({
     firstName: '',
     lastName: '',
