@@ -16,6 +16,7 @@ import { RegistrationScreenNavigationProps } from '../../types/Navigations';
 import { UploadImage } from '../../types/UploadImage';
 import { Dispatch } from 'redux';
 import { Theme } from '../../utils/themes';
+import { socketConnection } from '../../utils/socket';
 
 
 const Registration = () => {
@@ -151,6 +152,7 @@ const Registration = () => {
           'User Data',
           JSON.stringify(result.user)
         );
+        socketConnection();
         navigation.replace('Tabs');
         return;
       }

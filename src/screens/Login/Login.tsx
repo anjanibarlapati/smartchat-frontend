@@ -15,6 +15,7 @@ import { Credentials } from '../../types/Credentials';
 import { RegistrationScreenNavigationProps } from '../../types/Navigations';
 import { useAppTheme } from '../../hooks/appTheme';
 import { Theme } from '../../utils/themes';
+import { socketConnection } from '../../utils/socket';
 
 
 
@@ -101,6 +102,7 @@ const LoginScreen = () => {
           'User Data',
           JSON.stringify(result.user)
         );
+        socketConnection();
         navigation.replace('Tabs');
         return;
       }
