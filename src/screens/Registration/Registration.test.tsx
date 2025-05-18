@@ -40,7 +40,7 @@ describe('Registration Screen check', () => {
 
   let mockRegister: jest.SpyInstance;
   const mockReplace = jest.fn();
-
+  const mockReset = jest.fn();
 
   beforeAll(() => {
     mockRegister = jest.spyOn(RegistrationHandler, 'register');
@@ -50,6 +50,7 @@ describe('Registration Screen check', () => {
     jest.resetAllMocks();
     (useNavigation as jest.Mock).mockReturnValue({
       replace: mockReplace,
+      reset: mockReset,
     });
     jest.spyOn(Alert, 'alert').mockImplementation(() => {});
   });
@@ -227,7 +228,10 @@ describe('Registration Screen check', () => {
     await act(async ()=> {
       fireEvent.press(getByText('Register'));
     });
-    expect(mockReplace).toHaveBeenCalled();
+    expect(mockReset).toHaveBeenCalledWith({
+      index: 0,
+      routes: [{ name: 'Tabs' }],
+    });
 
   });
 
