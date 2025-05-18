@@ -33,6 +33,8 @@ describe('Login Screen check', ()=>{
 
     let mockRegister: jest.SpyInstance;
     const mockReplace = jest.fn();
+    const mockReset = jest.fn();
+
 
     beforeAll(() => {
       mockRegister = jest.spyOn(LoginHandler, 'login');
@@ -41,6 +43,7 @@ describe('Login Screen check', ()=>{
       jest.resetAllMocks();
       (useNavigation as jest.Mock).mockReturnValue({
         replace: mockReplace,
+        reset: mockReset,
       });
       jest.spyOn(Alert, 'alert').mockImplementation(() => {});
     });
@@ -148,7 +151,10 @@ describe('Login Screen check', ()=>{
       await act(async ()=> {
         fireEvent.press(getByText('Login'));
       });
-      expect(mockReplace).toHaveBeenCalledWith('Tabs');
+      expect(mockReset).toHaveBeenCalledWith({
+      index: 0,
+      routes: [{ name: 'Tabs' }],
+    });
 
     });
 });
