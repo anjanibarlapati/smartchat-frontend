@@ -56,9 +56,4 @@ describe('TimeStamp Component', ()=> {
     const { getByText } = renderTimeStamp('chat-screen', date);
     expect(getByText(expected)).toBeTruthy();
   });
-//   test('Should render empty string for future message date', () => {
-//     const future = addDays(new Date(), 2);
-//     const { queryByText } = renderTimeStamp('chat-screen', future);
-//     expect(queryByText('')).toBeNull();
-//   });
 });
