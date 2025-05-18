@@ -4,12 +4,6 @@ import { Provider } from 'react-redux';
 import { store } from '../../redux/store';
 import { MessageProps } from '../../types/MessageProps';
 
-
-jest.mock('../../../assets/images/singleTick.png', () => 'singleTick');
-jest.mock('../../../assets/images/doubleTick.png', () => 'doubleTick');
-jest.mock('../../../assets/images/readTick.png', () => 'readTick');
-
-
 const renderMessageBox = ({
   message = '',
   timestamp = '',
@@ -62,7 +56,7 @@ describe('MessageBox Component Check', () => {
       isSender: true,
     });
 
-    expect(screen.getByLabelText('sent-tick-icon')).toBeTruthy();
+    expect(screen.getByLabelText('sent-tick-icon').props.source).toEqual(require('../../../assets/images/singleTick.png'));
   });
 
   it('Should render double tick icon when status is "delivered"', () => {
@@ -73,7 +67,7 @@ describe('MessageBox Component Check', () => {
       isSender: true,
     });
 
-    expect(screen.getByLabelText('delivered-tick-icon')).toBeTruthy();
+    expect(screen.getByLabelText('delivered-tick-icon').props.source).toEqual(require('../../../assets/images/doubleTick.png'));
   });
 
   it('Should render read tick icon when status is "read"', () => {
@@ -83,7 +77,6 @@ describe('MessageBox Component Check', () => {
       status: 'read',
       isSender: true,
     });
-
-    expect(screen.getByLabelText('read-tick-icon')).toBeTruthy();
+    expect(screen.getByLabelText('read-tick-icon').props.source).toEqual(require('../../../assets/images/readTick.png'));
   });
 });
