@@ -32,15 +32,18 @@ const getStyles = (theme: Theme) => StyleSheet.create({
     contactName: {
         color: theme.primaryTextColor,
         fontSize: 18,
+        fontFamily:'Nunito',
     },
     contactNumber:{
         color: theme.secondaryTextColor,
         fontSize: 14,
+        fontFamily:'Nunito',
     },
     inviteText:{
         color: theme.primaryColor,
         fontSize: 16,
         fontWeight: '600',
+        fontFamily:'Nunito',
     },
 });
 
