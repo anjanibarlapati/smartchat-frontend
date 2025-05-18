@@ -16,7 +16,6 @@ export const getStyles = (theme: Theme) =>
     bodyContainer: {
       display: 'flex',
       zIndex: -1,
-      alignItems: 'center',
       position: 'relative',
     },
     totalContainer: {
