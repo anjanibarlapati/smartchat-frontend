@@ -79,6 +79,8 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   messageText:{
     color: theme.primaryColor,
     fontSize:16,
+    fontFamily:'Nunito',
+    fontWeight:'800',
   },
 });
 
