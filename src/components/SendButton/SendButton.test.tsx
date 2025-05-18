@@ -11,7 +11,7 @@ describe('Send Button Component', () => {
         <SendButton />
       </Provider>,
     );
-    const image = screen.getByRole('image');
-    expect(image).toBeTruthy();
+    const image = screen.getByLabelText('send-icon');
+    expect(image.props.source).toEqual(require('../../../assets/icons/send.png'));
   });
 });
