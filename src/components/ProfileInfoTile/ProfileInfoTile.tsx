@@ -40,14 +40,12 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
     }
     const field = Properties[props.label as keyof typeof Properties] as keyof User;
     const tokens = await getTokens(userDetails.mobileNumber);
-    console.log(tokens);
     if(!tokens) {
       Alert.alert('Invalid Access tokens');
       setValue('');
       return;
     }
     const response = await updateProfileDetails(field, newValue, userDetails.mobileNumber, tokens.access_token);
-    console.log(response);
     if(response.ok) {
       const updatedUser = {
           ...userDetails,
