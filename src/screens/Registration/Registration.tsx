@@ -153,7 +153,10 @@ const Registration = () => {
           JSON.stringify(result.user)
         );
         socketConnection();
-        navigation.replace('Tabs');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Tabs' }],
+        });
         return;
       }
       Alert.alert(result.message);
