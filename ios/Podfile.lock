@@ -2198,7 +2198,7 @@ SPEC CHECKSUMS:
   react-native-contacts: 30229f4b7d13283c56cfaf30f389f3a844709550
   react-native-encrypted-storage: 569d114e329b1c2c2d9f8c84bcdbe4478dda2258
   react-native-safe-area-context: 562163222d999b79a51577eda2ea8ad2c32b4d06
-  react-native-sms: 6abc83829639e90badc1f7211d2159a641e873a0
+  react-native-sms: 728060363bb726b55184e61b53c1f70d76a6b7f2
   react-native-splash-screen: 95994222cc95c236bd3cdc59fe45ed5f27969594
   React-NativeModulesApple: 2c4377e139522c3d73f5df582e4f051a838ff25e
   React-oscompat: ef5df1c734f19b8003e149317d041b8ce1f7d29c
