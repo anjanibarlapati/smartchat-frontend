@@ -43,5 +43,6 @@
     "Saturday": "Saturday",
     "Sunday": "Sunday",
     "AM": "AM",
-    "PM": "PM"
+    "PM": "PM",
+    "Block":"Block"
 }
