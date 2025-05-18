@@ -20,6 +20,7 @@ export const getStyles = (theme:Theme)=> StyleSheet.create({
       borderRadius: 10,
       paddingHorizontal: 19,
       paddingVertical: 10,
+      elevation:5,
     },
     clearChatButton: {
         height: 26,
