@@ -15,13 +15,10 @@ jest.mock('react-native-encrypted-storage', () => ({
     clear: jest.fn(),
 }));
 
-jest.mock('@react-navigation/native', () => {
-  const actualNav = jest.requireActual('@react-navigation/native');
-  return {
-    ...actualNav,
-    useNavigation: jest.fn(),
-  };
-});
+jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
+  useNavigation: jest.fn(),
+}));
 
 jest.mock('../../utils/getTokens', () => ({
     getTokens: jest.fn(),
@@ -58,8 +55,6 @@ jest.mock('react-redux', () => ({
 }));
 
 describe('Tests related to the Profile Screen', () => {
-    const navigation = { setOptions: jest.fn(), navigate: jest.fn() };
-
     const RenderProfileScreen = () => {
         return render(
             <NavigationContainer>
@@ -70,8 +65,15 @@ describe('Tests related to the Profile Screen', () => {
         );
     };
 
+    const mockReset = jest.fn();
+    const mockSetOptions = jest.fn();
+
     beforeEach(() => {
         jest.resetAllMocks();
+        (useNavigation as jest.Mock).mockReturnValue({
+            reset: mockReset,
+            setOptions: mockSetOptions,
+        });
         jest.spyOn(Alert, 'alert').mockImplementation(() => {});
     });
 
@@ -80,7 +82,6 @@ describe('Tests related to the Profile Screen', () => {
     });
 
     it('Should check all the elements', async() => {
-        (useNavigation as jest.Mock).mockReturnValue(navigation);
         await waitFor(() => {
             RenderProfileScreen();
         });
@@ -96,7 +97,6 @@ describe('Tests related to the Profile Screen', () => {
     });
 
     it('Should render all the user details', async() => {
-        (useNavigation as jest.Mock).mockReturnValue(navigation);
         await waitFor(() => {
             RenderProfileScreen();
         });
@@ -108,11 +108,10 @@ describe('Tests related to the Profile Screen', () => {
     });
 
     it('Should set the navigation options correctly', async() => {
-        (useNavigation as jest.Mock).mockReturnValue(navigation);
         await waitFor(() => {
             RenderProfileScreen();
         });
-        expect(navigation.setOptions).toHaveBeenCalledWith({
+        expect(mockSetOptions).toHaveBeenCalledWith({
             headerTitle: 'Profile',
             headerTitleStyle: expect.any(Object),
             headerStyle: expect.any(Object),
@@ -120,7 +119,6 @@ describe('Tests related to the Profile Screen', () => {
     });
 
     it('Should open profile picture modal on edit icon press', async() => {
-        (useNavigation as jest.Mock).mockReturnValue(navigation);
         RenderProfileScreen();
         const editIcon = await waitFor(() => screen.getByLabelText('editIcon'));
         fireEvent.press(editIcon);
@@ -130,7 +128,6 @@ describe('Tests related to the Profile Screen', () => {
     });
 
     it('Should show alert if tokens are invalid during upload', async() => {
-        (useNavigation as jest.Mock).mockReturnValue(navigation);
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue(null);
         RenderProfileScreen();
         fireEvent.press(screen.getByLabelText('editIcon'));
@@ -139,11 +136,7 @@ describe('Tests related to the Profile Screen', () => {
         });
     });
 
-    it('Should delete account and navigate to welcome screen', async() => {
-        (useNavigation as jest.Mock).mockReturnValue({
-            ...navigation,
-            navigate: jest.fn(),
-        });
+    it('Should delete account, clear stack and navigate to welcome screen', async() => {
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
         (ProfileHandler.deleteAccount as jest.Mock).mockResolvedValue({ ok: true });
         RenderProfileScreen();
@@ -155,14 +148,15 @@ describe('Tests related to the Profile Screen', () => {
         });
         await waitFor(() => {
             expect(EncryptedStorage.clear).toHaveBeenCalled();
+            expect(mockReset).toHaveBeenCalledWith({
+                index: 0,
+                routes: [{ name: 'WelcomeScreen' }],
+            });
         });
     });
 
-    it('Should show alert if tokens are invalid during delete account', async() => {
-        (useNavigation as jest.Mock).mockReturnValue({
-            ...navigation,
-            navigate: jest.fn(),
-        });
+    it('Should clear encrypted storage, clear stack and navigate to welcome screen if tokens are invalid during delete account', async() => {
+
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue(null);
         RenderProfileScreen();
         await waitFor(async() => {
@@ -172,15 +166,15 @@ describe('Tests related to the Profile Screen', () => {
             fireEvent.press(await screen.findByText('Delete'));
         });
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Invalid Access tokens');
+            expect(EncryptedStorage.clear).toHaveBeenCalled();
+            expect(mockReset).toHaveBeenCalledWith({
+                index: 0,
+                routes: [{ name: 'WelcomeScreen' }],
+            });
         });
     });
 
     it('Should go back to profile screen when clicks on No in delete modal', async() => {
-        (useNavigation as jest.Mock).mockReturnValue({
-            ...navigation,
-            navigate: jest.fn(),
-        });
         RenderProfileScreen();
         await waitFor(async() => {
             fireEvent.press(await screen.findByText('Delete Account'));
@@ -194,10 +188,6 @@ describe('Tests related to the Profile Screen', () => {
     });
 
     it('Should not delete account when the response is not ok and show alert with message Failed to delete', async() => {
-        (useNavigation as jest.Mock).mockReturnValue({
-            ...navigation,
-            navigate: jest.fn(),
-        });
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
         (ProfileHandler.deleteAccount as jest.Mock).mockResolvedValue({ ok: false });
         RenderProfileScreen();
@@ -208,15 +198,11 @@ describe('Tests related to the Profile Screen', () => {
             fireEvent.press(await screen.findByText('Delete'));
         });
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Failed to delete');
+            expect(Alert.alert).toHaveBeenCalledWith('Failed to delete account');
         });
     });
 
     it('Should not delete account when error occurs during deletion and displays an alert', async() => {
-        (useNavigation as jest.Mock).mockReturnValue({
-            ...navigation,
-            navigate: jest.fn(),
-        });
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
         (ProfileHandler.deleteAccount as jest.Mock).mockRejectedValue(new Error('Failed'));
         RenderProfileScreen();
@@ -227,15 +213,11 @@ describe('Tests related to the Profile Screen', () => {
             fireEvent.press(await screen.findByText('Delete'));
         });
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Failed to delete!');
+            expect(Alert.alert).toHaveBeenCalledWith('Something went wrong while deleting account. Please try again');
         });
     });
 
-    it('Should go to Welcome screen upon clicking on sign out', async() => {
-        (useNavigation as jest.Mock).mockReturnValue({
-            ...navigation,
-            navigate: jest.fn(),
-        });
+    it('Should clear encrypted storage and stack and navigate to welcome screen upon clicking on sign out', async() => {
         RenderProfileScreen();
         await waitFor(async() => {
             fireEvent.press(await screen.findByText('Sign out'));
@@ -245,14 +227,14 @@ describe('Tests related to the Profile Screen', () => {
         });
         await waitFor(() => {
             expect(EncryptedStorage.clear).toHaveBeenCalled();
+            expect(mockReset).toHaveBeenCalledWith({
+                index: 0,
+                routes: [{ name: 'WelcomeScreen' }],
+            });
         });
     });
 
     it('Should go back to profile screen when clicks on Cancel in signout modal', async() => {
-        (useNavigation as jest.Mock).mockReturnValue({
-            ...navigation,
-            navigate: jest.fn(),
-        });
         RenderProfileScreen();
         await waitFor(async() => {
             fireEvent.press(await screen.findByText('Sign out'));
@@ -266,7 +248,6 @@ describe('Tests related to the Profile Screen', () => {
     });
 
     it('Should remove profile picture and update the store', async () => {
-        (useNavigation as jest.Mock).mockReturnValue(navigation);
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
         (ProfileHandler.removeProfilePic as jest.Mock).mockResolvedValue({
             ok: true,
@@ -279,7 +260,7 @@ describe('Tests related to the Profile Screen', () => {
         });
         fireEvent.press(screen.getByText('Remove'));
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Successfully Removed');
+            expect(Alert.alert).toHaveBeenCalledWith('Successfully Removed Profile');
             expect(mockDispatch).toHaveBeenCalledWith(
                 expect.objectContaining({
                     type: 'user/setUserProperty',
@@ -289,8 +270,7 @@ describe('Tests related to the Profile Screen', () => {
         });
     });
 
-    it('Should display alert message when invalid access tokens are used while removing the profile picture', async() => {
-        (useNavigation as jest.Mock).mockReturnValue(navigation);
+    it('Should clear encrypted storage, clear stack and navigate to welcome screen when invalid access tokens are used while removing the profile picture', async() => {
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue(null);
         RenderProfileScreen();
         fireEvent.press(screen.getByLabelText('editIcon'));
@@ -299,12 +279,15 @@ describe('Tests related to the Profile Screen', () => {
         });
         fireEvent.press(screen.getByText('Remove'));
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalled();
+            expect(EncryptedStorage.clear).toHaveBeenCalled();
+            expect(mockReset).toHaveBeenCalledWith({
+                index: 0,
+                routes: [{ name: 'WelcomeScreen' }],
+             });
         });
     });
 
     it('Should upload profile picture successfully', async () => {
-        (useNavigation as jest.Mock).mockReturnValue(navigation);
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
         const imageUri = 'https:aws.amaozn.s3bucket/profile.jpg';
         const mockImage = {
@@ -342,8 +325,7 @@ describe('Tests related to the Profile Screen', () => {
         });
     });
 
-    it('Should not upload new profile picture when valid access tokens are not used', async () => {
-        (useNavigation as jest.Mock).mockReturnValue(navigation);
+    it('Should clear encrypted storage, clear stack and navigate to welcome screen when valid access tokens are not used while uploading new profile picture', async () => {
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue(null);
         const mockImage = {
             path: 'src/pic.jpg',
@@ -360,12 +342,15 @@ describe('Tests related to the Profile Screen', () => {
         });
         fireEvent.press(screen.getByText('Gallery'));
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalled();
+            expect(EncryptedStorage.clear).toHaveBeenCalled();
+            expect(mockReset).toHaveBeenCalledWith({
+                index: 0,
+                routes: [{ name: 'WelcomeScreen' }],
+            });
         });
     });
 
     it('Should show alert message when response is not ok while uploading new profile image', async () => {
-        (useNavigation as jest.Mock).mockReturnValue(navigation);
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
         const mockImage = {
             path: 'src/pic.jpg',
@@ -394,7 +379,6 @@ describe('Tests related to the Profile Screen', () => {
     });
 
     it('Should not update new Profile picture when error occurs while uploading new profile picture', async () => {
-        (useNavigation as jest.Mock).mockReturnValue(navigation);
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
         const mockImage = {
             path: 'src/pic.jpg',
@@ -412,7 +396,7 @@ describe('Tests related to the Profile Screen', () => {
         });
         fireEvent.press(screen.getByText('Gallery'));
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Upload failed', 'Please try again later!');
+            expect(Alert.alert).toHaveBeenCalledWith('Profile upload failed', 'Please try again later!');
         });
     });
 });

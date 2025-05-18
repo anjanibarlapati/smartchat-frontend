@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Image, Text, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AlertModal } from '../../components/Modal/AlertModal';
 import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTile';
@@ -12,7 +12,7 @@ import { deleteAccount, removeProfilePic, updateProfilePic } from './Profile.han
 import { getStyles } from './Profile.styles';
 import { storeState } from '../../redux/store';
 import { setUserProperty } from '../../redux/reducers/user.reducer';
-import { WelcomeScreenNavigationProps } from '../../types/Navigations';
+import { RootStackParamList } from '../../types/Navigations';
 import { UploadImage } from '../../types/UploadImage';
 import { getTokens } from '../../utils/getTokens';
 import { Theme } from '../../utils/themes';
@@ -22,9 +22,8 @@ export const Profile = (): React.JSX.Element => {
   const userDetails = useSelector((state: storeState) => state.user);
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme);
-  const navigation = useNavigation<WelcomeScreenNavigationProps>();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useDispatch();
-
   const [editField, setEditField] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [signoutModal, setSignoutModal] = useState(false);
@@ -52,7 +51,11 @@ export const Profile = (): React.JSX.Element => {
         try {
           const tokens = await getTokens(userDetails.mobileNumber);
           if(!tokens) {
-            Alert.alert('Invalid Access tokens');
+            await EncryptedStorage.clear();
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'WelcomeScreen' }],
+            });
             return;
           }
           const formData = new FormData();
@@ -76,7 +79,7 @@ export const Profile = (): React.JSX.Element => {
             Alert.alert(result.message || 'Failed to upload profile picture');
           }
         } catch (error) {
-          Alert.alert('Upload failed', 'Please try again later!');
+          Alert.alert('Profile upload failed', 'Please try again later!');
         } finally {
           setUploadImage(null);
           setLoading(false);
@@ -88,17 +91,24 @@ export const Profile = (): React.JSX.Element => {
         handleUploadProfilePic();
       }
 
-  }, [dispatch, uploadImage, userDetails]);
+  }, [dispatch, navigation, uploadImage, userDetails]);
 
   const signout = async() => {
     await EncryptedStorage.clear();
-    navigation.navigate('WelcomeScreen');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'WelcomeScreen' }],
+    });
   };
 
   const handleRemoveProfile = async() => {
     const tokens = await getTokens(userDetails.mobileNumber);
     if(!tokens) {
-      Alert.alert('Invalid Access tokens');
+      await EncryptedStorage.clear();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'WelcomeScreen' }],
+      });
       return;
     }
     const response = await removeProfilePic(profilePicUrl as string, userDetails.mobileNumber, tokens.access_token);
@@ -112,28 +122,35 @@ export const Profile = (): React.JSX.Element => {
             value: '',
         }));
         await EncryptedStorage.setItem('User Data', JSON.stringify(updatedUser));
-        Alert.alert('Successfully Removed');
+        Alert.alert('Successfully Removed Profile');
     }
     setProfilePicUrl('');
     setVisibleProfilePicModal(false);
   };
 
   const accountDelete = async() => {
-    const tokens = await getTokens(userDetails.mobileNumber);
-    if(!tokens) {
-      Alert.alert('Invalid Access tokens');
-      return;
-    }
     try{
+      const tokens = await getTokens(userDetails.mobileNumber);
+      if(!tokens) {
+        await EncryptedStorage.clear();
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'WelcomeScreen' }],
+        });
+        return;
+      }
       const response = await deleteAccount(userDetails.mobileNumber, tokens.access_token);
       if(response.ok) {
         await EncryptedStorage.clear();
-        navigation.navigate('WelcomeScreen');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'WelcomeScreen' }],
+        });
       } else {
-        Alert.alert('Failed to delete');
+        Alert.alert('Failed to delete account');
       }
     } catch(error) {
-      Alert.alert('Failed to delete!');
+      Alert.alert('Something went wrong while deleting account. Please try again');
     }
   };
 
