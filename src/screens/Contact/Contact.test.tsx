@@ -7,7 +7,9 @@ import { requestPermission } from '../../permissions/permissions';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import Contacts from 'react-native-contacts';
 import { getContactsDetails } from '../../utils/getContactsDetails';
+import { getTokens } from '../../utils/getTokens.ts';
 import { Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 jest.mock('react-native-contacts', () => ({
   getAll: jest.fn(),
@@ -23,11 +25,19 @@ jest.mock('../../permissions/permissions.ts', () => ({
 
 jest.spyOn(Alert, 'alert').mockImplementation(() => {});
 
+jest.mock('../../utils/getTokens', () => ({
+    getTokens: jest.fn(),
+}));
 
+jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
+  useNavigation: jest.fn(),
+}));
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),
+  clear: jest.fn(),
 }));
 
 const mockContacts = [
@@ -44,9 +54,13 @@ const renderContactScreen = () => {
   );
 };
 describe('Contacts Screen', () => {
+  const mockReset = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
+    (useNavigation as jest.Mock).mockReturnValue({
+      reset: mockReset,
+    });
   });
 
     it('should display alert if permission is denied', async () => {
@@ -62,7 +76,7 @@ describe('Contacts Screen', () => {
 
     it('should display alert if loading contacts from device fails', async () => {
       (requestPermission as jest.Mock).mockResolvedValue(true);
-      (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      ( getTokens as jest.Mock).mockResolvedValue(
         JSON.stringify({ access_token: 'mock_token' })
       );
       (Contacts.getAll as jest.Mock).mockRejectedValue(new Error('Could not load contacts.'));
@@ -76,23 +90,25 @@ describe('Contacts Screen', () => {
       });
     });
 
-    it('should display alert if empty tokens are returned from async storage', async () => {
+    it('should clear encrypted storage, clear stack and navigate to welcome screen if empty tokens are returned from async storage', async () => {
 
       (requestPermission as jest.Mock).mockResolvedValue(true);
-      (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
+      (getTokens as jest.Mock).mockResolvedValue(null);
 
       renderContactScreen();
       await waitFor(() => {
-        expect(Alert.alert).toHaveBeenCalledWith(
-          'Something went wrong while loading contacts from device. Please try again'
-        );
+        expect(EncryptedStorage.clear).toHaveBeenCalled();
+        expect(mockReset).toHaveBeenCalledWith({
+          index: 0,
+          routes: [{ name: 'WelcomeScreen' }],
+        });
       });
     });
 
     it('should switch to Invite tab and show contacts who are not on app', async () => {
 
       (requestPermission as jest.Mock).mockResolvedValue(true);
-      (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      (getTokens as jest.Mock).mockResolvedValue(
         JSON.stringify({ access_token: 'access_token' })
       );
       (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
@@ -111,7 +127,7 @@ describe('Contacts Screen', () => {
     it('should switch to Contacts tab and show contacts who are on app', async () => {
 
       (requestPermission as jest.Mock).mockResolvedValue(true);
-      (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      (getTokens as jest.Mock).mockResolvedValue(
         JSON.stringify({ access_token: 'access_token' })
       );
       (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
@@ -129,7 +145,7 @@ describe('Contacts Screen', () => {
 
     it('should show a message when no device contacts are available', async () => {
       (requestPermission as jest.Mock).mockResolvedValue(true);
-      (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      (getTokens as jest.Mock).mockResolvedValue(
         JSON.stringify({ access_token: 'access_token' })
       );
       (Contacts.getAll as jest.Mock).mockResolvedValue([]);
@@ -144,7 +160,7 @@ describe('Contacts Screen', () => {
 
     it('should show a message when no contacts are on app', async () => {
       (requestPermission as jest.Mock).mockResolvedValue(true);
-      (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      (getTokens as jest.Mock).mockResolvedValue(
         JSON.stringify({ access_token: 'access_token' })
       );
       (Contacts.getAll as jest.Mock).mockResolvedValue([mockContacts[1]]);
@@ -162,7 +178,7 @@ describe('Contacts Screen', () => {
 
     it('should show a message when all contacts are on app', async () => {
       (requestPermission as jest.Mock).mockResolvedValue(true);
-      (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      (getTokens as jest.Mock).mockResolvedValue(
         JSON.stringify({ access_token: 'access_token' })
       );
       (Contacts.getAll as jest.Mock).mockResolvedValue([mockContacts[0]]);
