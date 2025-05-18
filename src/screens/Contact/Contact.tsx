@@ -12,12 +12,16 @@ import { storeState } from '../../redux/store.ts';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Contact as ContactType } from '../../types/Contacts.ts';
 import { getContactsDetails } from '../../utils/getContactsDetails.ts';
+import { getTokens } from '../../utils/getTokens.ts';
 import LoadingScreen from '../Loading/Loading.tsx';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../../types/Navigations.ts';
 
 
 export function Contact(): React.JSX.Element {
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme);
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [selectedTab, setSelectedTab] = useState('Contacts');
   const dispatch = useDispatch();
   const contacts = useSelector((state: storeState)=> state.contacts.contacts);
@@ -27,24 +31,27 @@ export function Contact(): React.JSX.Element {
 
   useEffect(() => {
     const loadContacts = async () => {
+      try {
         const hasPermission = await requestPermission('contacts');
         if (!hasPermission) {
           Alert.alert('Permission for contacts was denied');
           return;
         }
-        const tokens = await EncryptedStorage.getItem(user.mobileNumber);
+        const tokens = await getTokens(user.mobileNumber);
         if (!tokens) {
-          Alert.alert('Something went wrong while loading contacts from device. Please try again');
+          await EncryptedStorage.clear();
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'WelcomeScreen' }],
+          });
           return;
         }
-        const parsedTokens = JSON.parse(tokens);
-        try {
           const deviceContacts = await Contacts.getAll();
           if(deviceContacts.length === 0 ){
             dispatch(setContacts([]));
             return;
           }
-          const resultantContacts = await getContactsDetails(deviceContacts, parsedTokens.access_token);
+          const resultantContacts = await getContactsDetails(deviceContacts, tokens.access_token);
           dispatch(setContacts(resultantContacts));
         } catch (error) {
           Alert.alert('Something went wrong while loading contacts from device. Please try again');
@@ -53,7 +60,7 @@ export function Contact(): React.JSX.Element {
         }
     };
         loadContacts();
-  }, [dispatch, user.mobileNumber]);
+  }, [dispatch, navigation, user.mobileNumber]);
 
 
   useEffect(() => {
