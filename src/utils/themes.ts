@@ -17,6 +17,9 @@ export const LightTheme = {
   chatInputBorderColor: '#ddd',
   chatTextColor: '#000',
   chatSendIconColor: '#008080',
+  senderMessageBox: '#9FD4D4',
+  receiverMessageBox:'white',
+  timestamp : 'rgb(98, 98, 98)',
   images: {
     camera: require('../../assets/icons/camera-icon.png'),
     gallery: require('../../assets/icons/gallery-icon.png'),
@@ -54,6 +57,9 @@ export const DarkTheme = {
   chatInputBorderColor: '#2a2a2a',
   chatTextColor: '#eaeaea',
   chatSendIconColor: '#008080',
+  senderMessageBox: 'rgb(29, 157, 157)',
+  receiverMessageBox: 'gray',
+  timestamp :'white',
   images: {
     camera: require('../../assets/icons/camera-icon-dark-theme.png'),
     gallery: require('../../assets/icons/gallery-icon-dark-theme.png'),
