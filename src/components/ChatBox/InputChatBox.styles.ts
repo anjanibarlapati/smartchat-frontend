@@ -3,9 +3,13 @@ import {Theme} from '../../utils/themes';
 
 export const ChatInputStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: {
-      backgroundColor: theme.chatInputBackground,
+    wrapper: {
+      display: 'flex',
       flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    container: {
       paddingHorizontal: 10,
       paddingVertical: 6,
       alignItems: 'flex-end',
@@ -14,20 +18,13 @@ export const ChatInputStyles = (theme: Theme) =>
       borderWidth: 1,
       borderColor: theme.chatInputBorderColor,
     },
+
     input: {
-      flex: 1,
+      width: 280,
       fontSize: 16,
       paddingHorizontal: 12,
       paddingVertical: 10,
       maxHeight: 90,
       color: theme.chatTextColor,
-    },
-    sendButton: {
-      justifyContent: 'flex-end',
-      padding: 10,
-    },
-    sendText: {
-      fontSize: 20,
-      color: theme.chatSendIconColor,
     },
   });

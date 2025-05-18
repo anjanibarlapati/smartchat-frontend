@@ -3,6 +3,7 @@ import {TextInput, View, KeyboardAvoidingView} from 'react-native';
 import {ChatInputStyles} from './InputChatBox.styles';
 import {Theme} from '../../utils/themes';
 import {useAppTheme} from '../../hooks/appTheme';
+import {SendButton} from '../SendButton/SendButton';
 
 export function InputChatBox() {
   const theme: Theme = useAppTheme();
@@ -11,17 +12,20 @@ export function InputChatBox() {
 
   return (
     <KeyboardAvoidingView>
-      <View style={styles.container}>
-        <TextInput
-          style={styles.input}
-          placeholder="Type a message"
-          value={message}
-          onChangeText={setMessage}
-          multiline
-          maxLength={1000}
-          scrollEnabled={true}
-          textAlignVertical="top"
-        />
+      <View style={styles.wrapper}>
+        <View style={styles.container}>
+          <TextInput
+            style={styles.input}
+            placeholder="Type a message"
+            value={message}
+            onChangeText={setMessage}
+            multiline
+            maxLength={1000}
+            scrollEnabled={true}
+            textAlignVertical="top"
+          />
+        </View>
+        <SendButton />
       </View>
     </KeyboardAvoidingView>
   );
