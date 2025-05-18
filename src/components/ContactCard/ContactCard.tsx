@@ -1,7 +1,7 @@
 import { Image, Pressable, Text, View } from 'react-native';
 import { useAppTheme } from '../../hooks/appTheme';
 import { Theme } from '../../utils/themes';
-import {getStyles} from './ContactCard';
+import {getStyles} from './ContactCard.styles';
 import { Contact } from '../../types/Contacts';
 import { sendSmsInvite } from '../../utils/sendSmsInvite';
 
