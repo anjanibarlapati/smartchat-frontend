@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Image, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -168,116 +168,122 @@ export const Profile = (): React.JSX.Element => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.profileImg}>
-        <Image
-          source={
-            profilePicUrl?.trim()
-              ? {uri: profilePicUrl}
-              : require('../../../assets/images/profileImage.png')
-          }
-          resizeMode="cover"
-          style={styles.profileImg}
-          accessibilityLabel="ProfilePicture"
-        />
-        <TouchableOpacity
-          style={styles.editProfileImgBox}
-          onPress={() => {
-            setVisibleProfilePicModal(true);
-          }}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
+    >
+      <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
+        <View style={styles.profileImg}>
           <Image
-            source={require('../../../assets/icons/camera-icon.png')}
-            style={styles.editIcon}
-            accessibilityLabel="editIcon"
+            source={
+              profilePicUrl?.trim()
+                ? {uri: profilePicUrl}
+                : require('../../../assets/images/profileImage.png')
+            }
+            resizeMode="cover"
+            style={styles.profileImg}
+            accessibilityLabel="ProfilePicture"
           />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.detailsContainer}>
-        <ProfileInfoTile
-          label={'First Name'}
-          value={userDetails.firstName}
-          image={require('../../../assets/icons/user-icon.png')}
-          editField={editField}
-          setEditField={setEditField}
-        />
-        <ProfileInfoTile
-          label={'Last Name'}
-          value={userDetails.lastName}
-          image={require('../../../assets/icons/user-icon.png')}
-          editField={editField}
-          setEditField={setEditField}
-        />
-        <ProfileInfoTile
-          label={'Email'}
-          value={userDetails.email}
-          image={require('../../../assets/icons/email.png')}
-          editField={editField}
-          setEditField={setEditField}
-        />
-        <ProfileInfoTile
-          label={'Contact'}
-          value={`${userDetails.countryCode} ${userDetails.mobileNumber}`}
-          image={require('../../../assets/icons/contact.png')}
-          editField={editField}
-          setEditField={setEditField}
-        />
-        <ProfileInfoTile
-          label={'Change Password'}
-          value={'*******'}
-          image={require('../../../assets/icons/password.png')}
-          editField={editField}
-          setEditField={setEditField}
-        />
-        <TouchableOpacity style={styles.box} onPress={() => {setDeleteModal(true);}}>
-          <Image
-            source={require('../../../assets/icons/delete.png')}
-            resizeMode="contain"
-            style={styles.image}
+          <TouchableOpacity
+            style={styles.editProfileImgBox}
+            onPress={() => {
+              setVisibleProfilePicModal(true);
+            }}>
+            <Image
+              source={require('../../../assets/icons/camera-icon.png')}
+              style={styles.editIcon}
+              accessibilityLabel="editIcon"
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.detailsContainer}>
+          <ProfileInfoTile
+            label={'First Name'}
+            value={userDetails.firstName}
+            image={require('../../../assets/icons/user-icon.png')}
+            editField={editField}
+            setEditField={setEditField}
           />
-          <Text style={styles.deleteText}>Delete Account</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.box} onPress={() => {setSignoutModal(true);}}>
-          <Image
-            source={require('../../../assets/icons/logout.png')}
-            resizeMode="contain"
-            style={styles.deleteImg}
+          <ProfileInfoTile
+            label={'Last Name'}
+            value={userDetails.lastName}
+            image={require('../../../assets/icons/user-icon.png')}
+            editField={editField}
+            setEditField={setEditField}
           />
-          <Text style={styles.valueText}>Sign out</Text>
-        </TouchableOpacity>
-        <ProfilePicturePickerModal
-          isEditingProfilePicture={visibleProfilePicModal}
-          close={() => {setVisibleProfilePicModal(false);}}
-          profilePicture={userDetails.profilePicture || null}
-          setProfilePic={setUploadImage}
-          remove={handleRemoveProfile}
-        />
-        <AlertModal
-          message={'Do you want to sign out?'}
-          visible={signoutModal}
-          confirmText={'Yes'}
-          cancelText={'Cancel'}
-          onConfirm={ () => {
-            setSignoutModal(false);
-            signout();
-          }}
-          onCancel={() => {
-            setSignoutModal(false);
-          }}
-        />
-        <AlertModal
-          message={'Do you really want to delete your account?'}
-          visible={deleteModal}
-          confirmText={'Delete'}
-          cancelText={'No'}
-          onConfirm={ () => {
-            setDeleteModal(false);
-            accountDelete();
-          }}
-          onCancel={() => {
-            setDeleteModal(false);
-          }}
-        />
-      </View>
-    </View>
+          <ProfileInfoTile
+            label={'Email'}
+            value={userDetails.email}
+            image={require('../../../assets/icons/email.png')}
+            editField={editField}
+            setEditField={setEditField}
+          />
+          <ProfileInfoTile
+            label={'Contact'}
+            value={`${userDetails.countryCode} ${userDetails.mobileNumber}`}
+            image={require('../../../assets/icons/contact.png')}
+            editField={editField}
+            setEditField={setEditField}
+          />
+          <ProfileInfoTile
+            label={'Change Password'}
+            value={'*******'}
+            image={require('../../../assets/icons/password.png')}
+            editField={editField}
+            setEditField={setEditField}
+          />
+          <TouchableOpacity style={styles.box} onPress={() => {setDeleteModal(true);}}>
+            <Image
+              source={require('../../../assets/icons/delete.png')}
+              resizeMode="contain"
+              style={styles.image}
+            />
+            <Text style={styles.deleteText}>Delete Account</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.box} onPress={() => {setSignoutModal(true);}}>
+            <Image
+              source={require('../../../assets/icons/logout.png')}
+              resizeMode="contain"
+              style={styles.deleteImg}
+            />
+            <Text style={styles.valueText}>Sign out</Text>
+          </TouchableOpacity>
+          <ProfilePicturePickerModal
+            isEditingProfilePicture={visibleProfilePicModal}
+            close={() => {setVisibleProfilePicModal(false);}}
+            profilePicture={userDetails.profilePicture || null}
+            setProfilePic={setUploadImage}
+            remove={handleRemoveProfile}
+          />
+          <AlertModal
+            message={'Do you want to sign out?'}
+            visible={signoutModal}
+            confirmText={'Yes'}
+            cancelText={'Cancel'}
+            onConfirm={ () => {
+              setSignoutModal(false);
+              signout();
+            }}
+            onCancel={() => {
+              setSignoutModal(false);
+            }}
+          />
+          <AlertModal
+            message={'Do you really want to delete your account?'}
+            visible={deleteModal}
+            confirmText={'Delete'}
+            cancelText={'No'}
+            onConfirm={ () => {
+              setDeleteModal(false);
+              accountDelete();
+            }}
+            onCancel={() => {
+              setDeleteModal(false);
+            }}
+          />
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
