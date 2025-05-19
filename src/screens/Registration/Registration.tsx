@@ -178,78 +178,78 @@ const Registration = () => {
   }
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-      <ScrollView contentContainerStyle={styles.body}>
-      <TouchableOpacity onPress={() => {setShowProfilePicSelectModal(true);}}>
-        <Image
-          style={styles.img}
-          source={profilePic ? typeof profilePic === 'string' ? {uri: profilePic} : {uri: profilePic.uri} : require('../../../assets/images/profileImage.png')}
-          accessibilityLabel="profile-image"
-          resizeMode="cover"
-        />
-      </TouchableOpacity>
-
-      <View style={styles.inputfields}>
-        <InputField
-          value={user.firstName}
-          onChangeText={(text) => { handleChange('firstName', text); }}
-          placeholder="First Name"
-          error={inputErrors.firstName}
-          required
-        />
-        <InputField
-          value={user.lastName}
-          onChangeText={(text) => { handleChange('lastName', text); }}
-          placeholder="Last Name"
-          error={inputErrors.lastName}
-          required
-        />
-        <InputField
-          value={user.email}
-          onChangeText={(text) => { handleChange('email', text); }}
-          placeholder="Email"
-          error={inputErrors.email}
-        />
-        <InputField
-          value={user.mobileNumber}
-          onChangeText={(text) => { handleChange('mobileNumber', text); }}
-          placeholder="Mobile Number"
-          error={inputErrors.mobileNumber}
-          required
-        />
-        <InputField
-          value={user.password}
-          onChangeText={(text) => { handleChange('password', text); }}
-          placeholder="Password"
-          secureTextEntry
-          error={inputErrors.password}
-          required
-        />
-        <InputField
-          value={user.confirmPassword}
-          onChangeText={(text) => { handleChange('confirmPassword', text); }}
-          placeholder="Confirm Password"
-          secureTextEntry
-          error={inputErrors.confirmPassword}
-          required
-        />
-      </View>
-
-      <View style={styles.loginView}>
-        <Text style={styles.text}>Already have an account?</Text>
-        <TouchableOpacity onPress={() => navigation.replace('LoginScreen')}>
-          <Text style={styles.loginText}>Login</Text>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0} style={styles.container}>
+      <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
+        <TouchableOpacity onPress={() => {setShowProfilePicSelectModal(true);}}>
+          <Image
+            style={styles.img}
+            source={profilePic ? typeof profilePic === 'string' ? {uri: profilePic} : {uri: profilePic.uri} : require('../../../assets/images/profileImage.png')}
+            accessibilityLabel="profile-image"
+            resizeMode="cover"
+          />
         </TouchableOpacity>
-      </View>
 
-      <Button label="Register" onPress={handleRegister} />
-      <ProfilePicturePickerModal
-        isEditingProfilePicture={showProfilePicSelectModal}
-        close={() => {setShowProfilePicSelectModal(false);}}
-        profilePicture={profilePic}
-        setProfilePic={setProfilePic}
-        remove={removePicture}
-      />
+        <View style={styles.inputfields}>
+          <InputField
+            value={user.firstName}
+            onChangeText={(text) => { handleChange('firstName', text); }}
+            placeholder="First Name"
+            error={inputErrors.firstName}
+            required
+          />
+          <InputField
+            value={user.lastName}
+            onChangeText={(text) => { handleChange('lastName', text); }}
+            placeholder="Last Name"
+            error={inputErrors.lastName}
+            required
+          />
+          <InputField
+            value={user.email}
+            onChangeText={(text) => { handleChange('email', text); }}
+            placeholder="Email"
+            error={inputErrors.email}
+          />
+          <InputField
+            value={user.mobileNumber}
+            onChangeText={(text) => { handleChange('mobileNumber', text); }}
+            placeholder="Mobile Number"
+            error={inputErrors.mobileNumber}
+            required
+          />
+          <InputField
+            value={user.password}
+            onChangeText={(text) => { handleChange('password', text); }}
+            placeholder="Password"
+            secureTextEntry
+            error={inputErrors.password}
+            required
+          />
+          <InputField
+            value={user.confirmPassword}
+            onChangeText={(text) => { handleChange('confirmPassword', text); }}
+            placeholder="Confirm Password"
+            secureTextEntry
+            error={inputErrors.confirmPassword}
+            required
+          />
+        </View>
+
+        <View style={styles.loginView}>
+          <Text style={styles.text}>Already have an account?</Text>
+          <TouchableOpacity onPress={() => navigation.replace('LoginScreen')}>
+            <Text style={styles.loginText}>Login</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Button label="Register" onPress={handleRegister} />
+        <ProfilePicturePickerModal
+          isEditingProfilePicture={showProfilePicSelectModal}
+          close={() => {setShowProfilePicSelectModal(false);}}
+          profilePicture={profilePic}
+          setProfilePic={setProfilePic}
+          remove={removePicture}
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   );
