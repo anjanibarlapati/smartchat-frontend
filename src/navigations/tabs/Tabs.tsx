@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BottomTabParamList, tabBarIconProps } from '../../types/Navigations';
 import { getStyles } from './Tabs.styles';
@@ -72,6 +72,11 @@ const getScreenOptions = (route: { name: string }, theme: Theme): BottomTabNavig
     tabBarLabel: '',
     tabBarIcon: (props: { focused: boolean }) => (
       <TabBarIcon routeName={route.name} focused={props.focused} />
+    ),
+    tabBarButton: ({ onPress, children, style }) => (
+      <Pressable onPress={onPress} android_ripple={{ color: 'transparent' }} style={style}>
+        {children}
+      </Pressable>
     ),
   };
 };
