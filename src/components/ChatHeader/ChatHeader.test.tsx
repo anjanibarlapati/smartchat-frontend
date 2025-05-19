@@ -1,7 +1,11 @@
 import { Provider } from 'react-redux';
-import { render, screen } from '@testing-library/react-native';
+import { render, screen , fireEvent} from '@testing-library/react-native';
 import { ChatHeader } from './ChatHeader';
 import { store } from '../../redux/store';
+
+jest.mock('@react-navigation/native', () => ({
+    useNavigation: jest.fn(),
+  }));
 
 const contact = {
     name: 'Virat',
@@ -10,7 +14,12 @@ const contact = {
 };
 
 describe('Tests related to the ChatHeader component', () => {
-
+    const mockGoBack = jest.fn();
+    beforeEach(() => {
+        require('@react-navigation/native').useNavigation.mockReturnValue({
+            goBack: mockGoBack,
+        });
+    });
     const renderChatHeader = () => {
         return render(
             <Provider store={store}>
@@ -35,6 +44,12 @@ describe('Tests related to the ChatHeader component', () => {
             </Provider>
         );
         expect(screen.getByLabelText('Profile-Image').props.source).toEqual({uri: contact.profilePic});
+    });
+
+    it('Should call navigation.goBack when back button is pressed', () => {
+        renderChatHeader();
+        fireEvent.press(screen.getByLabelText('Back-Icon'));
+        expect(mockGoBack).toHaveBeenCalledTimes(1);
     });
 
 });
