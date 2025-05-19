@@ -6,9 +6,17 @@ import { store } from '../../redux/store';
 import { setUserProperty } from '../../redux/reducers/user.reducer';
 import * as ProfileServices from '../../screens/Profile/Profile.services';
 import * as tokenUtil from '../../utils/getTokens';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { Alert } from 'react-native';
 
 jest.mock('react-native-encrypted-storage', () => ({
     setItem: jest.fn(),
+    clear: jest.fn(),
+}));
+
+jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
+  useNavigation: jest.fn(),
 }));
 
 jest.mock('../../utils/getTokens', () => ({
@@ -38,17 +46,27 @@ describe('Tests related to the Profile Info Tile component', () => {
         image: require('../../../assets/icons/user-icon.png'),
         setEditField: jest.fn(),
     };
+    const mockReset = jest.fn();
+    beforeEach(() => {
+        jest.resetAllMocks();
+        (useNavigation as jest.Mock).mockReturnValue({
+            reset: mockReset,
+        });
+        jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    });
 
     const renderUI = (label: string, value: string, editField: string = '') => {
         return render(
-            <Provider store={store}>
-                <ProfileInfoTile
-                    label={label}
-                    value={value}
-                    editField={editField}
-                    {...defaultProps}
-                />
-            </Provider>
+            <NavigationContainer>
+                <Provider store={store}>
+                    <ProfileInfoTile
+                        label={label}
+                        value={value}
+                        editField={editField}
+                        {...defaultProps}
+                    />
+                </Provider>
+            </NavigationContainer>
         );
     };
 
@@ -84,7 +102,11 @@ describe('Tests related to the Profile Info Tile component', () => {
         fireEvent.press(screen.getByLabelText('edit'));
 
         await waitFor(() => {
-            expect(input.props.value).toBe('');
+            expect(EncryptedStorage.clear).toHaveBeenCalled();
+            expect(mockReset).toHaveBeenCalledWith({
+                index: 0,
+                routes: [{ name: 'WelcomeScreen' }],
+            });
         });
     });
 
@@ -100,6 +122,7 @@ describe('Tests related to the Profile Info Tile component', () => {
                 setUserProperty({ property: 'firstName', value: 'Virat' })
             );
             expect(EncryptedStorage.setItem).toHaveBeenCalled();
+            expect(Alert.alert).toHaveBeenCalledWith(`Updated First Name successfuly`);
         });
     });
     it('Should not update the user details if response is not ok', async () => {
@@ -111,6 +134,17 @@ describe('Tests related to the Profile Info Tile component', () => {
         fireEvent.press(screen.getByLabelText('edit'));
         await waitFor(() => {
             expect(defaultProps.setEditField).toHaveBeenCalled();
+        });
+    });
+    it('Should display an alert if error occurs while updating any profile detail', async () => {
+        (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
+        (ProfileServices.updateProfileDetails as jest.Mock).mockRejectedValue(new Error('Failed'));
+        renderUI('First Name', 'Varun', 'First Name');
+        const firtsNameValue = screen.getByPlaceholderText('Varun');
+        fireEvent.changeText(firtsNameValue, 'Virat');
+        fireEvent.press(screen.getByLabelText('edit'));
+        await waitFor(() => {
+            expect(Alert.alert).toHaveBeenCalledWith('Something went wrong while updating. Please try again');
         });
     });
     it('Should not enter edit mode for Contact field', () => {
@@ -130,15 +164,17 @@ describe('Tests related to the Profile Info Tile component', () => {
     it('Should cancel editing when close button is pressed', async () => {
         const setEditFieldMock = jest.fn();
         render(
-            <Provider store={store}>
-                <ProfileInfoTile
-                    label="First Name"
-                    value="Varun"
-                    editField="First Name"
-                    setEditField={setEditFieldMock}
-                    image={require('../../../assets/icons/user-icon.png')}
-                />
-            </Provider>
+            <NavigationContainer>
+                <Provider store={store}>
+                    <ProfileInfoTile
+                        label="First Name"
+                        value="Varun"
+                        editField="First Name"
+                        setEditField={setEditFieldMock}
+                        image={require('../../../assets/icons/user-icon.png')}
+                    />
+                </Provider>
+            </NavigationContainer>
         );
         const value = screen.getByPlaceholderText('Varun');
         fireEvent.changeText(value, 'Virat');

@@ -11,6 +11,8 @@ import { User } from '../../types/User';
 import { getTokens } from '../../utils/getTokens';
 import { Properties } from '../../utils/Properties';
 import { Theme } from '../../utils/themes';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../../types/Navigations';
 interface ProfileInfoTileProps {
   label: string;
   value: string;
@@ -20,6 +22,7 @@ interface ProfileInfoTileProps {
 }
 
 export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const userDetails = useSelector((state: storeState) => state.user);
   const theme: Theme = useAppTheme();
@@ -41,23 +44,33 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
     const field = Properties[props.label as keyof typeof Properties] as keyof User;
     const tokens = await getTokens(userDetails.mobileNumber);
     if(!tokens) {
-      Alert.alert('Invalid Access tokens');
-      setValue('');
-      return;
+        await EncryptedStorage.clear();
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'WelcomeScreen' }],
+        });
+        return;
     }
-    const response = await updateProfileDetails(field, newValue, userDetails.mobileNumber, tokens.access_token);
-    if(response.ok) {
-      const updatedUser = {
-          ...userDetails,
-          [field]: newValue,
-      };
-      dispatch(setUserProperty({
-          property: field,
-          value: newValue,
-      }));
-      await EncryptedStorage.setItem('User Data', JSON.stringify(updatedUser));
+    try{
+      const response = await updateProfileDetails(field, newValue, userDetails.mobileNumber, tokens.access_token);
+      if(response.ok) {
+        const updatedUser = {
+            ...userDetails,
+            [field]: newValue,
+        };
+        dispatch(setUserProperty({
+            property: field,
+            value: newValue,
+        }));
+        await EncryptedStorage.setItem('User Data', JSON.stringify(updatedUser));
+        Alert.alert(`Updated ${props.label} successfuly`);
+
+      }
+      props.setEditField('');
+    } catch(error) {
+      Alert.alert('Something went wrong while updating. Please try again');
     }
-    props.setEditField('');
+
   };
 
   return (
