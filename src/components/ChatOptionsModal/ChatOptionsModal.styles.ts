@@ -4,18 +4,17 @@ import { Theme } from '../../utils/themes';
 export const getStyles = (theme:Theme)=> StyleSheet.create({
     overlay: {
       flex: 1,
-      justifyContent: 'flex-start',
+      justifyContent: 'flex-end',
+      flexDirection: 'row',
       alignItems: 'flex-start',
+      paddingTop: 100,
+      padding:10,
     },
     modalContainer: {
-      position: 'absolute',
-      width: 192,
-      height: 68,
-      marginLeft: 201,
-      marginTop: 113,
+      height: 80,
       backgroundColor: theme.primaryBackground,
       shadowColor: theme.primaryShadowColor,
-      shadowOpacity: 0.18,
+      shadowOpacity: 0.12,
       shadowRadius: 5,
       borderRadius: 10,
       paddingHorizontal: 19,
@@ -26,11 +25,11 @@ export const getStyles = (theme:Theme)=> StyleSheet.create({
         height: 26,
         width: 173,
         justifyContent: 'center',
-      },
+    },
       blockButton: {
         height: 15,
         width: 88,
-        marginTop: 5,
+        marginTop: 12,
         justifyContent: 'center',
       },
     text: {

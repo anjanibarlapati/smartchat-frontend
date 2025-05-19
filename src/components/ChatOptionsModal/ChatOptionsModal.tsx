@@ -5,6 +5,7 @@ import {
   Modal,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Platform,
 } from 'react-native';
 import {Theme} from '../../utils/themes';
 import {useAppTheme} from '../../hooks/appTheme';
@@ -30,11 +31,11 @@ export const ChatOptionsModal = ({
       transparent
       animationType="fade"
       visible={visible}
-      onRequestClose={onClose}>
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay}>
-          <TouchableWithoutFeedback>
-            <View style={styles.modalContainer}>
+      onRequestClose={onClose}
+      >
+      <TouchableWithoutFeedback onPress={onClose} >
+        <View style={Platform.OS === 'android' ? [styles.overlay, {paddingTop: 57}] : [styles.overlay, {paddingTop: 101}]}  accessibilityLabel="overlay">
+            <View style={styles.modalContainer} >
               <TouchableOpacity
                 onPress={onClearChat}
                 style={styles.clearChatButton}>
@@ -44,7 +45,6 @@ export const ChatOptionsModal = ({
                 <Text style={styles.text}>Block</Text>
               </TouchableOpacity>
             </View>
-          </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
     </Modal>
