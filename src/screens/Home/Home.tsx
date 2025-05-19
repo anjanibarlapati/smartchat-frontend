@@ -24,7 +24,7 @@ export function Home(): React.JSX.Element {
           onPress={() => navigation.navigate('Contact')}
           style={styles.addContactContainer}>
           <Image
-            source={require('../../../assets/icons/contacts-add-icon.png')}
+            source={theme.images.contactsAddcon}
             style={styles.addContactImage}
             accessibilityLabel="addContact"
           />

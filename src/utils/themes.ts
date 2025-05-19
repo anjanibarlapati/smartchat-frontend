@@ -35,6 +35,7 @@ export const LightTheme = {
       profileFocused: require('../../assets/icons/highlighted-profile-tab-icon.png'),
     },
     send: require('../../assets/icons/send.png'),
+    contactsAddcon: require('../../assets/icons/contacts-add-icon.png'),
   },
 };
 
@@ -75,6 +76,7 @@ export const DarkTheme = {
       profileFocused: require('../../assets/icons/highlighted-profile-tab-icon-dark-theme.png'),
     },
     send: require('../../assets/icons/send-dark-theme.png'),
+    contactsAddcon: require('../../assets/icons/contacts-add-icon-dark-theme.png'),
   },
 };
 
