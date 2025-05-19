@@ -8,7 +8,7 @@ import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTil
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
 import { useAppTheme } from '../../hooks/appTheme';
 import LoadingScreen from '../Loading/Loading';
-import { deleteAccount, removeProfilePic, updateProfilePic } from './Profile.handler';
+import { deleteAccount, removeProfilePic, updateProfilePic } from './Profile.services';
 import { getStyles } from './Profile.styles';
 import { storeState } from '../../redux/store';
 import { setUserProperty } from '../../redux/reducers/user.reducer';

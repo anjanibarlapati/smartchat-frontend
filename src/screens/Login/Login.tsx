@@ -8,7 +8,7 @@ import { Dispatch } from 'redux';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
 import LoadingScreen from '../Loading/Loading';
-import { login } from './Login.handler';
+import { login } from './Login.service';
 import { getStyles } from './Login.styles';
 import { setUserDetails } from '../../redux/reducers/user.reducer';
 import { Credentials } from '../../types/Credentials';

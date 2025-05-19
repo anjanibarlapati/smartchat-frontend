@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
 import LoginScreen from './Login';
-import * as LoginHandler from './Login.handler';
+import * as LoginService from './Login.service';
 import { store } from '../../redux/store';
 
 
@@ -37,7 +37,7 @@ describe('Login Screen check', ()=>{
 
 
     beforeAll(() => {
-      mockRegister = jest.spyOn(LoginHandler, 'login');
+      mockRegister = jest.spyOn(LoginService, 'login');
     });
     beforeEach(() => {
       jest.resetAllMocks();

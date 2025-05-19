@@ -1,4 +1,4 @@
-import { register } from './Registration.handler';
+import { register } from './Registration.service';
 import { BASE_URL } from '../../utils/constants';
 
 global.fetch = jest.fn();

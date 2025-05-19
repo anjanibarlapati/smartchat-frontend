@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { Profile } from './Profile';
 import { store } from '../../redux/store';
-import * as ProfileHandler from '../../screens/Profile/Profile.handler';
+import * as ProfileServices from './Profile.services';
 import { User } from '../../types/User';
 import * as tokenUtil from '../../utils/getTokens';
 import { openPhotoLibrary } from '../../utils/openPhotoLibrary';
@@ -24,7 +24,7 @@ jest.mock('../../utils/getTokens', () => ({
     getTokens: jest.fn(),
 }));
 
-jest.mock('../../screens/Profile/Profile.handler', () => ({
+jest.mock('../../screens/Profile/Profile.services', () => ({
     updateProfilePic: jest.fn(),
     removeProfilePic: jest.fn(),
     deleteAccount: jest.fn(),
@@ -138,7 +138,7 @@ describe('Tests related to the Profile Screen', () => {
 
     it('Should delete account, clear stack and navigate to welcome screen', async() => {
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
-        (ProfileHandler.deleteAccount as jest.Mock).mockResolvedValue({ ok: true });
+        (ProfileServices.deleteAccount as jest.Mock).mockResolvedValue({ ok: true });
         RenderProfileScreen();
         await waitFor(async() => {
             fireEvent.press(await screen.findByText('Delete Account'));
@@ -189,7 +189,7 @@ describe('Tests related to the Profile Screen', () => {
 
     it('Should not delete account when the response is not ok and show alert with message Failed to delete', async() => {
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
-        (ProfileHandler.deleteAccount as jest.Mock).mockResolvedValue({ ok: false });
+        (ProfileServices.deleteAccount as jest.Mock).mockResolvedValue({ ok: false });
         RenderProfileScreen();
         await waitFor(async() => {
             fireEvent.press(await screen.findByText('Delete Account'));
@@ -204,7 +204,7 @@ describe('Tests related to the Profile Screen', () => {
 
     it('Should not delete account when error occurs during deletion and displays an alert', async() => {
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
-        (ProfileHandler.deleteAccount as jest.Mock).mockRejectedValue(new Error('Failed'));
+        (ProfileServices.deleteAccount as jest.Mock).mockRejectedValue(new Error('Failed'));
         RenderProfileScreen();
         await waitFor(async() => {
             fireEvent.press(await screen.findByText('Delete Account'));
@@ -249,7 +249,7 @@ describe('Tests related to the Profile Screen', () => {
 
     it('Should remove profile picture and update the store', async () => {
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
-        (ProfileHandler.removeProfilePic as jest.Mock).mockResolvedValue({
+        (ProfileServices.removeProfilePic as jest.Mock).mockResolvedValue({
             ok: true,
             json: async () => ({ message: 'Deleted' }),
         });
@@ -302,7 +302,7 @@ describe('Tests related to the Profile Screen', () => {
             }),
         };
         (openPhotoLibrary as jest.Mock).mockResolvedValue(mockImage);
-        (ProfileHandler.updateProfilePic as jest.Mock).mockResolvedValue(mockResponse);
+        (ProfileServices.updateProfilePic as jest.Mock).mockResolvedValue(mockResponse);
         RenderProfileScreen();
         await waitFor(() => {
             fireEvent.press(screen.getByLabelText('editIcon'));
@@ -364,7 +364,7 @@ describe('Tests related to the Profile Screen', () => {
             }),
         };
         (openPhotoLibrary as jest.Mock).mockResolvedValue(mockImage);
-        (ProfileHandler.updateProfilePic as jest.Mock).mockResolvedValue(mockResponse);
+        (ProfileServices.updateProfilePic as jest.Mock).mockResolvedValue(mockResponse);
         RenderProfileScreen();
         await waitFor(() => {
             fireEvent.press(screen.getByLabelText('editIcon'));
@@ -386,7 +386,7 @@ describe('Tests related to the Profile Screen', () => {
             filename: 'pic.jpg',
         };
         (openPhotoLibrary as jest.Mock).mockResolvedValue(mockImage);
-        (ProfileHandler.updateProfilePic as jest.Mock).mockRejectedValue(new Error('Failed'));
+        (ProfileServices.updateProfilePic as jest.Mock).mockRejectedValue(new Error('Failed'));
         RenderProfileScreen();
         await waitFor(() => {
             fireEvent.press(screen.getByLabelText('editIcon'));

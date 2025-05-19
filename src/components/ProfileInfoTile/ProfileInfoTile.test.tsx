@@ -4,7 +4,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react-nativ
 import { ProfileInfoTile } from './ProfileInfoTile';
 import { store } from '../../redux/store';
 import { setUserProperty } from '../../redux/reducers/user.reducer';
-import * as ProfileHandler from '../../screens/Profile/Profile.handler';
+import * as ProfileServices from '../../screens/Profile/Profile.services';
 import * as tokenUtil from '../../utils/getTokens';
 
 jest.mock('react-native-encrypted-storage', () => ({
@@ -15,7 +15,7 @@ jest.mock('../../utils/getTokens', () => ({
     getTokens: jest.fn(),
 }));
 
-jest.mock('../../screens/Profile/Profile.handler', () => ({
+jest.mock('../../screens/Profile/Profile.services', () => ({
     updateProfileDetails: jest.fn(),
 }));
 
@@ -90,7 +90,7 @@ describe('Tests related to the Profile Info Tile component', () => {
 
     it('Should update details, dispatch action and set encrypted storage on success', async () => {
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'access-token' });
-        (ProfileHandler.updateProfileDetails as jest.Mock).mockResolvedValue({ ok: true });
+        (ProfileServices.updateProfileDetails as jest.Mock).mockResolvedValue({ ok: true });
         renderUI('First Name', 'Varun', 'First Name');
         const firtsNameValue = screen.getByPlaceholderText('Varun');
         fireEvent.changeText(firtsNameValue, 'Virat');
@@ -104,7 +104,7 @@ describe('Tests related to the Profile Info Tile component', () => {
     });
     it('Should not update the user details if response is not ok', async () => {
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
-        (ProfileHandler.updateProfileDetails as jest.Mock).mockResolvedValue({ ok: false});
+        (ProfileServices.updateProfileDetails as jest.Mock).mockResolvedValue({ ok: false});
         renderUI('First Name', 'Varun', 'First Name');
         const firtsNameValue = screen.getByPlaceholderText('Varun');
         fireEvent.changeText(firtsNameValue, 'Virat');

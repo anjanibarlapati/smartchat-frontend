@@ -1,4 +1,4 @@
-import { deleteAccount, removeProfilePic, updateProfileDetails, updateProfilePic } from './Profile.handler';
+import { deleteAccount, removeProfilePic, updateProfileDetails, updateProfilePic } from './Profile.services';
 
 global.fetch = jest.fn();
 

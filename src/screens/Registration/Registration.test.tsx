@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
 import Registration from './Registration';
-import * as RegistrationHandler from './Registration.handler';
+import * as RegistrationHandler from './Registration.service';
 import { store } from '../../redux/store';
 
 

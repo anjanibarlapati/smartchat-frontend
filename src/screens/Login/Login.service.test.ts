@@ -1,6 +1,6 @@
 import { Credentials } from '../../types/Credentials';
 import { BASE_URL } from '../../utils/constants';
-import { login } from './Login.handler';
+import { login } from './Login.service';
 
 global.fetch = jest.fn();
 

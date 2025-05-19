@@ -6,7 +6,7 @@ import { useAppTheme } from '../../hooks/appTheme';
 import { getStyles } from './ProfileInfoTile.styles';
 import { storeState } from '../../redux/store';
 import { setUserProperty } from '../../redux/reducers/user.reducer';
-import { updateProfileDetails } from '../../screens/Profile/Profile.handler';
+import { updateProfileDetails } from '../../screens/Profile/Profile.services';
 import { User } from '../../types/User';
 import { getTokens } from '../../utils/getTokens';
 import { Properties } from '../../utils/Properties';

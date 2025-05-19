@@ -9,7 +9,7 @@ import { ProfilePicturePickerModal } from '../../components/ProfilePicturePicker
 import { useAppTheme } from '../../hooks/appTheme';
 import LoadingScreen from '../Loading/Loading';
 import { setUserDetails } from '../../redux/reducers/user.reducer';
-import { register } from './Registration.handler';
+import { register } from './Registration.service';
 import { getStyles } from './Registration.styles';
 import { InputUser } from '../../types/InputUser';
 import { RegistrationScreenNavigationProps } from '../../types/Navigations';
