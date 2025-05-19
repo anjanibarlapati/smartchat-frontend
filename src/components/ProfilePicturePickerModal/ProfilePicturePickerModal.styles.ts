@@ -35,7 +35,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
         flexDirection:'row',
         justifyContent:'flex-start',
         alignItems:'center',
-        gap:'30%',
+        gap:110,
         paddingHorizontal:'5%',
     },
     cancelIcon:{
@@ -52,10 +52,11 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
         display:'flex',
         flexDirection:'row',
         justifyContent:'center',
+        alignItems:'center',
         paddingHorizontal:'15%',
         paddingTop:'5%',
         paddingBottom:'15%',
-        gap:'30%',
+        gap:70,
     },
     icon:{
         width:45,
