@@ -65,13 +65,12 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   },
   contactsBody:{
     display:'flex',
-    flex:1,
     flexDirection:'column',
-    paddingBottom:'10%',
+    paddingBottom:'20%',
   },
   messageContainer:{
     display:'flex',
-    flex:1,
+    height:'100%',
     alignItems:'center',
     justifyContent:'center',
     padding:25,

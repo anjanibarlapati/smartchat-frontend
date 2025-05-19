@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {getStyles} from './Contact.styles';
-import { Alert, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import { Alert, FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {Theme} from '../../utils/themes';
 import {useAppTheme} from '../../hooks/appTheme';
 import { ContactCard } from '../../components/ContactCard/ContactCard.tsx';
@@ -111,7 +111,6 @@ export function Contact(): React.JSX.Element {
           </TouchableOpacity>
         </View>
         <View style={styles.contactsContainer}>
-          <ScrollView contentContainerStyle={styles.contactsBody}>
               { contacts.length === 0 ? (
                 <View style={styles.messageContainer}><Text style={styles.messageText}>Add your friends to contacts and invite them to SmartChat</Text></View>
                 ) : filteredContacts.length === 0 ? (
@@ -121,11 +120,14 @@ export function Contact(): React.JSX.Element {
                     <View style={styles.messageContainer}><Text style={styles.messageText}>All your contacts are on SmartChat. Continue your conversations with them</Text></View>
                   )
                 ) : (
-                  filteredContacts.map((contact: ContactType) => (
-                    <ContactCard key={contact.mobileNumber} contact={contact} />
-                  ))
+                  <FlatList
+                    data={filteredContacts}
+                    keyExtractor={(item) => item.mobileNumber}
+                    contentContainerStyle={styles.contactsBody}
+                    initialNumToRender={10}
+                    renderItem={({ item }) => <ContactCard contact={item} />}
+                  />
               )}
-          </ScrollView>
         </View>
       </View>
     </>
