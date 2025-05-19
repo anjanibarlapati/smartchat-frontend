@@ -236,7 +236,7 @@ const Registration = () => {
         </View>
 
         <View style={styles.loginView}>
-          <Text style={styles.text}>Already have an account?</Text>
+          <Text style={styles.text}>Already have an account ?</Text>
           <TouchableOpacity onPress={() => navigation.replace('LoginScreen')}>
             <Text style={styles.loginText}>Login</Text>
           </TouchableOpacity>

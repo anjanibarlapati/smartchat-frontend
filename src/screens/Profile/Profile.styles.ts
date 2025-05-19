@@ -57,12 +57,12 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   deleteText: {
     fontSize: 15,
     color: theme.primaryErrorText,
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito-SemiBold',
   },
   valueText: {
     fontSize: 15,
     color: theme.primaryTextColor,
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito-SemiBold',
   },
   box: {
     display: 'flex',
@@ -80,6 +80,6 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   headerTitleStyle: {
     color: theme.primaryColor,
     fontSize: 20,
-    fontWeight: '700',
+    fontFamily:'Nunito-Bold',
   },
 });

@@ -34,17 +34,17 @@ const getStyles = (theme: Theme) => StyleSheet.create({
         fontSize: 18,
         width:'75%',
         overflow:'hidden',
+        fontFamily:'Nunito-SemiBold',
     },
     contactNumber:{
         color: theme.secondaryTextColor,
         fontSize: 14,
-        fontFamily:'Nunito',
+        fontFamily:'Nunito-Regular',
     },
     inviteText:{
         color: theme.primaryColor,
         fontSize: 16,
-        fontWeight: '600',
-        fontFamily:'Nunito',
+        fontFamily:'Nunito-Bold',
     },
 });
 

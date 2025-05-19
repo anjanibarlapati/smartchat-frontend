@@ -45,8 +45,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     text: {
         color: theme.primaryTextColor,
         fontSize:18,
-        fontWeight: 'bold',
-        fontFamily: 'Nunito',
+        fontFamily: 'Nunito-Bold',
     },
     icons:{
         display:'flex',
@@ -70,7 +69,6 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     iconText:{
         color: theme.primaryTextColor,
         fontSize:12,
-        fontWeight: 'bold',
-        fontFamily: 'Nunito',
+        fontFamily: 'Nunito-Bold',
     },
 });

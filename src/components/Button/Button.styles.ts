@@ -13,6 +13,6 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     buttonText: {
       color: theme.primaryButtonTextColor,
       fontSize: 14,
-      fontWeight:'bold',
+      fontFamily: 'Nunito-Bold',
     },
   });

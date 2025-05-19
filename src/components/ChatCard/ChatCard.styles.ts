@@ -32,12 +32,14 @@ const getStyles = (theme: Theme, unreadCount: number) => StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         overflow: 'hidden',
+        fontFamily:'Nunito-SemiBold',
     },
     latestMessage: {
         color: theme.secondaryTextColor,
         fontSize: 14,
         marginTop: 2,
         overflow: 'hidden',
+        fontFamily:'Nunito-SemiBold',
     },
     badgeTimeContainer: {
         flexDirection: 'column',
@@ -51,6 +53,7 @@ const getStyles = (theme: Theme, unreadCount: number) => StyleSheet.create({
         marginTop: -22,
         fontSize: 12,
         color: (unreadCount > 0) ? '#008080' : theme.secondaryTextColor,
+        fontFamily:(unreadCount > 0) ? 'Nunito-Bold' : 'Nunito-SemiBold',
     },
 
     badgeWrapper: {

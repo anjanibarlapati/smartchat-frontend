@@ -8,10 +8,9 @@ export const getStyles = (theme: Theme) =>
       backgroundColor: theme.primaryBackground,
     },
     headerText: {
-        fontWeight: 'bold',
-         fontSize: 25,
-         fontFamily: 'Nunito',
-         color: theme.primaryColor,
+      fontSize: 25,
+      fontFamily: 'Nunito-Bold',
+      color: theme.primaryColor,
     },
     bodyContainer: {
       display: 'flex',
@@ -30,10 +29,9 @@ export const getStyles = (theme: Theme) =>
       margin: 10,
     },
     bodyText: {
-      fontWeight: 'bold',
       fontSize: 20,
       textAlign: 'center',
-      fontFamily: 'Nunito',
+      fontFamily: 'Nunito-Bold',
       color: theme.primaryTextColor,
     },
     addContactContainer: {

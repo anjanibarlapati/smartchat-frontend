@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, Text, View } from 'react-native';
 import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BottomTabParamList, tabBarIconProps } from '../../types/Navigations';
-import { getStyles } from './Tabs';
+import { getStyles } from './Tabs.styles';
 import { useAppTheme } from '../../hooks/appTheme';
 import { Theme } from '../../utils/themes';
 import { HomeStack } from '../stacks/HomeStack';

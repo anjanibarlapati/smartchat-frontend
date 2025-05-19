@@ -18,6 +18,6 @@ export const Badgestyles = (theme: Theme) =>
     text: {
       color: theme.badgeTextColor,
       fontSize: 12,
-      fontWeight: 'bold',
+      fontFamily:'Nunito-Bold',
     },
   });

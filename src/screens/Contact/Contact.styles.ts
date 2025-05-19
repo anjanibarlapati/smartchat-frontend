@@ -14,17 +14,14 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     gap: 10,
     marginLeft: '1%',
   },
-  headerRight:{
-  },
   backIcon: {
     height: 30,
     width:30,
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
     color: theme.primaryColor,
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito-Bold',
   },
   userIcon: {
     height: 30,
@@ -40,20 +37,17 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   content: {
     alignItems: 'center',
   },
-
   activeText:{
     color: theme.primaryColor,
     padding:16,
     fontSize:15,
-    fontFamily:'Nunito',
-    fontWeight:'bold',
+    fontFamily:'Nunito-Bold',
   },
   inActiveText:{
     color: theme.secondaryTextColor,
     padding:16,
     fontSize:15,
-    fontFamily:'Nunito',
-    fontWeight:'bold',
+    fontFamily:'Nunito-Bold',
   },
   line:{
     height:4,
@@ -78,8 +72,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   messageText:{
     color: theme.primaryColor,
     fontSize:16,
-    fontFamily:'Nunito',
-    fontWeight:'800',
+    fontFamily:'Nunito-Bold',
   },
 });
 

@@ -1,4 +1,4 @@
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Theme } from '../../utils/themes';
 
 export const getStyles = (theme: Theme) => StyleSheet.create({
@@ -33,11 +33,12 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     label:{
         color: theme.primaryTextColor,
         fontSize: 12,
-        fontWeight: '500',
-        fontFamily: Platform.OS === 'ios' ? 'Nunito' : '',
+        fontWeight:'600',
+        fontFamily:'Nunito-Regular',
     },
     focusedText:{
         fontWeight:'800',
+        fontFamily:'Nunito-Regular',
     },
 });
 

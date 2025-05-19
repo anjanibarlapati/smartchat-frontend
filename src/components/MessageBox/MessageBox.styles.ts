@@ -10,20 +10,17 @@ export const getStyles = (theme: Theme, isSender: boolean) =>
       marginVertical: 8,
       alignSelf: isSender ? 'flex-end' : 'flex-start',
     },
-
     senderContainer: {
       backgroundColor: theme.senderMessageBox,
     },
-
     receiverContainer: {
       backgroundColor: theme.receiverMessageBox,
     },
-
     messageText: {
       fontSize: 16,
       color: theme.primaryTextColor,
+      fontFamily:'Nunito-Regular',
     },
-
     footer: {
       flexDirection: 'row',
       justifyContent: 'flex-end',
@@ -31,12 +28,11 @@ export const getStyles = (theme: Theme, isSender: boolean) =>
       marginTop: 4,
       gap: 6,
     },
-
     timeText: {
       fontSize: 12,
       color: theme.timestamp,
+      fontFamily:'Nunito-Regular',
     },
-
     tickIcon: {
       width: 16,
       height: 16,

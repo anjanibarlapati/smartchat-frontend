@@ -6,15 +6,14 @@ export const getStyles = (theme: Theme) =>
     bodyText: {
       fontSize: 20,
       textAlign: 'center',
-      fontFamily: 'Nunito',
+      fontFamily: 'Nunito-Regular',
       color: theme.primaryTextColor,
     },
     viewText:{
         marginTop:15,
-        fontWeight:'bold',
         fontSize: 20,
         textAlign: 'center',
-        fontFamily: 'Nunito',
+        fontFamily: 'Nunito-Bold',
         color: theme.primaryColor,
     },
   });

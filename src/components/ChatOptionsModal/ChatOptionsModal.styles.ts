@@ -33,9 +33,8 @@ export const getStyles = (theme:Theme)=> StyleSheet.create({
         justifyContent: 'center',
       },
     text: {
-      fontFamily: 'Nunito',
+      fontFamily: 'Nunito-SemiBold',
       fontStyle: 'normal',
-      fontWeight: '500',
       fontSize: 14,
       lineHeight:16,
       textAlign: 'left',

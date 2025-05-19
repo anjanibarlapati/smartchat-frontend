@@ -31,13 +31,14 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
         gap:2,
     },
     nameText: {
-        fontWeight:'600',
         fontSize: 12,
         color: theme.primaryTextColor,
+        fontFamily:'Nunito-Bold',
     },
     numberText: {
         fontSize: 10,
         color: theme.primaryTextColor,
+        fontFamily:'Nunito-SemiBold',
     },
     backIcon: {
         height: 30,

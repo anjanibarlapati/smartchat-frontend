@@ -17,6 +17,4 @@ const Button = ({label, onPress}: ButtonProps) => {
   );
 };
 
-
-
 export default Button;

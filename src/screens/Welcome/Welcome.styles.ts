@@ -20,16 +20,15 @@ export const getStyles = (theme: Theme) =>  StyleSheet.create({
     },
     appname: {
       fontSize: 32,
-      fontWeight: 'bold',
       color: theme.primaryColor,
       marginBottom: 10,
-      fontFamily: 'Nunito',
+      fontFamily: 'Nunito-Bold',
     },
     apptagline: {
       fontSize: 18,
       color: theme.primaryColor,
       textAlign: 'center',
-      fontFamily: 'Nunito',
+      fontFamily: 'Nunito-Regular',
       fontWeight: '400',
     },
     getstartButton: {
@@ -47,8 +46,7 @@ export const getStyles = (theme: Theme) =>  StyleSheet.create({
     },
 
     getstartText: {
-      fontFamily: 'Nunito',
-      fontWeight: '700',
+      fontFamily: 'Nunito-Bold',
       fontSize: 18,
       color: theme.primaryButtonTextColor,
       marginRight: 45,

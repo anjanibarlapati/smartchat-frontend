@@ -19,20 +19,23 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     gap: 5,
   },
   headerText: {
-    fontSize: 12,
+    fontSize: 16,
     color: theme.primaryTextColor,
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito-SemiBold',
   },
   valueText: {
-    fontSize: 15,
+    fontSize: 14,
     color: theme.secondaryTextColor,
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito-Regular',
   },
   inputBox: {
     borderBottomWidth: 1,
     borderBottomColor: '#008080',
     padding: 2,
     width: '60%',
+    fontFamily: 'Nunito-Regular',
+    fontSize: 14,
+    color: theme.secondaryTextColor,
   },
   tickImage: {
     height: 20,

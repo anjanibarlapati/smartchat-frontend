@@ -156,7 +156,7 @@ const LoginScreen = () => {
       </View>
       <Button label="Login" onPress={handleLogin}/>
       <View style={styles.registerView}>
-        <Text style={styles.text}>Don't have an account?</Text>
+        <Text style={styles.text}>Don't have an account ?</Text>
         <TouchableOpacity onPress={() => navigation.replace('RegistrationScreen')}>
           <Text style={styles.registerText}>Register</Text>
         </TouchableOpacity>

@@ -26,5 +26,6 @@ export const ChatInputStyles = (theme: Theme) =>
       paddingVertical: 10,
       maxHeight: 90,
       color: theme.chatTextColor,
+      fontFamily:'Nunito-Regular',
     },
   });

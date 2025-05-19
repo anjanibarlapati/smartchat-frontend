@@ -16,7 +16,7 @@ export function Home(): React.JSX.Element {
         <ScrollView contentContainerStyle={styles.bodyContainer}>
           <View style={styles.textContainer}>
             <Text style={styles.bodyText}>
-              Start Conversations with your closed ones
+              Start conversations with your closed ones
             </Text>
           </View>
         </ScrollView>

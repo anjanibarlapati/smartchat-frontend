@@ -28,9 +28,8 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito-Regular',
     color: theme.primaryTextColor,
-
   },
   loginView: {
     display: 'flex',
@@ -42,7 +41,6 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   },
   loginText: {
     color: theme.primaryColor,
-    fontWeight: 'bold',
-    fontFamily: 'Nunito',
+    fontFamily: 'Nunito-Bold',
   },
 });

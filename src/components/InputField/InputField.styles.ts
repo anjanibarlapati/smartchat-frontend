@@ -13,10 +13,12 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
       borderWidth: 1,
       borderRadius: 5,
       paddingLeft: 10,
+      fontFamily:'Nunito-Regular',
     },
     errorText: {
       color: theme.primaryErrorText,
       fontSize: 12,
+      fontFamily:'Nunito-Regular',
       marginTop: 5,
     },
   });

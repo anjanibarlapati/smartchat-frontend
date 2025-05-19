@@ -17,7 +17,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   },
 message: {
     fontSize: 16,
-    fontWeight:'bold',
+    fontFamily:'Nunito-Bold',
     textAlign: 'center',
     marginBottom: 25,
     color:'#008080',
@@ -28,10 +28,10 @@ buttonContainer: {
   },
   cancelText: {
     color: theme.secondaryTextColor,
-    fontWeight:'bold',
+    fontFamily:'Nunito-Bold',
   },
   confirmText: {
     color: theme.primaryColor,
-    fontWeight:'bold',
+    fontFamily:'Nunito-Bold',
   },
 });
