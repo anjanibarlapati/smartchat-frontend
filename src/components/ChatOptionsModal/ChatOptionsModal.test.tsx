@@ -1,10 +1,9 @@
-import React from 'react';
-import {fireEvent, render} from '@testing-library/react-native';
-import {Provider} from 'react-redux';
-import {ChatOptionsModal} from './ChatOptionsModal';
-import {store} from '../../redux/store';
-
-const renderChatBlockModal = ({
+import { render, screen, fireEvent } from '@testing-library/react-native';
+import { Provider } from 'react-redux';
+import { store } from '../../redux/store';
+import { ChatOptionsModal } from './ChatOptionsModal';
+import { Platform } from 'react-native';
+const renderChatOptionsModal = ({
   visible = true,
   onClearChat = jest.fn(),
   onBlock = jest.fn(),
@@ -18,30 +17,59 @@ const renderChatBlockModal = ({
         onBlock={onBlock}
         onClose={onClose}
       />
-    </Provider>,
+    </Provider>
   );
 };
 
-describe('Chat Options Modal', () => {
-  it('Should render the modal with "Clear Chat" and "Block" options', () => {
-    const {getByText} = renderChatBlockModal();
-    expect(getByText('Clear Chat')).toBeTruthy();
-    expect(getByText('Block')).toBeTruthy();
+describe('ChatOptionsModal Component', () => {
+  it('should render the modal with "Clear Chat" and "Block" options', () => {
+    renderChatOptionsModal();
+
+    expect(screen.getByText('Clear Chat')).toBeTruthy();
+    expect(screen.getByText('Block')).toBeTruthy();
   });
 
-  it('Should call onClearChat when "Clear Chat" is pressed', () => {
+  it('should call onClearChat when "Clear Chat" is pressed', () => {
     const handleClearChat = jest.fn();
-    const {getByText} = renderChatBlockModal({onClearChat: handleClearChat});
+    renderChatOptionsModal({ onClearChat: handleClearChat });
 
-    fireEvent.press(getByText('Clear Chat'));
+    fireEvent.press(screen.getByText('Clear Chat'));
     expect(handleClearChat).toHaveBeenCalledTimes(1);
   });
 
-  it('Should call onBlock when "Block" is pressed', () => {
+  it('should call onBlock when "Block" is pressed', () => {
     const handleBlock = jest.fn();
-    const {getByText} = renderChatBlockModal({onBlock: handleBlock});
+    renderChatOptionsModal({ onBlock: handleBlock });
 
-    fireEvent.press(getByText('Block'));
+    fireEvent.press(screen.getByText('Block'));
     expect(handleBlock).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call onClose when clicking outside the modal', () => {
+    const handleClose = jest.fn();
+    renderChatOptionsModal({ onClose: handleClose });
+
+    fireEvent.press(screen.getByLabelText('overlay'));
+    expect(handleClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('should apply correct paddingTop based on the platform (Android)', () => {
+    Platform.OS = 'android';
+    const { getByLabelText } = renderChatOptionsModal();
+
+    const overlayView = getByLabelText('overlay');
+    const styles = overlayView.props.style;
+
+    expect(styles).toContainEqual({ paddingTop: 57 });
+  });
+
+  it('should apply correct paddingTop based on the platform (iOS)', () => {
+    Platform.OS = 'ios';
+    const { getByLabelText } = renderChatOptionsModal();
+
+    const overlayView = getByLabelText('overlay');
+    const styles = overlayView.props.style;
+
+    expect(styles).toContainEqual({ paddingTop: 101 });
   });
 });
