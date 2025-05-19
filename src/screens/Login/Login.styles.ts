@@ -3,22 +3,22 @@ import { Theme } from '../../utils/themes';
 
 export const getStyles = (theme: Theme) => StyleSheet.create({
     container:{
-      flex:1,
+      flex: 1,
       backgroundColor: theme.primaryBackground,
 
     },
-    body:{
-        display:'flex',
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+    scrollContainer:{
+      display:'flex',
+      flexGrow: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     logoStyles: {
         width: 250,
         height: 250,
         resizeMode: 'contain',
         marginBottom:90,
-      },
+    },
       inputfields: {
         gap: 1,
         marginTop: '-10%',

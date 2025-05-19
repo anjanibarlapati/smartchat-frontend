@@ -124,8 +124,15 @@ const LoginScreen = () => {
 
 
   return (
- <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-    <ScrollView contentContainerStyle={styles.body}>
+  <KeyboardAvoidingView
+    style={styles.container}
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
+  >
+    <ScrollView
+      contentContainerStyle={styles.scrollContainer}
+      keyboardShouldPersistTaps="handled"
+    >
       <Image
         style={styles.logoStyles}
         source={require('../../../assets/images/Applogo.png')}
@@ -155,7 +162,7 @@ const LoginScreen = () => {
         </TouchableOpacity>
       </View>
     </ScrollView>
-    </KeyboardAvoidingView>
+  </KeyboardAvoidingView>
   );
 };
 
