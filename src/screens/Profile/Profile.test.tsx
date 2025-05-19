@@ -217,6 +217,20 @@ describe('Tests related to the Profile Screen', () => {
         });
     });
 
+    it('Should display an alert when error occurs while signing out', async() => {
+        (EncryptedStorage.clear as jest.Mock).mockRejectedValue(new Error('Failed'));
+        RenderProfileScreen();
+        await waitFor(async() => {
+            fireEvent.press(await screen.findByText('Sign out'));
+        });
+        await waitFor(async() => {
+            fireEvent.press(await screen.findByText('Yes'));
+        });
+        await waitFor(() => {
+            expect(Alert.alert).toHaveBeenCalledWith('Something went wrong while signing out. Please try again');
+        });
+    });
+
     it('Should clear encrypted storage and stack and navigate to welcome screen upon clicking on sign out', async() => {
         RenderProfileScreen();
         await waitFor(async() => {
@@ -244,6 +258,20 @@ describe('Tests related to the Profile Screen', () => {
         });
         await waitFor(() => {
             expect(screen.findByText('Sign out')).toBeTruthy();
+        });
+    });
+
+    it('Should display an alert if error occurs while removing profile picture', async () => {
+        (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
+        (ProfileServices.removeProfilePic as jest.Mock).mockRejectedValue(new Error('Failed'));
+        RenderProfileScreen();
+        fireEvent.press(screen.getByLabelText('editIcon'));
+        await waitFor(() => {
+            expect(screen.getByText('Profile Photo')).toBeTruthy();
+        });
+        fireEvent.press(screen.getByText('Remove'));
+        await waitFor(() => {
+            expect(Alert.alert).toHaveBeenCalledWith('Something went wrong while removing profile picture. Please try again');
         });
     });
 

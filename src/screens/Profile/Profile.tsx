@@ -94,11 +94,15 @@ export const Profile = (): React.JSX.Element => {
   }, [dispatch, navigation, uploadImage, userDetails]);
 
   const signout = async() => {
-    await EncryptedStorage.clear();
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'WelcomeScreen' }],
-    });
+    try{
+      await EncryptedStorage.clear();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'WelcomeScreen' }],
+      });
+    } catch (error) {
+      Alert.alert('Something went wrong while signing out. Please try again');
+    }
   };
 
   const handleRemoveProfile = async() => {
@@ -111,21 +115,26 @@ export const Profile = (): React.JSX.Element => {
       });
       return;
     }
-    const response = await removeProfilePic(profilePicUrl as string, userDetails.mobileNumber, tokens.access_token);
-    if(response.ok) {
-        const updatedUser = {
-            ...userDetails,
-            profilePicture: '',
-        };
-        dispatch(setUserProperty({
-            property: 'profilePicture',
-            value: '',
-        }));
-        await EncryptedStorage.setItem('User Data', JSON.stringify(updatedUser));
-        Alert.alert('Successfully Removed Profile');
+    try{
+      const response = await removeProfilePic(profilePicUrl as string, userDetails.mobileNumber, tokens.access_token);
+      if(response.ok) {
+          const updatedUser = {
+              ...userDetails,
+              profilePicture: '',
+          };
+          dispatch(setUserProperty({
+              property: 'profilePicture',
+              value: '',
+          }));
+          await EncryptedStorage.setItem('User Data', JSON.stringify(updatedUser));
+          Alert.alert('Successfully Removed Profile');
+      }
+      setProfilePicUrl('');
+      setVisibleProfilePicModal(false);
+    } catch(error) {
+      Alert.alert('Something went wrong while removing profile picture. Please try again');
     }
-    setProfilePicUrl('');
-    setVisibleProfilePicModal(false);
+
   };
 
   const accountDelete = async() => {
