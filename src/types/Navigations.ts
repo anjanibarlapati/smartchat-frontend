@@ -33,6 +33,11 @@ export type HomeStackParamList = {
     Home: undefined;
     Contact: undefined;
     Unread:undefined;
+    IndividualChat: {
+        name: string;
+        mobileNumber: string;
+        profilePic: string | null;
+      };
 };
 
 export type HomeScreenNavigationProps = NativeStackNavigationProp<HomeStackParamList, 'Home'>;
