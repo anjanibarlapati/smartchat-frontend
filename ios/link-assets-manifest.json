@@ -8,6 +8,10 @@
     {
       "path": "assets/fonts/Nunito-Regular.ttf",
       "sha1": "465c464793593babb53e51e2a56562cdd79c237d"
+    },
+    {
+      "path": "assets/fonts/Nunito-SemiBold.ttf",
+      "sha1": "047ca2a59c253520cc46b3506744fad6ef8192c6"
     }
   ]
 }
