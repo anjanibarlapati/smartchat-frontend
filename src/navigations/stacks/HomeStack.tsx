@@ -53,12 +53,10 @@ function getContactScreenOptions(navigation: ContactScreenNavigationProps, theme
             </View>
         ),
         headerRight: () => (
-            <TouchableOpacity style={styles.headerRight}>
             <Image
                 style={styles.userIcon}
                 source={theme.images.contactUser}
             />
-            </TouchableOpacity>
         ),
     };
 }
