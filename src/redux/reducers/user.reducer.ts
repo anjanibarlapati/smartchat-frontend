@@ -6,7 +6,6 @@ const initialUserState: User = {
     lastName: '',
     email: '',
     mobileNumber: '',
-    countryCode: '',
     profilePicture: '',
   };
 
