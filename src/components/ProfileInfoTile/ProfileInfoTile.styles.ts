@@ -17,6 +17,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   detailBox: {
     display: 'flex',
     gap: 5,
+    width: '100%',
   },
   headerText: {
     fontSize: 16,
@@ -27,6 +28,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     fontSize: 14,
     color: theme.secondaryTextColor,
     fontFamily: 'Nunito-Regular',
+    width: '60%',
   },
   inputBox: {
     borderBottomWidth: 1,
