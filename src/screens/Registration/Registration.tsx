@@ -1,7 +1,9 @@
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import React, { useState } from 'react';
 import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useNavigation } from '@react-navigation/native';
+import PhoneInput from 'react-native-phone-input';
 import { useDispatch } from 'react-redux';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
@@ -85,7 +87,13 @@ const Registration = () => {
       setErrorMessage('email', 'Email is required');
       isValid = false;
     }
-    if (!user.mobileNumber.trim()) {
+    if (user.mobileNumber.trim()) {
+      const parsedPhoneNumber = parsePhoneNumberFromString(user.mobileNumber.trim());
+      if(!parsedPhoneNumber || !parsedPhoneNumber.isValid()) {
+        setErrorMessage('mobileNumber', 'Invalid mobile number');
+        isValid = false;
+      }
+    } else{
       setErrorMessage('mobileNumber', 'Mobile number is required');
       isValid = false;
     }
@@ -210,13 +218,21 @@ const Registration = () => {
             placeholder="Email"
             error={inputErrors.email}
           />
-          <InputField
-            value={user.mobileNumber}
-            onChangeText={(text) => { handleChange('mobileNumber', text); }}
-            placeholder="Mobile Number"
-            error={inputErrors.mobileNumber}
-            required
-          />
+          <View style={styles.phoneInputWrapper}>
+            <PhoneInput
+              initialCountry="in"
+              textProps={{
+                placeholder: 'Mobile Number *',
+              }}
+              onChangePhoneNumber={(text) => handleChange('mobileNumber', text)}
+              style={styles.phoneInput}
+              autoFormat
+              accessibilityLabel="phone-input"
+            />
+            {inputErrors.mobileNumber ? (
+              <Text style={styles.errorText}>{inputErrors.mobileNumber}</Text>
+            ) : null}
+          </View>
           <InputField
             value={user.password}
             onChangeText={(text) => { handleChange('password', text); }}
