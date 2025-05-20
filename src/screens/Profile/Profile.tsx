@@ -227,7 +227,7 @@ export const Profile = (): React.JSX.Element => {
           />
           <ProfileInfoTile
             label={'Contact'}
-            value={`${userDetails.countryCode} ${userDetails.mobileNumber}`}
+            value={userDetails.mobileNumber}
             image={require('../../../assets/icons/contact.png')}
             editField={editField}
             setEditField={setEditField}
