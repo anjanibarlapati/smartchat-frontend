@@ -80,7 +80,7 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
         <View style={styles.detailBox}>
           <Text style={styles.headerText}>{props.label}</Text>
           {!isEdit ? (
-            <Text style={styles.valueText}>{props.value}</Text>
+            <Text style={styles.valueText} ellipsizeMode="tail" numberOfLines={1}>{props.value}</Text>
           ) : (
             <View style={styles.editTileBox}>
               <TextInput
