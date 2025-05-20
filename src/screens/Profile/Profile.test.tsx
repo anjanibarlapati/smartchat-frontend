@@ -4,8 +4,8 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { Provider } from 'react-redux';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { Profile } from './Profile';
-import { store } from '../../redux/store';
 import * as ProfileServices from './Profile.services';
+import { store } from '../../redux/store';
 import { User } from '../../types/User';
 import * as tokenUtil from '../../utils/getTokens';
 import { openPhotoLibrary } from '../../utils/openPhotoLibrary';
@@ -140,6 +140,8 @@ describe('Tests related to the Profile Screen', () => {
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
         (ProfileServices.deleteAccount as jest.Mock).mockResolvedValue({ ok: true });
         RenderProfileScreen();
+        const editTextIcon = await screen.findAllByLabelText('edit-text');
+        fireEvent.press(editTextIcon[0]);
         await waitFor(async() => {
             fireEvent.press(await screen.findByText('Delete Account'));
         });
@@ -220,6 +222,8 @@ describe('Tests related to the Profile Screen', () => {
     it('Should display an alert when error occurs while signing out', async() => {
         (EncryptedStorage.clear as jest.Mock).mockRejectedValue(new Error('Failed'));
         RenderProfileScreen();
+        const editTextIcon = await screen.findAllByLabelText('edit-text');
+        fireEvent.press(editTextIcon[0]);
         await waitFor(async() => {
             fireEvent.press(await screen.findByText('Sign out'));
         });
