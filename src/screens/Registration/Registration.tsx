@@ -83,9 +83,6 @@ const Registration = () => {
         setErrorMessage('email', 'Invalid email address');
         isValid = false;
       }
-    } else {
-      setErrorMessage('email', 'Email is required');
-      isValid = false;
     }
     if (user.mobileNumber.trim()) {
       const parsedPhoneNumber = parsePhoneNumberFromString(user.mobileNumber.trim());
