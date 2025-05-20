@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AlertModal } from '../../components/Modal/AlertModal';
 import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTile';
@@ -40,6 +40,12 @@ export const Profile = (): React.JSX.Element => {
             headerStyle: styles.headerBackgroundColor ,
         });
   }, [navigation, styles.headerBackgroundColor, styles.headerTitleStyle]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setEditField('');
+    }, [])
+  );
 
   useEffect(() => {
       const handleUploadProfilePic = async () => {
@@ -233,21 +239,33 @@ export const Profile = (): React.JSX.Element => {
             editField={editField}
             setEditField={setEditField}
           />
-          <TouchableOpacity style={styles.box} onPress={() => {setDeleteModal(true);}}>
-            <Image
-              source={require('../../../assets/icons/delete.png')}
-              resizeMode="contain"
-              style={styles.image}
-            />
-            <Text style={styles.deleteText}>Delete Account</Text>
+          <TouchableOpacity style={styles.box}
+            onPress={() => {
+              if(editField) {
+                setEditField('');
+              }
+              setDeleteModal(true);
+            }}>
+              <Image
+                source={require('../../../assets/icons/delete.png')}
+                resizeMode="contain"
+                style={styles.image}
+              />
+              <Text style={styles.deleteText}>Delete Account</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.box} onPress={() => {setSignoutModal(true);}}>
-            <Image
-              source={require('../../../assets/icons/logout.png')}
-              resizeMode="contain"
-              style={styles.deleteImg}
-            />
-            <Text style={styles.valueText}>Sign out</Text>
+          <TouchableOpacity style={styles.box}
+            onPress={() => {
+              if(editField) {
+                setEditField('');
+              }
+              setSignoutModal(true);
+            }}>
+              <Image
+                source={require('../../../assets/icons/logout.png')}
+                resizeMode="contain"
+                style={styles.deleteImg}
+              />
+              <Text style={styles.valueText}>Sign out</Text>
           </TouchableOpacity>
           <ProfilePicturePickerModal
             isEditingProfilePicture={visibleProfilePicModal}
