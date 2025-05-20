@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import PhoneInput from 'react-native-phone-input';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import Button from '../../components/Button/Button';
@@ -16,6 +17,7 @@ import { RegistrationScreenNavigationProps } from '../../types/Navigations';
 import { useAppTheme } from '../../hooks/appTheme';
 import { Theme } from '../../utils/themes';
 import { socketConnection } from '../../utils/socket';
+import parsePhoneNumberFromString from 'libphonenumber-js';
 
 
 
@@ -56,7 +58,13 @@ const LoginScreen = () => {
   const validateForm = () => {
     let isValid = true;
 
-    if (!credentials.mobileNumber.trim()) {
+    if (credentials.mobileNumber.trim()) {
+      const parsedPhoneNumber = parsePhoneNumberFromString(credentials.mobileNumber.trim());
+      if(!parsedPhoneNumber || !parsedPhoneNumber.isValid()) {
+        setErrorMessage('mobileNumber', 'Invalid mobile number');
+        isValid = false;
+      }
+    } else{
       setErrorMessage('mobileNumber', 'Mobile number is required');
       isValid = false;
     }
@@ -139,13 +147,21 @@ const LoginScreen = () => {
         accessibilityLabel="appLogo"
       />
       <View style={styles.inputfields}>
-        <InputField
-          value={credentials.mobileNumber}
-          onChangeText={(text) => handleChange('mobileNumber', text)}
-          placeholder="Mobile Number"
-          error={errors.mobileNumber}
-          keyboardType="numeric"
-        />
+          <View style={styles.phoneInputWrapper}>
+            <PhoneInput
+              initialCountry="in"
+              textProps={{
+                placeholder: 'Mobile Number',
+              }}
+              onChangePhoneNumber={(text: string) => handleChange('mobileNumber', text)}
+              style={styles.phoneInput}
+              autoFormat
+              accessibilityLabel="phone-input"
+            />
+            {errors.mobileNumber ? (
+              <Text style={styles.errorText}>{errors.mobileNumber}</Text>
+            ) : null}
+          </View>
         <InputField
           value={credentials.password}
           onChangeText={(text) => handleChange('password', text)}
