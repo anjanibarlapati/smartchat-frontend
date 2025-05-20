@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import Registration from './Registration';
 import * as RegistrationHandler from './Registration.service';
 import { store } from '../../redux/store';
+import { expect } from '@jest/globals';
 
 
 jest.mock('../../utils/openCamera', () => ({
@@ -66,7 +67,7 @@ describe('Registration Screen check', () => {
     expect(getByPlaceholderText('First Name *')).toBeTruthy();
     expect(getByPlaceholderText('Last Name *')).toBeTruthy();
     expect(getByPlaceholderText('Email')).toBeTruthy();
-    expect(getByPlaceholderText('Mobile Number *')).toBeTruthy();
+    expect(getByLabelText('phone-input')).toBeTruthy();
     expect(getByPlaceholderText('Password *')).toBeTruthy();
     expect(getByPlaceholderText('Confirm Password *')).toBeTruthy();
     expect(getByText('Register')).toBeTruthy();
@@ -82,10 +83,10 @@ describe('Registration Screen check', () => {
     });
   });
   it('shows error when passwords do not match', async () => {
-    const {getByPlaceholderText, getByText, queryByText} = renderRegistrationScreen();
+    const {getByLabelText, getByPlaceholderText, getByText, queryByText} = renderRegistrationScreen();
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Mamatha');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Niya;');
-    fireEvent.changeText(getByPlaceholderText('Mobile Number *'), '1234567890');
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
     fireEvent.changeText(getByPlaceholderText('Password *'), 'pass123');
     fireEvent.changeText(getByPlaceholderText('Confirm Password *'), '123');
     await act(async ()=> {
@@ -95,12 +96,12 @@ describe('Registration Screen check', () => {
     });
   });
   it('Should show error for invalid email address', async () => {
-    const {getByPlaceholderText, getByText, queryByText} = renderRegistrationScreen();
+    const {getByLabelText, getByPlaceholderText, getByText, queryByText} = renderRegistrationScreen();
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Mamatha');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Niyal');
     fireEvent.changeText(getByPlaceholderText('Email'), 'mamathagmail.com');
-    fireEvent.changeText(getByPlaceholderText('Mobile Number *'), '1234567890');
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
     fireEvent.changeText(getByPlaceholderText('Password *'), 'password123');
     fireEvent.changeText(
       getByPlaceholderText('Confirm Password *'),
@@ -115,12 +116,33 @@ describe('Registration Screen check', () => {
     });
   });
 
+  test('Should show error for invalid mobile number', async () => {
+    const {getByLabelText, getByPlaceholderText, getByText, queryByText} = renderRegistrationScreen();
+
+    fireEvent.changeText(getByPlaceholderText('First Name *'), 'Mamatha');
+    fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Niyal');
+    fireEvent.changeText(getByPlaceholderText('Email'), 'mamathagmail.com');
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 34567890');
+    fireEvent.changeText(getByPlaceholderText('Password *'), 'password123');
+    fireEvent.changeText(
+      getByPlaceholderText('Confirm Password *'),
+      'password123',
+    );
+
+    await act(async ()=> {
+      fireEvent.press(getByText('Register'));
+    });
+    await waitFor(() => {
+      expect(queryByText('Invalid mobile number')).toBeTruthy();
+    });
+  });
+
   it('Should submit the form successfully when all fields are valid', async () => {
-    const {getByPlaceholderText, getByText} = renderRegistrationScreen();
+    const {getByLabelText, getByPlaceholderText, getByText} = renderRegistrationScreen();
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Anjani');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Barlapati');
     fireEvent.changeText(getByPlaceholderText('Email'), 'anju@gmail.com');
-    fireEvent.changeText(getByPlaceholderText('Mobile Number *'), '9876543210');
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
     fireEvent.changeText(getByPlaceholderText('Password *'), '1234');
     fireEvent.changeText(getByPlaceholderText('Confirm Password *'), '1234');
     await act(async ()=> {
@@ -135,12 +157,12 @@ describe('Registration Screen check', () => {
     };
     mockRegister.mockResolvedValue(response);
 
-    const { getByPlaceholderText, getByText } = renderRegistrationScreen();
+    const { getByLabelText, getByPlaceholderText, getByText } = renderRegistrationScreen();
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
     fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
-    fireEvent.changeText(getByPlaceholderText('Mobile Number *'), '1234567890');
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
     fireEvent.changeText(getByPlaceholderText('Password *'), '1234');
     fireEvent.changeText(getByPlaceholderText('Confirm Password *'), '1234');
 
@@ -159,12 +181,12 @@ describe('Registration Screen check', () => {
     };
     mockRegister.mockResolvedValue(response);
 
-    const { getByPlaceholderText, getByText } = renderRegistrationScreen();
+    const { getByLabelText, getByPlaceholderText, getByText } = renderRegistrationScreen();
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
     fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
-    fireEvent.changeText(getByPlaceholderText('Mobile Number *'), '1234567890');
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
     fireEvent.changeText(getByPlaceholderText('Password *'), '1234');
     fireEvent.changeText(getByPlaceholderText('Confirm Password *'), '1234');
     await act(async ()=> {
@@ -178,11 +200,11 @@ describe('Registration Screen check', () => {
   it('Should give an alert with Something went wrong. Please try again message if API throws an error', async () => {
     mockRegister.mockRejectedValue(new Error('Internal server error'));
 
-    const { getByPlaceholderText, getByText } = renderRegistrationScreen();
+    const { getByLabelText, getByPlaceholderText, getByText } = renderRegistrationScreen();
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
     fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
-    fireEvent.changeText(getByPlaceholderText('Mobile Number *'), '5432123456');
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
     fireEvent.changeText(getByPlaceholderText('Password *'), '1234');
     fireEvent.changeText(getByPlaceholderText('Confirm Password *'), '1234');
     await act(async ()=> {
@@ -216,12 +238,12 @@ describe('Registration Screen check', () => {
     };
     mockRegister.mockResolvedValue(response);
 
-    const { getByPlaceholderText, getByText } = renderRegistrationScreen();
+    const { getByLabelText, getByPlaceholderText, getByText } = renderRegistrationScreen();
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
     fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
-    fireEvent.changeText(getByPlaceholderText('Mobile Number *'), '1234567890');
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
     fireEvent.changeText(getByPlaceholderText('Password *'), '1234');
     fireEvent.changeText(getByPlaceholderText('Confirm Password *'), '1234');
 
