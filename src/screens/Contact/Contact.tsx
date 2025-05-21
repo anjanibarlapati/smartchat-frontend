@@ -54,7 +54,7 @@ export function Contact(): React.JSX.Element {
           const resultantContacts = await getContactsDetails(deviceContacts, tokens.access_token);
           dispatch(setContacts(resultantContacts));
         } catch (error) {
-          Alert.alert('Something went wrong while loading contacts from device. Please try again');
+          Alert.alert('Something went wrong while fetching contacts details. Please try again');
         } finally{
           setIsLoading(false);
         }

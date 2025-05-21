@@ -85,7 +85,7 @@ describe('Contacts Screen', () => {
 
       await waitFor(() => {
         expect(Alert.alert).toHaveBeenCalledWith(
-          'Something went wrong while loading contacts from device. Please try again'
+          `Something went wrong while fetching contacts details. Please try again`
         );
       });
     });
