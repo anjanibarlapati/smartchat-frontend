@@ -11,7 +11,7 @@ const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({visible}) => {
   }
 
   return (
-    <View style={styles.overlay} testID="animation">
+    <View style={styles.overlay} accessibilityLabel="loading-animation">
       <LottieView
         source={require('../../../assets/loadingImages/loadingImage.json')}
         autoPlay
