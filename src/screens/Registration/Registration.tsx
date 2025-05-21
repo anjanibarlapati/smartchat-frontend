@@ -1,34 +1,46 @@
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import React, { useState } from 'react';
-import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import {parsePhoneNumberFromString} from 'libphonenumber-js';
+import React, {useState} from 'react';
+import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import PhoneInput from 'react-native-phone-input';
-import { useDispatch } from 'react-redux';
-import { Dispatch } from 'redux';
+import {useDispatch} from 'react-redux';
+import {Dispatch} from 'redux';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
-import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
-import { useAppTheme } from '../../hooks/appTheme';
-import LoadingScreen from '../Loading/Loading';
-import { setUserDetails } from '../../redux/reducers/user.reducer';
-import { RegistrationScreenNavigationProps } from '../../types/Navigations';
-import { InputUser } from '../../types/InputUser';
-import { UploadImage } from '../../types/UploadImage';
-import { register } from './Registration.service';
-import { getStyles } from './Registration.styles';
-import { socketConnection } from '../../utils/socket';
-import { Theme } from '../../utils/themes';
-
+import {ProfilePicturePickerModal} from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
+import {useAppTheme} from '../../hooks/appTheme';
+import LoadingIndicator from '../../components/Loading/Loading';
+import {setUserDetails} from '../../redux/reducers/user.reducer';
+import {RegistrationScreenNavigationProps} from '../../types/Navigations';
+import {InputUser} from '../../types/InputUser';
+import {UploadImage} from '../../types/UploadImage';
+import {register} from './Registration.service';
+import {getStyles} from './Registration.styles';
+import {socketConnection} from '../../utils/socket';
+import {Theme} from '../../utils/themes';
+import {String} from 'aws-sdk/clients/acm';
 
 const Registration = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();
 
-    const theme: Theme = useAppTheme();
-    const styles = getStyles(theme);
+  const theme: Theme = useAppTheme();
+  const styles = getStyles(theme);
 
-  const [showProfilePicSelectModal, setShowProfilePicSelectModal] = useState(false);
-  const [profilePic, setProfilePic] = useState<UploadImage | null | string>(null);
+  const [showProfilePicSelectModal, setShowProfilePicSelectModal] =
+    useState(false);
+  const [profilePic, setProfilePic] = useState<UploadImage | null | string>(
+    null,
+  );
   const [isLoading, setLoading] = useState(false);
   const [user, setUser] = useState<InputUser>({
     firstName: '',
@@ -49,18 +61,18 @@ const Registration = () => {
   });
 
   const handleChange = (field: string, value: string) => {
-    setUser((prevValues) => ({
-        ...prevValues,
-        [field]: value,
+    setUser(prevValues => ({
+      ...prevValues,
+      [field]: value,
     }));
-    setInputErrors((prevValues) => ({
-        ...prevValues,
-        [field]: '',
+    setInputErrors(prevValues => ({
+      ...prevValues,
+      [field]: '',
     }));
   };
 
   const setErrorMessage = (field: string, message: string) => {
-    setInputErrors((prevValues) => ({
+    setInputErrors(prevValues => ({
       ...prevValues,
       [field]: message,
     }));
@@ -88,12 +100,14 @@ const Registration = () => {
       isValid = false;
     }
     if (user.mobileNumber.trim()) {
-      const parsedPhoneNumber = parsePhoneNumberFromString(user.mobileNumber.trim());
-      if(!parsedPhoneNumber || !parsedPhoneNumber.isValid()) {
+      const parsedPhoneNumber = parsePhoneNumberFromString(
+        user.mobileNumber.trim(),
+      );
+      if (!parsedPhoneNumber || !parsedPhoneNumber.isValid()) {
         setErrorMessage('mobileNumber', 'Invalid mobile number');
         isValid = false;
       }
-    } else{
+    } else {
       setErrorMessage('mobileNumber', 'Mobile number is required');
       isValid = false;
     }
@@ -127,8 +141,8 @@ const Registration = () => {
       confirmPassword: '',
     });
   };
-  const handleRegister = async() => {
-    if(!validateFields()) {
+  const handleRegister = async () => {
+    if (!validateFields()) {
       return;
     }
     const formData = new FormData();
@@ -137,41 +151,41 @@ const Registration = () => {
     formData.append('email', user.email);
     formData.append('mobileNumber', user.mobileNumber);
     formData.append('password', user.password);
-    if(profilePic) {
+    if (profilePic) {
       formData.append('profilePicture', profilePic);
     }
 
-    try{
+    try {
       setLoading(true);
       const response = await register(formData);
       const result = await response.json();
-      if(response.ok) {
+      if (response.ok) {
         Alert.alert('You’ve successfully joined SmartChat!');
         clearFields();
         dispatch(setUserDetails(result.user));
         await EncryptedStorage.setItem(
-            result.user.mobileNumber,
-            JSON.stringify({
-              access_token: result.access_token,
-              refresh_token: result.refresh_token,
-            })
-         );
-         await EncryptedStorage.setItem(
+          result.user.mobileNumber,
+          JSON.stringify({
+            access_token: result.access_token,
+            refresh_token: result.refresh_token,
+          }),
+        );
+        await EncryptedStorage.setItem(
           'User Data',
-          JSON.stringify(result.user)
+          JSON.stringify(result.user),
         );
         socketConnection();
         navigation.reset({
           index: 0,
-          routes: [{ name: 'Tabs' }],
+          routes: [{name: 'Tabs'}],
         });
         return;
       }
       Alert.alert(result.message);
-    } catch(error) {
+    } catch (error) {
       Alert.alert('Something went wrong. Please try again');
       clearFields();
-    } finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -181,17 +195,27 @@ const Registration = () => {
     setShowProfilePicSelectModal(false);
   };
 
-  if(isLoading) {
-    return <LoadingScreen />;
-  }
-
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0} style={styles.container}>
-      <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
-        <TouchableOpacity onPress={() => {setShowProfilePicSelectModal(true);}}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
+      style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.body}
+        keyboardShouldPersistTaps="handled">
+        <TouchableOpacity
+          onPress={() => {
+            setShowProfilePicSelectModal(true);
+          }}>
           <Image
             style={styles.img}
-            source={profilePic ? typeof profilePic === 'string' ? {uri: profilePic} : {uri: profilePic.uri} : require('../../../assets/images/profileImage.png')}
+            source={
+              profilePic
+                ? typeof profilePic === 'string'
+                  ? {uri: profilePic}
+                  : {uri: profilePic.uri}
+                : require('../../../assets/images/profileImage.png')
+            }
             accessibilityLabel="profile-image"
             resizeMode="cover"
           />
@@ -200,21 +224,27 @@ const Registration = () => {
         <View style={styles.inputfields}>
           <InputField
             value={user.firstName}
-            onChangeText={(text) => { handleChange('firstName', text); }}
+            onChangeText={text => {
+              handleChange('firstName', text);
+            }}
             placeholder="First Name"
             error={inputErrors.firstName}
             required
           />
           <InputField
             value={user.lastName}
-            onChangeText={(text) => { handleChange('lastName', text); }}
+            onChangeText={text => {
+              handleChange('lastName', text);
+            }}
             placeholder="Last Name"
             error={inputErrors.lastName}
             required
           />
           <InputField
             value={user.email}
-            onChangeText={(text) => { handleChange('email', text); }}
+            onChangeText={text => {
+              handleChange('email', text);
+            }}
             placeholder="Email"
             error={inputErrors.email}
           />
@@ -224,7 +254,9 @@ const Registration = () => {
               textProps={{
                 placeholder: 'Mobile Number *',
               }}
-              onChangePhoneNumber={(text) => handleChange('mobileNumber', text)}
+              onChangePhoneNumber={(text: String) =>
+                handleChange('mobileNumber', text)
+              }
               style={styles.phoneInput}
               autoFormat
               accessibilityLabel="phone-input"
@@ -235,7 +267,9 @@ const Registration = () => {
           </View>
           <InputField
             value={user.password}
-            onChangeText={(text) => { handleChange('password', text); }}
+            onChangeText={text => {
+              handleChange('password', text);
+            }}
             placeholder="Password"
             secureTextEntry
             error={inputErrors.password}
@@ -243,7 +277,9 @@ const Registration = () => {
           />
           <InputField
             value={user.confirmPassword}
-            onChangeText={(text) => { handleChange('confirmPassword', text); }}
+            onChangeText={text => {
+              handleChange('confirmPassword', text);
+            }}
             placeholder="Confirm Password"
             secureTextEntry
             error={inputErrors.confirmPassword}
@@ -257,11 +293,13 @@ const Registration = () => {
             <Text style={styles.loginText}>Login</Text>
           </TouchableOpacity>
         </View>
-
         <Button label="Register" onPress={handleRegister} />
+        <LoadingIndicator visible={isLoading} />
         <ProfilePicturePickerModal
           isEditingProfilePicture={showProfilePicSelectModal}
-          close={() => {setShowProfilePicSelectModal(false);}}
+          close={() => {
+            setShowProfilePicSelectModal(false);
+          }}
           profilePicture={profilePic}
           setProfilePic={setProfilePic}
           remove={removePicture}
