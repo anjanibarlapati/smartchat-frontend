@@ -7,7 +7,7 @@ jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
 }));
 
-jest.mock('./encryptionKeyPairs', () => ({
+jest.mock('./keyPairs', () => ({
   getPublicKey: jest.fn(),
 }));
 
@@ -72,31 +72,11 @@ describe('Check for decryption of messages', () => {
     expect(Sodium.to_string).toHaveBeenCalledWith(mockDecrypted);
     expect(result).toBe(mockDecryptedMessage);
   });
-  it('should return null if private key is not found', async () => {
+it('should throw error if private key is not found', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
 
-    const result = await decryptMessage(
-      mockSenderNumber,
-      mockCiphertextBase64,
-      mockNonceBase64,
-      mockAccessToken,
-    );
-
-    expect(result).toBeNull();
-  });
-
-  it('Should return null if an error is thrown during the process', async () => {
-    (EncryptedStorage.getItem as jest.Mock).mockRejectedValue(
-      new Error('Storage error'),
-    );
-
-    const result = await decryptMessage(
-      mockSenderNumber,
-      mockCiphertextBase64,
-      mockNonceBase64,
-      mockAccessToken,
-    );
-
-    expect(result).toBeNull();
+    await expect(
+      decryptMessage(mockSenderNumber, mockCiphertextBase64, mockNonceBase64, mockAccessToken),
+    ).rejects.toThrow('Unable to decrypt message');
   });
 });
