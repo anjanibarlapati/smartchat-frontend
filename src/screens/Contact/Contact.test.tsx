@@ -41,8 +41,8 @@ jest.mock('react-native-encrypted-storage', () => ({
 }));
 
 const mockContacts = [
-  { name: 'Anjani', mobileNumber: '8639523822', doesHaveAccount: true, profilePicture: '/image.jpg' },
-  { name: 'Anj', mobileNumber: '8639523823', doesHaveAccount: false, profilePicture: null},
+  { name: 'Anjani', mobileNumber: '+91 8639523822', doesHaveAccount: true, profilePicture: '/image.jpg' },
+  { name: 'Anj', mobileNumber: '+91 8639523823', doesHaveAccount: false, profilePicture: null},
 ];
 
 
