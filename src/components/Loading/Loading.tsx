@@ -1,6 +1,6 @@
-import {getStyles} from './Loading.styles.ts';
 import LottieView from 'lottie-react-native';
 import {View} from 'react-native';
+import {getStyles} from './Loading.styles.ts';
 interface LoadingIndicatorProps {
   visible: boolean;
 }

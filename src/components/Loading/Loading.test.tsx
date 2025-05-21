@@ -1,8 +1,8 @@
 import React from 'react';
-import {render} from '@testing-library/react-native';
-import {store} from '../../redux/store.ts';
 import {Provider} from 'react-redux';
+import {render} from '@testing-library/react-native';
 import LoadingIndicator from './Loading.tsx';
+import {store} from '../../redux/store.ts';
 
 describe('LoadingIndicator', () => {
   it('Should render nothing when visible is false', () => {

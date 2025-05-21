@@ -9,18 +9,18 @@ import {
   View,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {useAppTheme} from '../../hooks/appTheme';
 import {getStyles} from './ProfileInfoTile.styles';
-import {storeState} from '../../redux/store';
 import {setUserProperty} from '../../redux/reducers/user.reducer';
+import {storeState} from '../../redux/store';
 import {updateProfileDetails} from '../../screens/Profile/Profile.services';
+import {RootStackParamList} from '../../types/Navigations';
 import {User} from '../../types/User';
 import {getTokens} from '../../utils/getTokens';
 import {Properties} from '../../utils/Properties';
 import {Theme} from '../../utils/themes';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {RootStackParamList} from '../../types/Navigations';
 interface ProfileInfoTileProps {
   label: string;
   value: string;
