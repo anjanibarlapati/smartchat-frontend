@@ -5,20 +5,20 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import { useNavigation } from '@react-navigation/native';
 import PhoneInput from 'react-native-phone-input';
 import { useDispatch } from 'react-redux';
+import { Dispatch } from 'redux';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
 import { useAppTheme } from '../../hooks/appTheme';
 import LoadingScreen from '../Loading/Loading';
 import { setUserDetails } from '../../redux/reducers/user.reducer';
+import { RegistrationScreenNavigationProps } from '../../types/Navigations';
+import { InputUser } from '../../types/InputUser';
+import { UploadImage } from '../../types/UploadImage';
 import { register } from './Registration.service';
 import { getStyles } from './Registration.styles';
-import { InputUser } from '../../types/InputUser';
-import { RegistrationScreenNavigationProps } from '../../types/Navigations';
-import { UploadImage } from '../../types/UploadImage';
-import { Dispatch } from 'redux';
-import { Theme } from '../../utils/themes';
 import { socketConnection } from '../../utils/socket';
+import { Theme } from '../../utils/themes';
 
 
 const Registration = () => {

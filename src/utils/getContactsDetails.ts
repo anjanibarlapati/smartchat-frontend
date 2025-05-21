@@ -1,8 +1,8 @@
+import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js';
 import { Contact } from 'react-native-contacts';
+import * as RNLocalize from 'react-native-localize';
 import { fetchContacts } from '../screens/Contact/Contact.service';
 import { Contact as ContactType, UserContact } from '../types/Contacts';
-import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js';
-import * as RNLocalize from 'react-native-localize';
 
 const defaultCountryCode = RNLocalize.getCountry() as CountryCode || 'IN';
 
