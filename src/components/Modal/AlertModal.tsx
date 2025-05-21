@@ -39,11 +39,11 @@ export const AlertModal = ({
             <Text style={styles.message}>{message}</Text>
             <View style={styles.buttonContainer}>
               <TouchableOpacity
-                onPress={onCancel}>
+                onPress={onCancel} style={styles.cancelTextContainer}>
                 <Text style={styles.cancelText}>{cancelText}</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={onConfirm}>
+                onPress={onConfirm} style={styles.confirmTextContainer}>
                 <Text style={styles.confirmText}>{confirmText}</Text>
               </TouchableOpacity>
             </View>
