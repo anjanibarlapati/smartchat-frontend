@@ -67,6 +67,13 @@ describe('getContactsDetails', () => {
     mockFetchContacts.mockReset();
   });
 
+  it('should throw an error if fetching contact details', async () => {
+    mockFetchContacts.mockRejectedValue(new Error('Something went wrong'));
+    await expect(getContactsDetails(mockContacts, mockAccessToken)).rejects.toThrow(
+      'Something went wrong while fetching contacts details'
+    );
+  });
+
   it('should return account details and profile picture if contact is registered', async () => {
     mockFetchContacts.mockResolvedValueOnce({
       json: jest.fn().mockResolvedValue(mockResponseData),
