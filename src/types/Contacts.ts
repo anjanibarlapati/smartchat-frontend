@@ -1,8 +1,11 @@
-export type Contact = {
-  name: string;
+export type UserContact = {
   mobileNumber: string;
-  doesHaveAccount: boolean,
-  profilePicture: string | null
+  doesHaveAccount: boolean;
+  profilePicture: string | null;
+}
+
+export type Contact = UserContact & {
+  name: string;
 }
 
 export type Contacts = {

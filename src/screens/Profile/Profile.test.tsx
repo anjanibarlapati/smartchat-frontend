@@ -44,8 +44,7 @@ const mockUser: User = {
         lastName: 'Kumar',
         email: 'varun@gmail.com',
         profilePicture: 'imagelink',
-        countryCode: '+91',
-        mobileNumber: '6303522765',
+        mobileNumber: '+91 6303522765',
 };
 
 jest.mock('react-redux', () => ({

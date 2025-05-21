@@ -55,12 +55,12 @@ describe('Login Screen check', ()=>{
       expect(getByLabelText('appLogo')).toBeTruthy();
     });
     test('Should render input fields', ()=>{
-      const {getByPlaceholderText, getByText} = renderLoginScreen();
-      expect(getByPlaceholderText('Mobile Number')).toBeTruthy();
+      const { getByLabelText, getByPlaceholderText, getByText} = renderLoginScreen();
+      expect(getByLabelText('phone-input')).toBeTruthy();
       expect(getByPlaceholderText('Password')).toBeTruthy();
       expect(getByText('Login')).toBeTruthy();
     });
-    test('Should show validattion errors when fileds are empty', async()=>{
+    test('Should show validation errors when fileds are empty', async()=>{
       const{getByText, queryByText} = renderLoginScreen();
         fireEvent.press(getByText('Login'));
             await waitFor(() => {
@@ -68,9 +68,19 @@ describe('Login Screen check', ()=>{
               expect(queryByText('Password is required')).toBeTruthy();
             });
     });
+
+    test('Should show error for invalid mobile number', async () => {
+      const { getByLabelText, getByText, getByPlaceholderText, queryByText } = renderLoginScreen();
+      fireEvent.changeText(getByLabelText('phone-input'), '+91 34567890');
+      fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
+      fireEvent.press(getByText('Login'));
+      await waitFor(() => {
+        expect(queryByText('Invalid mobile number')).toBeTruthy();
+      });
+    });
     test('Should not show errors for valid inputs', async () => {
-      const { getByText, getByPlaceholderText, queryByText } = renderLoginScreen();
-      fireEvent.changeText(getByPlaceholderText('Mobile Number'), '1234567890');
+      const { getByLabelText, getByText, getByPlaceholderText, queryByText } = renderLoginScreen();
+      fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
       fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
       fireEvent.press(getByText('Login'));
       await waitFor(() => {
@@ -85,8 +95,8 @@ describe('Login Screen check', ()=>{
         json: async () => ({ message: 'Login Successful' }),
       };
       mockRegister.mockResolvedValue(response);
-      const { getByPlaceholderText, getByText } = renderLoginScreen();
-      fireEvent.changeText(getByPlaceholderText('Mobile Number'), '1234567890');
+      const { getByLabelText, getByPlaceholderText, getByText } = renderLoginScreen();
+      fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
       fireEvent.changeText(getByPlaceholderText('Password'), '1234');
       await act(async ()=> {
         fireEvent.press(getByText('Login'));
@@ -101,8 +111,8 @@ describe('Login Screen check', ()=>{
         json: async () => ({ message: 'User do not exist' }),
       };
       mockRegister.mockResolvedValue(response);
-      const { getByPlaceholderText, getByText } = renderLoginScreen();
-      fireEvent.changeText(getByPlaceholderText('Mobile Number'), '1234567890');
+      const { getByLabelText, getByPlaceholderText, getByText } = renderLoginScreen();
+      fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
       fireEvent.changeText(getByPlaceholderText('Password'), '1234');
       await act(async ()=> {
         fireEvent.press(getByText('Login'));
@@ -113,8 +123,8 @@ describe('Login Screen check', ()=>{
     });
     it('Should give an alert with Something went wrong. Please try again message if API throws an error', async () => {
       mockRegister.mockRejectedValue(new Error('Internal server error'));
-      const { getByPlaceholderText, getByText } = renderLoginScreen();
-      fireEvent.changeText(getByPlaceholderText('Mobile Number'), '5432123456');
+      const { getByLabelText, getByPlaceholderText, getByText } = renderLoginScreen();
+      fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
       fireEvent.changeText(getByPlaceholderText('Password'), '1234');
       await act(async ()=> {
         fireEvent.press(getByText('Login'));
@@ -145,8 +155,8 @@ describe('Login Screen check', ()=>{
         }),
       };
       mockRegister.mockResolvedValue(response);
-      const { getByPlaceholderText, getByText } = renderLoginScreen();
-      fireEvent.changeText(getByPlaceholderText('Mobile Number'), '1234567890');
+      const { getByLabelText, getByPlaceholderText, getByText } = renderLoginScreen();
+      fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
       fireEvent.changeText(getByPlaceholderText('Password'), '1234');
       await act(async ()=> {
         fireEvent.press(getByText('Login'));

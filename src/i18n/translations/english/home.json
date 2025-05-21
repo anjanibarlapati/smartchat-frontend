@@ -51,7 +51,7 @@
   "Failed to load user from storage": "Failed to load user from storage",
   "Something went wrong!": "Something went wrong!",
   "Permission for contacts was denied": "Permission for contacts was denied",
-  "Something went wrong while loading contacts from device. Please try again": "Something went wrong while loading contacts from device. Please try again",
+  "Something went wrong while fetching contacts details. Please try again": "Something went wrong while fetching contacts details. Please try again",
   "Add your friends to contacts and invite them to SmartChat": "Add your friends to contacts and invite them to SmartChat",
   "Invite your contacts to SmartChat and start your conversations": "Invite your contacts to SmartChat and start your conversations",
   "All your contacts are on SmartChat. Continue your conversations with them": "All your contacts are on SmartChat. Continue your conversations with them",

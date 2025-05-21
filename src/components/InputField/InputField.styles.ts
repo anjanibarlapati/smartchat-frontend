@@ -12,7 +12,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
       backgroundColor: theme.primaryInputBackground,
       borderWidth: 1,
       borderRadius: 5,
-      paddingLeft: 10,
+      paddingHorizontal: 10,
       fontFamily:'Nunito-Regular',
     },
     errorText: {
