@@ -1,25 +1,31 @@
-
-import React, { useState } from 'react';
-import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, {useState} from 'react';
+import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
-import { useDispatch } from 'react-redux';
-import { Dispatch } from 'redux';
+import {useDispatch} from 'react-redux';
+import {Dispatch} from 'redux';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
-import LoadingScreen from '../Loading/Loading';
-import { login } from './Login.service';
-import { getStyles } from './Login.styles';
-import { setUserDetails } from '../../redux/reducers/user.reducer';
-import { Credentials } from '../../types/Credentials';
-import { RegistrationScreenNavigationProps } from '../../types/Navigations';
-import { useAppTheme } from '../../hooks/appTheme';
-import { Theme } from '../../utils/themes';
-import { socketConnection } from '../../utils/socket';
+import LoadingIndicator from '../../components/Loading/Loading';
+import {login} from './Login.service';
+import {getStyles} from './Login.styles';
+import {setUserDetails} from '../../redux/reducers/user.reducer';
+import {Credentials} from '../../types/Credentials';
+import {RegistrationScreenNavigationProps} from '../../types/Navigations';
+import {useAppTheme} from '../../hooks/appTheme';
+import {Theme} from '../../utils/themes';
+import {socketConnection} from '../../utils/socket';
 import parsePhoneNumberFromString from 'libphonenumber-js';
-
-
 
 const LoginScreen = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();
@@ -27,7 +33,10 @@ const LoginScreen = () => {
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme);
 
-  const [credentials, setCredentials] = useState<Credentials>({ mobileNumber: '', password: '' });
+  const [credentials, setCredentials] = useState<Credentials>({
+    mobileNumber: '',
+    password: '',
+  });
   const [errors, setErrors] = useState<Credentials>({
     mobileNumber: '',
     password: '',
@@ -37,34 +46,35 @@ const LoginScreen = () => {
   const dispatch: Dispatch = useDispatch();
 
   const handleChange = (field: string, value: string) => {
-    setCredentials((prevValues) => ({
-        ...prevValues,
-        [field]: value,
+    setCredentials(prevValues => ({
+      ...prevValues,
+      [field]: value,
     }));
-    setErrors((prevValues) => ({
-        ...prevValues,
-        [field]: '',
+    setErrors(prevValues => ({
+      ...prevValues,
+      [field]: '',
     }));
   };
 
   const setErrorMessage = (field: string, message: string) => {
-    setErrors((prevValues) => ({
+    setErrors(prevValues => ({
       ...prevValues,
       [field]: message,
     }));
   };
 
-
   const validateForm = () => {
     let isValid = true;
 
     if (credentials.mobileNumber.trim()) {
-      const parsedPhoneNumber = parsePhoneNumberFromString(credentials.mobileNumber.trim());
-      if(!parsedPhoneNumber || !parsedPhoneNumber.isValid()) {
+      const parsedPhoneNumber = parsePhoneNumberFromString(
+        credentials.mobileNumber.trim(),
+      );
+      if (!parsedPhoneNumber || !parsedPhoneNumber.isValid()) {
         setErrorMessage('mobileNumber', 'Invalid mobile number');
         isValid = false;
       }
-    } else{
+    } else {
       setErrorMessage('mobileNumber', 'Mobile number is required');
       isValid = false;
     }
@@ -74,7 +84,6 @@ const LoginScreen = () => {
     }
     return isValid;
   };
-
 
   const clearFields = () => {
     setCredentials({
@@ -89,71 +98,65 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     if (!validateForm()) {
-        return;
+      return;
     }
-    try{
+    try {
       setLoading(true);
       const response = await login(credentials);
       const result = await response.json();
-      if(response.ok) {
+      if (response.ok) {
         Alert.alert('You’ve successfully logged in to SmartChat!');
         clearFields();
         dispatch(setUserDetails(result.user));
         await EncryptedStorage.setItem(
-            result.user.mobileNumber,
-            JSON.stringify({
-              access_token: result.access_token,
-              refresh_token: result.refresh_token,
-            })
+          result.user.mobileNumber,
+          JSON.stringify({
+            access_token: result.access_token,
+            refresh_token: result.refresh_token,
+          }),
         );
         await EncryptedStorage.setItem(
           'User Data',
-          JSON.stringify(result.user)
+          JSON.stringify(result.user),
         );
         socketConnection();
         navigation.reset({
           index: 0,
-          routes: [{ name: 'Tabs' }],
+          routes: [{name: 'Tabs'}],
         });
         return;
       }
       Alert.alert(result.message);
-      } catch(error) {
-        Alert.alert('Something went wrong. Please try again');
-        clearFields();
-      } finally{
-        setLoading(false);
+    } catch (error) {
+      Alert.alert('Something went wrong. Please try again');
+      clearFields();
+    } finally {
+      setLoading(false);
     }
   };
-
-  if(isLoading) {
-    return <LoadingScreen />;
-  }
-
-
   return (
-  <KeyboardAvoidingView
-    style={styles.container}
-    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
-  >
-    <ScrollView
-      contentContainerStyle={styles.scrollContainer}
-      keyboardShouldPersistTaps="handled"
-    >
-      <Image
-        style={styles.logoStyles}
-        source={require('../../../assets/images/Applogo.png')}
-        accessibilityLabel="appLogo"
-      />
-      <View style={styles.inputfields}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled">
+        <Image
+          style={styles.logoStyles}
+          source={require('../../../assets/images/Applogo.png')}
+          accessibilityLabel="appLogo"
+        />
+        <View style={styles.inputfields}>
           <View style={styles.phoneInputWrapper}>
             <PhoneInput
               initialCountry="in"
               textProps={{
                 placeholder: 'Mobile Number',
               }}
-              onChangePhoneNumber={(text: string) => handleChange('mobileNumber', text)}
+              onChangePhoneNumber={(text: string) =>
+                handleChange('mobileNumber', text)
+              }
               style={styles.phoneInput}
               autoFormat
               accessibilityLabel="phone-input"
@@ -162,23 +165,25 @@ const LoginScreen = () => {
               <Text style={styles.errorText}>{errors.mobileNumber}</Text>
             ) : null}
           </View>
-        <InputField
-          value={credentials.password}
-          onChangeText={(text) => handleChange('password', text)}
-          placeholder="Password"
-          secureTextEntry
-          error={errors.password}
-        />
-      </View>
-      <Button label="Login" onPress={handleLogin}/>
-      <View style={styles.registerView}>
-        <Text style={styles.text}>Don't have an account ?</Text>
-        <TouchableOpacity onPress={() => navigation.replace('RegistrationScreen')}>
-          <Text style={styles.registerText}>Register</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
-  </KeyboardAvoidingView>
+          <InputField
+            value={credentials.password}
+            onChangeText={text => handleChange('password', text)}
+            placeholder="Password"
+            secureTextEntry
+            error={errors.password}
+          />
+        </View>
+        <Button label="Login" onPress={handleLogin} />
+        <LoadingIndicator visible={isLoading} />
+        <View style={styles.registerView}>
+          <Text style={styles.text}>Don't have an account ?</Text>
+          <TouchableOpacity
+            onPress={() => navigation.replace('RegistrationScreen')}>
+            <Text style={styles.registerText}>Register</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
