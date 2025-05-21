@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import Registration from './Registration';
 import * as RegistrationHandler from './Registration.service';
 import { store } from '../../redux/store';
-import { expect } from '@jest/globals';
 
 
 jest.mock('../../utils/openCamera', () => ({
