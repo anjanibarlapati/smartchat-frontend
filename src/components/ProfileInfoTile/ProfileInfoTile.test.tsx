@@ -123,7 +123,22 @@ describe('Tests related to the Profile Info Tile component', () => {
                 setUserProperty({ property: 'firstName', value: 'Virat' })
             );
             expect(EncryptedStorage.setItem).toHaveBeenCalled();
-            expect(Alert.alert).toHaveBeenCalledWith(`Updated First Name successfuly`);
+            expect(Alert.alert).toHaveBeenCalledWith(`Updated first name successfully`);
+        });
+    });
+    it('Should update password, dispatch action, set encrypted storage on success and show alert', async () => {
+        (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'access-token' });
+        (ProfileServices.updateProfileDetails as jest.Mock).mockResolvedValue({ ok: true });
+        renderUI('Change Password', 'Varun', 'Change Password');
+        const passwordValue = screen.getByPlaceholderText('Varun');
+        fireEvent.changeText(passwordValue, 'Virat');
+        fireEvent.press(screen.getByLabelText('edit'));
+        await waitFor(() => {
+            expect(mockDispatch).toHaveBeenCalledWith(
+                setUserProperty({ property: 'password', value: 'Virat' })
+            );
+            expect(EncryptedStorage.setItem).toHaveBeenCalled();
+            expect(Alert.alert).toHaveBeenCalledWith(`Updated password successfully`);
         });
     });
     it('Should not update the user details if response is not ok', async () => {

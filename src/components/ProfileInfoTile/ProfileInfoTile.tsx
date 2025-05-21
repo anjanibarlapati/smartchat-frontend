@@ -89,7 +89,11 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
           'User Data',
           JSON.stringify(updatedUser),
         );
-        Alert.alert(`Updated ${props.label} successfuly`);
+        if(props.label === 'Change Password') {
+          Alert.alert('Updated password successfully');
+        } else {
+          Alert.alert(`Updated ${props.label.toLowerCase()} successfully`);
+        }
       }
       props.setEditField('');
     } catch (error) {
