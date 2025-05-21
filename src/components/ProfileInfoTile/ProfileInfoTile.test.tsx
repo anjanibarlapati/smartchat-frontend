@@ -45,6 +45,7 @@ describe('Tests related to the Profile Info Tile component', () => {
     const defaultProps = {
         image: require('../../../assets/icons/user-icon.png'),
         setEditField: jest.fn(),
+        setLoading: jest.fn(),
     };
     const mockReset = jest.fn();
     beforeEach(() => {
@@ -163,6 +164,7 @@ describe('Tests related to the Profile Info Tile component', () => {
 
     it('Should cancel editing when close button is pressed', async () => {
         const setEditFieldMock = jest.fn();
+        const setLoading = jest.fn();
         render(
             <NavigationContainer>
                 <Provider store={store}>
@@ -171,6 +173,7 @@ describe('Tests related to the Profile Info Tile component', () => {
                         value="Varun"
                         editField="First Name"
                         setEditField={setEditFieldMock}
+                        setLoading={setLoading}
                         image={require('../../../assets/icons/user-icon.png')}
                     />
                 </Provider>
