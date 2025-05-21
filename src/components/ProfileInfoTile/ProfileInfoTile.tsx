@@ -1,24 +1,33 @@
-import { useState } from 'react';
-import { Alert, Image, ImageSourcePropType, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {useState} from 'react';
+import {
+  Alert,
+  Image,
+  ImageSourcePropType,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useDispatch, useSelector } from 'react-redux';
-import { useAppTheme } from '../../hooks/appTheme';
-import { getStyles } from './ProfileInfoTile.styles';
-import { storeState } from '../../redux/store';
-import { setUserProperty } from '../../redux/reducers/user.reducer';
-import { updateProfileDetails } from '../../screens/Profile/Profile.services';
-import { User } from '../../types/User';
-import { getTokens } from '../../utils/getTokens';
-import { Properties } from '../../utils/Properties';
-import { Theme } from '../../utils/themes';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from '../../types/Navigations';
+import {useDispatch, useSelector} from 'react-redux';
+import {useAppTheme} from '../../hooks/appTheme';
+import {getStyles} from './ProfileInfoTile.styles';
+import {storeState} from '../../redux/store';
+import {setUserProperty} from '../../redux/reducers/user.reducer';
+import {updateProfileDetails} from '../../screens/Profile/Profile.services';
+import {User} from '../../types/User';
+import {getTokens} from '../../utils/getTokens';
+import {Properties} from '../../utils/Properties';
+import {Theme} from '../../utils/themes';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../../types/Navigations';
 interface ProfileInfoTileProps {
   label: string;
   value: string;
   image: ImageSourcePropType;
   editField: string;
   setEditField: React.Dispatch<React.SetStateAction<string>>;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
@@ -30,57 +39,84 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
   const dispatch = useDispatch();
   const [newValue, setValue] = useState('');
   const isEdit = props.editField === props.label;
+  const setLoading = props.setLoading;
 
-  const updateDetails = async() => {
-    if(!newValue.trim() || newValue.trim() === props.value) {
+  const updateDetails = async () => {
+    if (!newValue.trim() || newValue.trim() === props.value) {
       Alert.alert('Give appropriate value');
       return;
     }
-    if(props.label === 'Email' && !/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/.test(newValue)) {
+    if (
+      props.label === 'Email' &&
+      !/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/.test(newValue)
+    ) {
       Alert.alert('Invalid email format');
       setValue('');
       return;
     }
-    const field = Properties[props.label as keyof typeof Properties] as keyof User;
+    const field = Properties[
+      props.label as keyof typeof Properties
+    ] as keyof User;
     const tokens = await getTokens(userDetails.mobileNumber);
-    if(!tokens) {
-        await EncryptedStorage.clear();
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'WelcomeScreen' }],
-        });
-        return;
+    if (!tokens) {
+      await EncryptedStorage.clear();
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'WelcomeScreen'}],
+      });
+      return;
     }
-    try{
-      const response = await updateProfileDetails(field, newValue, userDetails.mobileNumber, tokens.access_token);
-      if(response.ok) {
+    try {
+      setLoading(true);
+      const response = await updateProfileDetails(
+        field,
+        newValue,
+        userDetails.mobileNumber,
+        tokens.access_token,
+      );
+      if (response.ok) {
         const updatedUser = {
-            ...userDetails,
-            [field]: newValue,
+          ...userDetails,
+          [field]: newValue,
         };
-        dispatch(setUserProperty({
+        dispatch(
+          setUserProperty({
             property: field,
             value: newValue,
-        }));
-        await EncryptedStorage.setItem('User Data', JSON.stringify(updatedUser));
+          }),
+        );
+        await EncryptedStorage.setItem(
+          'User Data',
+          JSON.stringify(updatedUser),
+        );
         Alert.alert(`Updated ${props.label} successfuly`);
-
       }
       props.setEditField('');
-    } catch(error) {
+    } catch (error) {
       Alert.alert('Something went wrong while updating. Please try again');
+    } finally {
+      setLoading(false);
     }
-
   };
 
   return (
     <View style={styles.box}>
-      <Image source={props.image} resizeMode="contain" style={styles.image} accessibilityLabel={props.label} />
+      <Image
+        source={props.image}
+        resizeMode="contain"
+        style={styles.image}
+        accessibilityLabel={props.label}
+      />
       <View style={styles.fieldBox}>
         <View style={styles.detailBox}>
           <Text style={styles.headerText}>{props.label}</Text>
           {!isEdit ? (
-            <Text style={styles.valueText} ellipsizeMode="tail" numberOfLines={1}>{props.value}</Text>
+            <Text
+              style={styles.valueText}
+              ellipsizeMode="tail"
+              numberOfLines={1}>
+              {props.value}
+            </Text>
           ) : (
             <View style={styles.editTileBox}>
               <TextInput
@@ -92,7 +128,10 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
                 style={styles.inputBox}
               />
               <View style={styles.statusBox}>
-                <TouchableOpacity onPress={() => {updateDetails();}}>
+                <TouchableOpacity
+                  onPress={() => {
+                    updateDetails();
+                  }}>
                   <Image
                     source={require('../../../assets/icons/tick.png')}
                     resizeMode="contain"
@@ -116,14 +155,19 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
             </View>
           )}
         </View>
-        { props.label !== 'Contact' && !isEdit && <TouchableOpacity
+        {props.label !== 'Contact' && !isEdit && (
+          <TouchableOpacity
             onPress={() => {
-                props.setEditField(props.label);
-                setValue('');
+              props.setEditField(props.label);
+              setValue('');
             }}>
-            <Image source={require('../../../assets/icons/edit-text-icon.png')} style={styles.editTextIcon} accessibilityLabel="edit-text"/>
+            <Image
+              source={require('../../../assets/icons/edit-text-icon.png')}
+              style={styles.editTextIcon}
+              accessibilityLabel="edit-text"
+            />
           </TouchableOpacity>
-        }
+        )}
       </View>
     </View>
   );
