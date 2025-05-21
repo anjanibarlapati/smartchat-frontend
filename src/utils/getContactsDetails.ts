@@ -19,7 +19,8 @@ function normalizeNumber(number: string): string | null {
 
 
 export const getContactsDetails = async (contacts: Contact[], access_token: string) => {
-      const deviceContacts = contacts.flatMap(contact => {
+    try {
+        const deviceContacts = contacts.flatMap(contact => {
         const name = `${contact.givenName} ${contact.middleName} ${contact.familyName}`.trim();
         return (contact.phoneNumbers || []).map(phone => {
             const normalizedPhoneNumber = normalizeNumber(phone.number);
@@ -47,4 +48,7 @@ export const getContactsDetails = async (contacts: Contact[], access_token: stri
           };
       });
       return resultantContacts;
+    } catch(error) {
+      throw new Error('Something went wrong while fetching contacts details');
+    }
 };
