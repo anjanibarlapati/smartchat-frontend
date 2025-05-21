@@ -51,7 +51,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     width: 30,
   },
   deleteImg: {
-    height: 28,
+    height: 26,
     width: 28,
   },
   deleteText: {
