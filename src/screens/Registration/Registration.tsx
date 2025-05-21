@@ -28,7 +28,6 @@ import {register} from './Registration.service';
 import {getStyles} from './Registration.styles';
 import {socketConnection} from '../../utils/socket';
 import {Theme} from '../../utils/themes';
-import {String} from 'aws-sdk/clients/acm';
 
 const Registration = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();
@@ -254,7 +253,7 @@ const Registration = () => {
               textProps={{
                 placeholder: 'Mobile Number *',
               }}
-              onChangePhoneNumber={(text: String) =>
+              onChangePhoneNumber={(text: string) =>
                 handleChange('mobileNumber', text)
               }
               style={styles.phoneInput}
