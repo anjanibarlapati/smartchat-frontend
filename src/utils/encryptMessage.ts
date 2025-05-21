@@ -38,7 +38,6 @@ export const encryptMessage = async (
       nonce: Sodium.to_base64(nonce),
     };
   } catch (error) {
-    console.error(error);
-    return null;
+    throw new Error('Unable to encrypt message');
   }
 };
