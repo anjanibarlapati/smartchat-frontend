@@ -41,7 +41,6 @@ export const decryptMessage = async (
 
     return decryptedMessage;
   } catch (error) {
-    console.error('Decryption failed:', error);
-    return null;
+    throw new Error('Unable to decrypt message');
   }
 };
