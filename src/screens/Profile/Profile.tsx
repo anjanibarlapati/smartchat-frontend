@@ -214,7 +214,7 @@ export const Profile = (): React.JSX.Element => {
           <ProfileInfoTile
             label={'Last Name'}
             value={userDetails.lastName}
-            image={require('../../../assets/icons/user-icon.png')}
+            image={require('../../../assets/icons/last-name-icon.png')}
             editField={editField}
             setEditField={setEditField}
           />
