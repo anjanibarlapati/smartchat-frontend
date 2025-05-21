@@ -20,6 +20,7 @@ export const LightTheme = {
   senderMessageBox: '#9FD4D4',
   receiverMessageBox:'white',
   timestamp : 'rgb(98, 98, 98)',
+  alertButtonBackground: 'rgb(215, 41, 41)',
   images: {
     camera: require('../../assets/icons/camera-icon.png'),
     gallery: require('../../assets/icons/gallery-icon.png'),
@@ -61,6 +62,7 @@ export const DarkTheme = {
   senderMessageBox: 'rgb(29, 157, 157)',
   receiverMessageBox: 'gray',
   timestamp :'white',
+  alertButtonBackground: 'rgba(231, 44, 44, 0.84)',
   images: {
     camera: require('../../assets/icons/camera-icon-dark-theme.png'),
     gallery: require('../../assets/icons/gallery-icon-dark-theme.png'),
