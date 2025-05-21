@@ -67,11 +67,16 @@
   "Sign out": "సైన్ అవుట్ చేయండి",
   "Do you want to sign out?": "మీరు సైన్ అవుట్ చేయాలనుకుంటున్నారా?",
   "Do you really want to delete your account?": "మీరు నిజంగా మీ ఖాతాను తొలగించాలనుకుంటున్నారా?",
-  "firstName, First name is required": "మొదటి పేరు, మొదటి పేరు అవసరం",
-  "lastName, Last name is required": "lastName, Last name is required",
-  "mobileNumber, Mobile number is required": "మొబైల్ నంబర్, మొబైల్ నంబర్ అవసరం",
-  "password, Password is required": "పాస్‌వర్డ్, పాస్‌వర్డ్ అవసరం",
-  "confirmPassword, Passwords do not match": "పాస్‌వర్డ్‌ను నిర్ధారించండి, పాస్‌వర్డ్‌లు సరిపోలడం లేదు",
+  "First name is required": "మొదటి పేరు తప్పనిసరిగా అవసరం",
+  "Last name is required": "చివరి పేరు తప్పనిసరిగా ఇవ్వాలి",
+  "Mobile number is required": "మొబైల్ నంబర్ తప్పనిసరిగా అవసరం",
+  "Password is required": "పాస్‌వర్డ్ తప్పనిసరిగా అవసరం",
+  "Passwords do not match": "పాస్‌వర్డ్‌లు సరిపోలడం లేదు",
   "Let's chat on SmartChat! It's a fast, simple, and secure app we can use to message each other for free.": "స్మార్ట్‌చాట్‌లో చాట్ చేద్దాం! ఇది వేగవంతమైన, సరళమైన మరియు సురక్షితమైన యాప్, మనం ఒకరికొకరు ఉచితంగా సందేశాలు పంపుకోవడానికి ఉపయోగించవచ్చు.",
-  "Permission denied, SMS permission is required to send invites.": "అనుమతి నిరాకరించబడింది, ఆహ్వానాలను పంపడానికి SMS అనుమతి అవసరం."
+  "Permission denied, SMS permission is required to send invites.": "అనుమతి నిరాకరించబడింది, ఆహ్వానాలను పంపడానికి SMS అనుమతి అవసరం.",
+  "Updated first name successfully": "మొదటి పేరును విజయవంతంగా నవీకరించారు",
+  "Updated last name successfully": "చివరి పేరును విజయవంతంగా నవీకరించారు",
+  "Updated email successfully": "ఇమెయిల్‌ను విజయవంతంగా నవీకరించారు",
+  "Updated password successfully": "పాస్‌వర్డ్‌ను విజయవంతంగా నవీకరించారు"
+
 }

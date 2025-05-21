@@ -67,11 +67,16 @@
   "Sign out": "Sign out",
   "Do you want to sign out?": "Do you want to sign out?",
   "Do you really want to delete your account?": "Do you really want to delete your account?",
-  "firstName', First name is required": "'firstName', 'First name is required'",
-  "lastName', Last name is required": "'lastName', 'Last name is required'",
-  "mobileNumber, Mobile number is required": "'mobileNumber', 'Mobile number is required'",
-  "password, Password is required": "'password', 'Password is required'",
-  "confirmPassword, Passwords do not match": "'confirmPassword', 'Passwords do not match'",
+  "First name is required": "First name is required",
+  "Last name is required": "Last name is required",
+  "Mobile number is required": "Mobile number is required",
+  "password, Password is required": "'password', 'Password is required",
+  "Passwords do not match": "'Passwords do not match",
   "Let's chat on SmartChat! It's a fast, simple, and secure app we can use to message each other for free.": "Let's chat on SmartChat! It's a fast, simple, and secure app we can use to message each other for free.",
-  "Permission denied, SMS permission is required to send invites.": "Permission denied, SMS permission is required to send invites."
+  "Permission denied, SMS permission is required to send invites.": "Permission denied, SMS permission is required to send invites.",
+  "Updated first name successfully": "Updated first name successfully",
+  "Updated last name successfully": "Updated last name successfully",
+  "Updated email successfully": "Updated email successfully",
+  "Updated password successfully": "Updated password successfully"
+
 }
