@@ -1,21 +1,21 @@
 import React, {useEffect, useState} from 'react';
-import {getStyles} from './Contact.styles';
 import {Alert, FlatList, Text, TouchableOpacity, View} from 'react-native';
-import {Theme} from '../../utils/themes';
-import {useAppTheme} from '../../hooks/appTheme';
-import {ContactCard} from '../../components/ContactCard/ContactCard.tsx';
-import {useDispatch, useSelector} from 'react-redux';
-import {requestPermission} from '../../permissions/permissions.ts';
 import Contacts from 'react-native-contacts';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+import {ContactCard} from '../../components/ContactCard/ContactCard.tsx';
+import LoadingIndicator from '../../components/Loading/Loading.tsx';
+import {getStyles} from './Contact.styles';
+import {useAppTheme} from '../../hooks/appTheme';
+import {requestPermission} from '../../permissions/permissions.ts';
 import {setContacts} from '../../redux/reducers/contacts.reducer.ts';
 import {storeState} from '../../redux/store.ts';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import {Contact as ContactType} from '../../types/Contacts.ts';
+import {RootStackParamList} from '../../types/Navigations.ts';
 import {getContactsDetails} from '../../utils/getContactsDetails.ts';
 import {getTokens} from '../../utils/getTokens.ts';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {RootStackParamList} from '../../types/Navigations.ts';
-import LoadingIndicator from '../../components/Loading/Loading.tsx';
+import {Theme} from '../../utils/themes';
 
 export function Contact(): React.JSX.Element {
   const theme: Theme = useAppTheme();
