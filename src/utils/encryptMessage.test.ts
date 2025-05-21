@@ -7,7 +7,7 @@ jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
 }));
 
-jest.mock('./encryptionKeyPairs', () => ({
+jest.mock('./keyPairs', () => ({
   getPublicKey: jest.fn(),
 }));
 
@@ -75,25 +75,11 @@ describe('Check for encryted messages', () => {
       nonce: 'base64(nonce_raw)',
     });
   });
-  it('Should return null if private key is not found', async () => {
+it('should throw error if private key is not found', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
 
-    const result = await encryptMessage(
-      mockMobileNumber,
-      mockMessage,
-      mockAccessToken,
-    );
-    expect(result).toBeNull();
-  });
-  it('Should return null if an error is thrown during the process', async () => {
-    (getPublicKey as jest.Mock).mockRejectedValue(new Error('Network error'));
-
-    const result = await encryptMessage(
-      mockMobileNumber,
-      mockMessage,
-      mockAccessToken,
-    );
-
-    expect(result).toBeNull();
+    await expect(
+      encryptMessage(mockMobileNumber, mockMessage, mockAccessToken),
+    ).rejects.toThrow('Unable to encrypt message');
   });
 });
