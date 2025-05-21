@@ -73,8 +73,8 @@ export const Profile = (): React.JSX.Element => {
         return;
       }
       imageUploaded.current = true;
-      setLoading(true);
       try {
+        setLoading(true);
         const tokens = await getTokens(userDetails.mobileNumber);
         if (!tokens) {
           await EncryptedStorage.clear();
@@ -146,6 +146,7 @@ export const Profile = (): React.JSX.Element => {
       return;
     }
     try {
+      setLoading(true);
       const response = await removeProfilePic(
         profilePicUrl as string,
         userDetails.mobileNumber,
@@ -174,6 +175,8 @@ export const Profile = (): React.JSX.Element => {
       Alert.alert(
         'Something went wrong while removing profile picture. Please try again',
       );
+    } finally{
+      setLoading(false);
     }
   };
 
@@ -207,10 +210,6 @@ export const Profile = (): React.JSX.Element => {
       );
     }
   };
-
-  // if(isLoading) {
-  //   return <LoadingScreen />;
-  // }
 
   return (
     <KeyboardAvoidingView
