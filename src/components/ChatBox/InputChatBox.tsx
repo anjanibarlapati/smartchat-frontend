@@ -1,14 +1,29 @@
 import React, {useState} from 'react';
-import {TextInput, View, KeyboardAvoidingView} from 'react-native';
-import {ChatInputStyles} from './InputChatBox.styles';
-import {Theme} from '../../utils/themes';
+import {KeyboardAvoidingView, TextInput, View} from 'react-native';
 import {useAppTheme} from '../../hooks/appTheme';
+import {Theme} from '../../utils/themes';
 import {SendButton} from '../SendButton/SendButton';
+import {ChatInputStyles} from './InputChatBox.styles';
 
-export function InputChatBox() {
+interface InputChatBoxProps {
+  receiverMobileNumber: string;
+  onSendMessage: (text: string) => void;
+}
+export function InputChatBox({
+  receiverMobileNumber,
+  onSendMessage,
+}: InputChatBoxProps) {
   const theme: Theme = useAppTheme();
   const styles = ChatInputStyles(theme);
   const [message, setMessage] = useState('');
+
+  const sendTextMessage = () => {
+    if (message.trim() === '') {
+      return;
+    }
+    onSendMessage(message);
+    setMessage('');
+  };
 
   return (
     <KeyboardAvoidingView>
@@ -25,7 +40,11 @@ export function InputChatBox() {
             textAlignVertical="top"
           />
         </View>
-        <SendButton />
+        <SendButton
+          receiverMobileNumber={receiverMobileNumber}
+          message={message}
+          onSend={sendTextMessage}
+        />
       </View>
     </KeyboardAvoidingView>
   );
