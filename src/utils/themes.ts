@@ -18,7 +18,7 @@ export const LightTheme = {
   chatTextColor: '#000',
   chatSendIconColor: '#008080',
   senderMessageBox: '#9FD4D4',
-  receiverMessageBox:'white',
+  receiverMessageBox:'lightgray',
   timestamp : 'rgb(98, 98, 98)',
   alertButtonBackground: 'rgb(215, 41, 41)',
   images: {
