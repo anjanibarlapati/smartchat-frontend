@@ -43,4 +43,5 @@ export type HomeStackParamList = {
 export type HomeScreenNavigationProps = NativeStackNavigationProp<HomeStackParamList, 'Home'>;
 export type ContactScreenNavigationProps = NativeStackNavigationProp<HomeStackParamList, 'Contact'>;
 
-export type ProfileScreenNavigationProps = NativeStackNavigationProp<HomeStackParamList, 'Contact'>;
+export type ProfileScreenNavigationProps = NativeStackNavigationProp<BottomTabParamList, 'ProfileScreen'>;
+export type IndividualChatNavigationProps = NativeStackNavigationProp<HomeStackParamList, 'IndividualChat'>;
