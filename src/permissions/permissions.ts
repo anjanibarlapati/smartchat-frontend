@@ -1,4 +1,4 @@
-import {Alert, Platform} from 'react-native';
+import {Platform} from 'react-native';
 import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
 
 const requestPermission = async (permissionType: string) => {
@@ -47,7 +47,7 @@ const requestPermission = async (permissionType: string) => {
     }
     return false;
   } catch (error) {
-    Alert.alert('Something went wrong!');
+    throw new Error('Something went wrong!');
   }
 };
 
