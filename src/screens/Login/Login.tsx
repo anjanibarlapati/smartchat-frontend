@@ -1,3 +1,5 @@
+import {useNavigation} from '@react-navigation/native';
+import parsePhoneNumberFromString from 'libphonenumber-js';
 import React, {useState} from 'react';
 import {
   Alert,
@@ -9,7 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
 import {useDispatch} from 'react-redux';
@@ -17,15 +18,14 @@ import {Dispatch} from 'redux';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
 import LoadingIndicator from '../../components/Loading/Loading';
-import {login} from './Login.service';
-import {getStyles} from './Login.styles';
+import {useAppTheme} from '../../hooks/appTheme';
 import {setUserDetails} from '../../redux/reducers/user.reducer';
 import {Credentials} from '../../types/Credentials';
 import {RegistrationScreenNavigationProps} from '../../types/Navigations';
-import {useAppTheme} from '../../hooks/appTheme';
+import {generateKeyPair, storePublicKey} from '../../utils/keyPairs';
 import {Theme} from '../../utils/themes';
-import {socketConnection} from '../../utils/socket';
-import parsePhoneNumberFromString from 'libphonenumber-js';
+import {login} from './Login.service';
+import {getStyles} from './Login.styles';
 
 const LoginScreen = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();
@@ -119,7 +119,20 @@ const LoginScreen = () => {
           'User Data',
           JSON.stringify(result.user),
         );
-        socketConnection();
+        const keyPair: any = await generateKeyPair();
+        const keys = await storePublicKey(
+          result.user.mobileNumber,
+          keyPair.publicKey,
+        );
+        if (keys.ok) {
+          await EncryptedStorage.setItem(
+            'privateKey',
+            JSON.stringify({
+              privateKey: keyPair.privateKey,
+            }),
+          );
+        }
+
         navigation.reset({
           index: 0,
           routes: [{name: 'Tabs'}],
