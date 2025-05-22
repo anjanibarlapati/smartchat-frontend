@@ -78,28 +78,25 @@ describe('checkAccessToken', () => {
     expect(EncryptedStorage.setItem).not.toHaveBeenCalled();
   });
 
-  it('Should catch and log errors', async () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  it('should throw error if EncryptedStorage.getItem fails', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockRejectedValue(new Error('Storage failed'));
+
+    await expect(checkAccessToken()).rejects.toThrow('Token check failed');
+  });
+
+  it('Should not update token if response is not ok', async () => {
+    (EncryptedStorage.getItem as jest.Mock)
+      .mockResolvedValueOnce(JSON.stringify(mockUser))
+      .mockResolvedValueOnce(JSON.stringify(mockToken));
+
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({}),
+    });
 
     await checkAccessToken();
 
-    expect(consoleSpy).toHaveBeenCalledWith('Token check failed', expect.any(Error));
-    consoleSpy.mockRestore();
+    expect(EncryptedStorage.setItem).not.toHaveBeenCalled();
   });
-  it('Should not update token if response is not ok', async () => {
-  (EncryptedStorage.getItem as jest.Mock)
-    .mockResolvedValueOnce(JSON.stringify(mockUser))
-    .mockResolvedValueOnce(JSON.stringify(mockToken));
-
-  (fetch as jest.Mock).mockResolvedValueOnce({
-    ok: false,
-    json: async () => ({}),
-  });
-
-  await checkAccessToken();
-
-  expect(EncryptedStorage.setItem).not.toHaveBeenCalled();
-});
 
 });

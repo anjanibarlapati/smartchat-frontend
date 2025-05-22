@@ -9,11 +9,11 @@ export const checkAccessToken = async () => {
 
       const token = await EncryptedStorage.getItem(user.mobileNumber);
       if (token) {
-        let {access_token, refresh_token} = JSON.parse(token);
+        let { access_token, refresh_token } = JSON.parse(token);
 
         const response = await fetch(`${BASE_URL}token`, {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             accessToken: access_token,
             refreshToken: refresh_token,
@@ -37,6 +37,6 @@ export const checkAccessToken = async () => {
       }
     }
   } catch (error) {
-    console.error('Token check failed', error);
+    throw new Error('Token check failed');
   }
 };
