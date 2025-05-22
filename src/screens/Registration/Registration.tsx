@@ -1,33 +1,28 @@
-import {parsePhoneNumberFromString} from 'libphonenumber-js';
-import React, {useState} from 'react';
-import {
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import React, { useState } from 'react';
+import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {useNavigation} from '@react-navigation/native';
 import PhoneInput from 'react-native-phone-input';
-import {useDispatch} from 'react-redux';
-import {Dispatch} from 'redux';
+import { useDispatch } from 'react-redux';
+import { Dispatch } from 'redux';
+import { CustomizableAlert } from '../../components/Alert/CustomizableAlert';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
-import {ProfilePicturePickerModal} from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
-import {useAppTheme} from '../../hooks/appTheme';
 import LoadingIndicator from '../../components/Loading/Loading';
-import {setUserDetails} from '../../redux/reducers/user.reducer';
-import {RegistrationScreenNavigationProps} from '../../types/Navigations';
-import {InputUser} from '../../types/InputUser';
-import {UploadImage} from '../../types/UploadImage';
-import {register} from './Registration.service';
-import {getStyles} from './Registration.styles';
-import {socketConnection} from '../../utils/socket';
-import {Theme} from '../../utils/themes';
+import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
+import { useAppTheme } from '../../hooks/appTheme';
+import { useAlertModal } from '../../hooks/useAlertModal';
+import { setSuccessMessage } from '../../redux/reducers/auth.reducer';
+import { setUserDetails } from '../../redux/reducers/user.reducer';
+import { InputUser } from '../../types/InputUser';
+import { RegistrationScreenNavigationProps } from '../../types/Navigations';
+import { UploadImage } from '../../types/UploadImage';
+import { socketConnection } from '../../utils/socket';
+import { Theme } from '../../utils/themes';
+import { register } from './Registration.service';
+import { getStyles } from './Registration.styles';
+
 
 const Registration = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();
@@ -35,11 +30,11 @@ const Registration = () => {
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme);
 
-  const [showProfilePicSelectModal, setShowProfilePicSelectModal] =
-    useState(false);
-  const [profilePic, setProfilePic] = useState<UploadImage | null | string>(
-    null,
-  );
+  const {
+    alertVisible, alertMessage, alertType, showAlert, hideAlert,
+  } = useAlertModal();
+  const [showProfilePicSelectModal, setShowProfilePicSelectModal] = useState(false);
+  const [profilePic, setProfilePic] = useState<UploadImage | null | string>(null);
   const [isLoading, setLoading] = useState(false);
   const [user, setUser] = useState<InputUser>({
     firstName: '',
@@ -155,10 +150,10 @@ const Registration = () => {
       setLoading(true);
       const response = await register(formData);
       const result = await response.json();
-      if (response.ok) {
-        Alert.alert('You’ve successfully joined SmartChat!');
+      if(response.ok) {
         clearFields();
         dispatch(setUserDetails(result.user));
+        dispatch(setSuccessMessage('You\'ve successfully logged in to SmartChat!'));
         await EncryptedStorage.setItem(
           result.user.mobileNumber,
           JSON.stringify({
@@ -177,9 +172,9 @@ const Registration = () => {
         });
         return;
       }
-      Alert.alert(result.message);
-    } catch (error) {
-      Alert.alert('Something went wrong. Please try again');
+      showAlert(result.message, 'warning');
+    } catch(error) {
+      showAlert('Something went wrong. Please try again', 'error');
       clearFields();
     } finally {
       setLoading(false);
@@ -301,6 +296,7 @@ const Registration = () => {
           remove={removePicture}
         />
       </ScrollView>
+      <CustomizableAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
     </KeyboardAvoidingView>
   );
 };

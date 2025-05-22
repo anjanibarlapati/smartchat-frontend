@@ -1,31 +1,26 @@
-import React, {useState} from 'react';
-import {
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import parsePhoneNumberFromString from 'libphonenumber-js';
+import React, { useState } from 'react';
+import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
-import {useDispatch} from 'react-redux';
-import {Dispatch} from 'redux';
+import { useDispatch } from 'react-redux';
+import { Dispatch } from 'redux';
+import { CustomizableAlert } from '../../components/Alert/CustomizableAlert';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
 import LoadingIndicator from '../../components/Loading/Loading';
-import {login} from './Login.service';
-import {getStyles} from './Login.styles';
-import {setUserDetails} from '../../redux/reducers/user.reducer';
-import {Credentials} from '../../types/Credentials';
-import {RegistrationScreenNavigationProps} from '../../types/Navigations';
-import {useAppTheme} from '../../hooks/appTheme';
-import {Theme} from '../../utils/themes';
-import {socketConnection} from '../../utils/socket';
-import parsePhoneNumberFromString from 'libphonenumber-js';
+import { useAppTheme } from '../../hooks/appTheme';
+import { useAlertModal } from '../../hooks/useAlertModal';
+import { setSuccessMessage } from '../../redux/reducers/auth.reducer';
+import { setUserDetails } from '../../redux/reducers/user.reducer';
+import { Credentials } from '../../types/Credentials';
+import { RegistrationScreenNavigationProps } from '../../types/Navigations';
+import { socketConnection } from '../../utils/socket';
+import { Theme } from '../../utils/themes';
+import { login } from './Login.service';
+import { getStyles } from './Login.styles';
+
 
 const LoginScreen = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();
@@ -42,6 +37,9 @@ const LoginScreen = () => {
     password: '',
   });
   const [isLoading, setLoading] = useState(false);
+  const {
+    alertVisible, alertMessage, alertType, showAlert, hideAlert,
+  } = useAlertModal();
 
   const dispatch: Dispatch = useDispatch();
 
@@ -104,10 +102,10 @@ const LoginScreen = () => {
       setLoading(true);
       const response = await login(credentials);
       const result = await response.json();
-      if (response.ok) {
-        Alert.alert('You’ve successfully logged in to SmartChat!');
+      if(response.ok) {
         clearFields();
         dispatch(setUserDetails(result.user));
+        dispatch(setSuccessMessage('You\'ve successfully logged in to SmartChat!'));
         await EncryptedStorage.setItem(
           result.user.mobileNumber,
           JSON.stringify({
@@ -126,12 +124,12 @@ const LoginScreen = () => {
         });
         return;
       }
-      Alert.alert(result.message);
-    } catch (error) {
-      Alert.alert('Something went wrong. Please try again');
-      clearFields();
-    } finally {
-      setLoading(false);
+      showAlert(result.message, 'warning');
+      } catch(error) {
+        showAlert('Something went wrong. Please try again', 'error');
+        clearFields();
+      } finally{
+        setLoading(false);
     }
   };
   return (
@@ -165,25 +163,25 @@ const LoginScreen = () => {
               <Text style={styles.errorText}>{errors.mobileNumber}</Text>
             ) : null}
           </View>
-          <InputField
-            value={credentials.password}
-            onChangeText={text => handleChange('password', text)}
-            placeholder="Password"
-            secureTextEntry
-            error={errors.password}
-          />
-        </View>
-        <Button label="Login" onPress={handleLogin} />
-        <LoadingIndicator visible={isLoading} />
-        <View style={styles.registerView}>
-          <Text style={styles.text}>Don't have an account ?</Text>
-          <TouchableOpacity
-            onPress={() => navigation.replace('RegistrationScreen')}>
-            <Text style={styles.registerText}>Register</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        <InputField
+          value={credentials.password}
+          onChangeText={(text) => handleChange('password', text)}
+          placeholder="Password"
+          secureTextEntry
+          error={errors.password}
+        />
+      </View>
+      <Button label="Login" onPress={handleLogin}/>
+      <LoadingIndicator visible={isLoading} />
+      <View style={styles.registerView}>
+        <Text style={styles.text}>Don't have an account ?</Text>
+        <TouchableOpacity onPress={() => navigation.replace('RegistrationScreen')}>
+          <Text style={styles.registerText}>Register</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+    <CustomizableAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+  </KeyboardAvoidingView>
   );
 };
 

@@ -1,11 +1,11 @@
 import { Alert } from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import { useNavigation } from '@react-navigation/native';
-import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { store } from '../../redux/store';
 import Registration from './Registration';
 import * as RegistrationHandler from './Registration.service';
-import { store } from '../../redux/store';
-
 
 jest.mock('../../utils/openCamera', () => ({
   openCamera: jest.fn(),
@@ -152,24 +152,24 @@ describe('Registration Screen check', () => {
   it('Should give an alert on successful registration with message', async () => {
     const response = {
       ok: true,
-      json: async () => ({ message: 'Registered Successfully' }),
+      json: async () => ({user: {}, access_token: '', refresh_token: ''}),
     };
     mockRegister.mockResolvedValue(response);
-
+    (EncryptedStorage.setItem as jest.Mock).mockReturnValue(() => {});
     const { getByLabelText, getByPlaceholderText, getByText } = renderRegistrationScreen();
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
     fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
-    fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 12345 67890');
     fireEvent.changeText(getByPlaceholderText('Password *'), '1234');
     fireEvent.changeText(getByPlaceholderText('Confirm Password *'), '1234');
 
     await act(async ()=> {
       fireEvent.press(getByText('Register'));
     });
-    await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith('You’ve successfully joined SmartChat!');
+    await waitFor(async() => {
+      expect(EncryptedStorage.setItem).toHaveBeenCalled();
     });
   });
 
@@ -192,7 +192,7 @@ describe('Registration Screen check', () => {
       fireEvent.press(getByText('Register'));
     });
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith('User already exists');
+      expect(getByText('User already exists')).toBeTruthy();
     });
   });
 
@@ -210,7 +210,7 @@ describe('Registration Screen check', () => {
       fireEvent.press(getByText('Register'));
     });
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith('Something went wrong. Please try again');
+      expect(getByText('Something went wrong. Please try again')).toBeTruthy();
     });
   });
 
