@@ -1,10 +1,10 @@
+import { useNavigation } from '@react-navigation/native';
 import { fireEvent, render} from '@testing-library/react-native';
 import { ContactCard } from './ContactCard.tsx';
 import { store } from '../../redux/store';
 import { Provider } from 'react-redux';
 import { Contact } from '../../types/Contacts.ts';
 import { sendSmsInvite } from '../../utils/sendSmsInvite.ts';
-import { useNavigation } from '@react-navigation/native';
 
 jest.mock('../../permissions/permissions.ts', () => ({
   requestPermission: jest.fn(),
