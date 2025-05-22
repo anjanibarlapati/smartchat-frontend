@@ -6,6 +6,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { CustomizableAlert } from '../../components/Alert/CustomizableAlert.tsx';
 import { ContactCard } from '../../components/ContactCard/ContactCard.tsx';
+import LoadingIndicator from '../../components/Loading/Loading.tsx';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal.ts';
 import { requestPermission } from '../../permissions/permissions.ts';

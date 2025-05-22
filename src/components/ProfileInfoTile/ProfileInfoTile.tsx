@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-import {useState} from 'react';
-import {
-  Alert,
-  Image,
-  ImageSourcePropType,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {useDispatch, useSelector} from 'react-redux';
-import {useAppTheme} from '../../hooks/appTheme';
-import {getStyles} from './ProfileInfoTile.styles';
-import {setUserProperty} from '../../redux/reducers/user.reducer';
-import {storeState} from '../../redux/store';
-import {updateProfileDetails} from '../../screens/Profile/Profile.services';
-import {RootStackParamList} from '../../types/Navigations';
-import {User} from '../../types/User';
-import {getTokens} from '../../utils/getTokens';
-import {Properties} from '../../utils/Properties';
-import {Theme} from '../../utils/themes';
-=======
 import { useState } from 'react';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { Image, ImageSourcePropType, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -40,7 +15,6 @@ import { Properties } from '../../utils/Properties';
 import { Theme } from '../../utils/themes';
 import { CustomizableAlert } from '../Alert/CustomizableAlert';
 import { getStyles } from './ProfileInfoTile.styles';
->>>>>>> 9fee290 (Replace native alert with custom alert and update test cases)
 interface ProfileInfoTileProps {
   label: string;
   value: string;
@@ -64,18 +38,6 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
   const isEdit = props.editField === props.label;
   const setLoading = props.setLoading;
 
-<<<<<<< HEAD
-  const updateDetails = async () => {
-    if (!newValue.trim() || newValue.trim() === props.value) {
-      Alert.alert('Give appropriate value');
-      return;
-    }
-    if (
-      props.label === 'Email' &&
-      !/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/.test(newValue)
-    ) {
-      Alert.alert('Invalid email format');
-=======
   const updateDetails = async() => {
     if(!newValue.trim() || newValue.trim() === props.value) {
       showAlert('Please give a different value', 'info');
@@ -83,7 +45,6 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
     }
     if(props.label === 'Email' && !/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/.test(newValue)) {
       showAlert('Invalid email format', 'warning');
->>>>>>> 9fee290 (Replace native alert with custom alert and update test cases)
       setValue('');
       return;
     }
@@ -123,14 +84,14 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
           JSON.stringify(updatedUser),
         );
         if(props.label === 'Change Password') {
-          showAlert(`Updated password successfuly`, 'success');
+          showAlert('Updated password successfully', 'success');
         } else {
-          showAlert(`Updated ${props.label} successfuly`, 'success');
+          showAlert(`Updated ${props.label.toLowerCase()} successfully`, 'success');
         }
       }
       props.setEditField('');
     } catch (error) {
-        showAlert(`Updated ${props.label} successfuly`, 'success');
+        showAlert('Something went wrong while updating. Please try again', 'error');
     } finally {
       setLoading(false);
     }

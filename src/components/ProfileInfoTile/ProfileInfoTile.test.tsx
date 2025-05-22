@@ -123,7 +123,7 @@ describe('Tests related to the Profile Info Tile component', () => {
                 setUserProperty({ property: 'firstName', value: 'Virat' })
             );
             expect(EncryptedStorage.setItem).toHaveBeenCalled();
-            expect(Alert.alert).toHaveBeenCalledWith(`Updated first name successfully`);
+            expect(screen.getByText('Updated first name successfully')).toBeTruthy();
         });
     });
     it('Should update password, dispatch action, set encrypted storage on success and show alert', async () => {
@@ -138,7 +138,8 @@ describe('Tests related to the Profile Info Tile component', () => {
                 setUserProperty({ property: 'password', value: 'Virat' })
             );
             expect(EncryptedStorage.setItem).toHaveBeenCalled();
-            expect(Alert.alert).toHaveBeenCalledWith(`Updated password successfully`);
+            expect(screen.getByText('Updated password successfully')).toBeTruthy();
+
         });
     });
     it('Should not update the user details if response is not ok', async () => {

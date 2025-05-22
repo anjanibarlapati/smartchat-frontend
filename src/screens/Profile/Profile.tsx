@@ -100,12 +100,11 @@ export const Profile = (): React.JSX.Element => {
           setLoading(false);
           imageUploaded.current = false;
         }
-    
     };
 
     if (uploadImage) {
       handleUploadProfilePic();
-    }  
+    }
 }, [dispatch, navigation, showAlert, uploadImage, userDetails]);
 
   const signout = async () => {

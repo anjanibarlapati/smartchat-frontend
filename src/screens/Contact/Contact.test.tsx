@@ -66,7 +66,9 @@ describe('Contacts Screen', () => {
     it('should display alert if permission is denied', async () => {
       (requestPermission as jest.Mock).mockResolvedValue(false);
 
-      renderContactScreen();
+      await waitFor(() => {
+        renderContactScreen();
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Permission for contacts was denied')).toBeTruthy();
@@ -81,8 +83,9 @@ describe('Contacts Screen', () => {
       );
       (Contacts.getAll as jest.Mock).mockRejectedValue(new Error('Could not load contacts.'));
 
-      renderContactScreen();
-
+      await waitFor(() => {
+        renderContactScreen();
+      });
       await waitFor(() => {
         expect(screen.getByText(`Something went wrong while fetching contacts details. Please try again`)).toBeTruthy();
       });
@@ -93,7 +96,9 @@ describe('Contacts Screen', () => {
       (requestPermission as jest.Mock).mockResolvedValue(true);
       (getTokens as jest.Mock).mockResolvedValue(null);
 
-      renderContactScreen();
+      await waitFor(() => {
+        renderContactScreen();
+      });
       await waitFor(() => {
         expect(EncryptedStorage.clear).toHaveBeenCalled();
         expect(mockReset).toHaveBeenCalledWith({
@@ -112,14 +117,17 @@ describe('Contacts Screen', () => {
       (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
       (getContactsDetails as jest.Mock).mockResolvedValue(mockContacts);
 
-      const { getByText, queryByText } = renderContactScreen();
-
       await waitFor(() => {
-        fireEvent.press(getByText('Invite to SmartChat'));
+        renderContactScreen();
+      });
+      await waitFor(() => {
+        fireEvent.press(screen.getByText('Invite to SmartChat'));
+      });
+      await waitFor(()=> {
+        expect(screen.getByText('Anj')).toBeTruthy();
+        expect(screen.queryByText('Anjani')).toBeNull();
       });
 
-      expect(getByText('Anj')).toBeTruthy();
-      expect(queryByText('Anjani')).toBeNull();
     });
 
     it('should switch to Contacts tab and show contacts who are on app', async () => {
@@ -131,14 +139,18 @@ describe('Contacts Screen', () => {
       (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
       (getContactsDetails as jest.Mock).mockResolvedValue(mockContacts);
 
-      const { getByText, queryByText } = renderContactScreen();
-
       await waitFor(() => {
-        fireEvent.press(getByText('Contacts on SmartChat'));
+        renderContactScreen();
+      });
+      await waitFor(() => {
+        fireEvent.press(screen.getByText('Contacts on SmartChat'));
       });
 
-      expect(getByText('Anjani')).toBeTruthy();
-      expect(queryByText('Anj')).toBeNull();
+      await waitFor(()=> {
+        expect(screen.getByText('Anjani')).toBeTruthy();
+        expect(screen.queryByText('Anj')).toBeNull();
+      });
+
     });
 
     it('should show a message when no device contacts are available', async () => {
@@ -149,10 +161,12 @@ describe('Contacts Screen', () => {
       (Contacts.getAll as jest.Mock).mockResolvedValue([]);
       (getContactsDetails as jest.Mock).mockResolvedValue([]);
 
-      const { getByText } = renderContactScreen();
+      await waitFor(() => {
+        renderContactScreen();
+      });
 
       await waitFor(() => {
-        expect(getByText('Add your friends to contacts and invite them to SmartChat')).toBeTruthy();
+        expect(screen.getByText('Add your friends to contacts and invite them to SmartChat')).toBeTruthy();
       });
     });
 
@@ -164,13 +178,15 @@ describe('Contacts Screen', () => {
       (Contacts.getAll as jest.Mock).mockResolvedValue([mockContacts[1]]);
       (getContactsDetails as jest.Mock).mockResolvedValue([mockContacts[1]]);
 
-      const { getByText } = renderContactScreen();
       await waitFor(() => {
-        fireEvent.press(getByText('Contacts on SmartChat'));
+        renderContactScreen();
+      });
+      await waitFor(() => {
+        fireEvent.press(screen.getByText('Contacts on SmartChat'));
       });
 
       await waitFor(() => {
-        expect(getByText('Invite your contacts to SmartChat and start your conversations')).toBeTruthy();
+        expect(screen.getByText('Invite your contacts to SmartChat and start your conversations')).toBeTruthy();
       });
     });
 
@@ -181,14 +197,18 @@ describe('Contacts Screen', () => {
       );
       (Contacts.getAll as jest.Mock).mockResolvedValue([mockContacts[0]]);
       (getContactsDetails as jest.Mock).mockResolvedValue([mockContacts[0]]);
-
-      const { getByText } = renderContactScreen();
       await waitFor(() => {
-        fireEvent.press(getByText('Invite to SmartChat'));
+        renderContactScreen();
+      });
+      await waitFor(() => {
+        fireEvent.press(screen.getByText('Invite to SmartChat'));
+      });
+      await waitFor(() => {
+        fireEvent.press(screen.getByText('Invite to SmartChat'));
       });
 
       await waitFor(() => {
-        expect(getByText('All your contacts are on SmartChat. Continue your conversations with them')).toBeTruthy();
+        expect(screen.getByText('All your contacts are on SmartChat. Continue your conversations with them')).toBeTruthy();
       });
     });
 });
