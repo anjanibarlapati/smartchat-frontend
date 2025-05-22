@@ -343,7 +343,6 @@ describe('Tests related to the Profile Screen', () => {
         });
         fireEvent.press(screen.getByText('Gallery'));
         await waitFor(() => {
-            expect(screen.getByText('Profile picture updated')).toBeTruthy();
             expect(mockDispatch).toHaveBeenCalledWith(
                 expect.objectContaining({
                     type: 'user/setUserProperty',
@@ -353,6 +352,9 @@ describe('Tests related to the Profile Screen', () => {
                     },
                 })
             );
+        });
+        await waitFor(() => {
+            expect(screen.getByText('Profile picture updated')).toBeTruthy();
         });
     });
 
