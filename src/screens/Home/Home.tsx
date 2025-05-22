@@ -1,15 +1,31 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { CustomizableAlert } from '../../components/Alert/CustomizableAlert';
 import {getStyles} from './Home.styles';
 import {useAppTheme} from '../../hooks/appTheme';
-import {Theme} from '../../utils/themes';
-import {useNavigation} from '@react-navigation/native';
+import { useAlertModal } from '../../hooks/useAlertModal';
+import { clearSuccessMessage } from '../../redux/reducers/auth.reducer';
+import { storeState } from '../../redux/store';
 import {ContactScreenNavigationProps} from '../../types/Navigations';
+import {Theme} from '../../utils/themes';
 
 export function Home(): React.JSX.Element {
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme);
   const navigation = useNavigation<ContactScreenNavigationProps>();
+  const { alertMessage, alertType, alertVisible, hideAlert, showAlert } = useAlertModal();
+  const successMessage = useSelector((state: storeState) => state.auth.successMessage);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (successMessage) {
+      showAlert(successMessage, 'success');
+      dispatch(clearSuccessMessage());
+    }
+  }, [dispatch, showAlert, successMessage]);
+
   return (
     <View style={styles.container}>
       <View style={styles.totalContainer}>
@@ -30,6 +46,7 @@ export function Home(): React.JSX.Element {
           />
         </TouchableOpacity>
       </View>
+      <CustomizableAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
     </View>
   );
 }
