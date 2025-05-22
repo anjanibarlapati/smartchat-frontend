@@ -28,7 +28,7 @@ export function AppNavigator(): React.JSX.Element {
         if (storedUser) {
           const user = JSON.parse(storedUser);
           dispatch(setUserDetails(user));
-          setIsUserStored(false);
+          setIsUserStored(true);
         }
       } catch (error) {
         Alert.alert('Failed to load user from storage');
