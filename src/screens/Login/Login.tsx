@@ -1,24 +1,26 @@
 
+import parsePhoneNumberFromString from 'libphonenumber-js';
 import React, { useState } from 'react';
-import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
+import { CustomizableAlert } from '../../components/Alert/CustomizableAlert';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
+import { useAppTheme } from '../../hooks/appTheme';
+import { useAlertModal } from '../../hooks/useAlertModal';
 import LoadingScreen from '../Loading/Loading';
 import { login } from './Login.service';
 import { getStyles } from './Login.styles';
+import { setSuccessMessage } from '../../redux/reducers/auth.reducer';
 import { setUserDetails } from '../../redux/reducers/user.reducer';
 import { Credentials } from '../../types/Credentials';
 import { RegistrationScreenNavigationProps } from '../../types/Navigations';
-import { useAppTheme } from '../../hooks/appTheme';
 import { Theme } from '../../utils/themes';
 import { socketConnection } from '../../utils/socket';
-import parsePhoneNumberFromString from 'libphonenumber-js';
-
 
 
 const LoginScreen = () => {
@@ -33,6 +35,9 @@ const LoginScreen = () => {
     password: '',
   });
   const [isLoading, setLoading] = useState(false);
+  const {
+    alertVisible, alertMessage, alertType, showAlert, hideAlert,
+  } = useAlertModal();
 
   const dispatch: Dispatch = useDispatch();
 
@@ -96,9 +101,9 @@ const LoginScreen = () => {
       const response = await login(credentials);
       const result = await response.json();
       if(response.ok) {
-        Alert.alert('You’ve successfully logged in to SmartChat!');
         clearFields();
         dispatch(setUserDetails(result.user));
+        dispatch(setSuccessMessage('You\'ve successfully logged in to SmartChat!'));
         await EncryptedStorage.setItem(
             result.user.mobileNumber,
             JSON.stringify({
@@ -117,9 +122,9 @@ const LoginScreen = () => {
         });
         return;
       }
-      Alert.alert(result.message);
+      showAlert(result.message, 'warning');
       } catch(error) {
-        Alert.alert('Something went wrong. Please try again');
+        showAlert('Something went wrong. Please try again', 'error');
         clearFields();
       } finally{
         setLoading(false);
@@ -178,6 +183,7 @@ const LoginScreen = () => {
         </TouchableOpacity>
       </View>
     </ScrollView>
+    <CustomizableAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
   </KeyboardAvoidingView>
   );
 };
