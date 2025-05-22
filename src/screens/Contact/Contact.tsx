@@ -32,7 +32,7 @@ export function Contact(): React.JSX.Element {
       alertVisible, alertMessage, alertType, showAlert, hideAlert,
     } = useAlertModal();
   const [filteredContacts, setFilteredContacts] = useState<ContactType[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const loadContacts = async () => {

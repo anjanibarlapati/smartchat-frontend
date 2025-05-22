@@ -148,6 +148,8 @@ export const Profile = (): React.JSX.Element => {
       setVisibleProfilePicModal(false);
     } catch(error) {
       showAlert('Something went wrong while removing profile picture. Please try again', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 

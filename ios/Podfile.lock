@@ -1386,6 +1386,13 @@ PODS:
     - Yoga
   - react-native-encrypted-storage (4.0.3):
     - React-Core
+  - react-native-libsodium (1.4.0):
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - ReactCommon/turbomodule/core
   - react-native-safe-area-context (5.4.0):
     - DoubleConversion
     - glog
@@ -1967,6 +1974,7 @@ DEPENDENCIES:
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-contacts (from `../node_modules/react-native-contacts`)
   - react-native-encrypted-storage (from `../node_modules/react-native-encrypted-storage`)
+  - react-native-libsodium (from `../node_modules/react-native-libsodium`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-sms (from `../node_modules/react-native-sms`)
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
@@ -2099,6 +2107,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-contacts"
   react-native-encrypted-storage:
     :path: "../node_modules/react-native-encrypted-storage"
+  react-native-libsodium:
+    :path: "../node_modules/react-native-libsodium"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-sms:
@@ -2224,6 +2234,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 054f34e9b82f02bd40f09cebd4083828b5b2beb6
   react-native-contacts: 30229f4b7d13283c56cfaf30f389f3a844709550
   react-native-encrypted-storage: 569d114e329b1c2c2d9f8c84bcdbe4478dda2258
+  react-native-libsodium: 86b84347292ccc98a101ebf58e63feb7b74f4b63
   react-native-safe-area-context: 562163222d999b79a51577eda2ea8ad2c32b4d06
   react-native-sms: 6abc83829639e90badc1f7211d2159a641e873a0
   react-native-splash-screen: 95994222cc95c236bd3cdc59fe45ed5f27969594
