@@ -1,3 +1,4 @@
+import {useNavigation} from '@react-navigation/native';
 import {parsePhoneNumberFromString} from 'libphonenumber-js';
 import React, {useState} from 'react';
 import {
@@ -11,23 +12,22 @@ import {
   View,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {useNavigation} from '@react-navigation/native';
 import PhoneInput from 'react-native-phone-input';
 import {useDispatch} from 'react-redux';
 import {Dispatch} from 'redux';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
+import LoadingIndicator from '../../components/Loading/Loading';
 import {ProfilePicturePickerModal} from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
 import {useAppTheme} from '../../hooks/appTheme';
-import LoadingIndicator from '../../components/Loading/Loading';
 import {setUserDetails} from '../../redux/reducers/user.reducer';
-import {RegistrationScreenNavigationProps} from '../../types/Navigations';
 import {InputUser} from '../../types/InputUser';
+import {RegistrationScreenNavigationProps} from '../../types/Navigations';
 import {UploadImage} from '../../types/UploadImage';
+import {generateKeyPair, storePublicKey} from '../../utils/keyPairs';
+import {Theme} from '../../utils/themes';
 import {register} from './Registration.service';
 import {getStyles} from './Registration.styles';
-import {socketConnection} from '../../utils/socket';
-import {Theme} from '../../utils/themes';
 
 const Registration = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();
@@ -170,7 +170,19 @@ const Registration = () => {
           'User Data',
           JSON.stringify(result.user),
         );
-        socketConnection();
+        const keyPair: any = await generateKeyPair();
+        const keys = await storePublicKey(
+          result.user.mobileNumber,
+          keyPair.publicKey,
+        );
+        if (keys.ok) {
+          await EncryptedStorage.setItem(
+            'privateKey',
+            JSON.stringify({
+              privateKey: keyPair.privateKey,
+            }),
+          );
+        }
         navigation.reset({
           index: 0,
           routes: [{name: 'Tabs'}],
