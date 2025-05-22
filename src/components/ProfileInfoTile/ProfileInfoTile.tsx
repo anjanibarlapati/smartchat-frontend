@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {useState} from 'react';
 import {
   Alert,
@@ -21,6 +22,25 @@ import {User} from '../../types/User';
 import {getTokens} from '../../utils/getTokens';
 import {Properties} from '../../utils/Properties';
 import {Theme} from '../../utils/themes';
+=======
+import { useState } from 'react';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { Image, ImageSourcePropType, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { useDispatch, useSelector } from 'react-redux';
+import { useAppTheme } from '../../hooks/appTheme';
+import { useAlertModal } from '../../hooks/useAlertModal';
+import { setUserProperty } from '../../redux/reducers/user.reducer';
+import { storeState } from '../../redux/store';
+import { updateProfileDetails } from '../../screens/Profile/Profile.services';
+import { RootStackParamList } from '../../types/Navigations';
+import { User } from '../../types/User';
+import { getTokens } from '../../utils/getTokens';
+import { Properties } from '../../utils/Properties';
+import { Theme } from '../../utils/themes';
+import { CustomizableAlert } from '../Alert/CustomizableAlert';
+import { getStyles } from './ProfileInfoTile.styles';
+>>>>>>> 9fee290 (Replace native alert with custom alert and update test cases)
 interface ProfileInfoTileProps {
   label: string;
   value: string;
@@ -37,10 +57,14 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme);
   const dispatch = useDispatch();
+  const {
+      alertVisible, alertMessage, alertType, showAlert, hideAlert,
+    } = useAlertModal();
   const [newValue, setValue] = useState('');
   const isEdit = props.editField === props.label;
   const setLoading = props.setLoading;
 
+<<<<<<< HEAD
   const updateDetails = async () => {
     if (!newValue.trim() || newValue.trim() === props.value) {
       Alert.alert('Give appropriate value');
@@ -51,6 +75,15 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
       !/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/.test(newValue)
     ) {
       Alert.alert('Invalid email format');
+=======
+  const updateDetails = async() => {
+    if(!newValue.trim() || newValue.trim() === props.value) {
+      showAlert('Please give a different value', 'info');
+      return;
+    }
+    if(props.label === 'Email' && !/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/.test(newValue)) {
+      showAlert('Invalid email format', 'warning');
+>>>>>>> 9fee290 (Replace native alert with custom alert and update test cases)
       setValue('');
       return;
     }
@@ -90,14 +123,14 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
           JSON.stringify(updatedUser),
         );
         if(props.label === 'Change Password') {
-          Alert.alert('Updated password successfully');
+          showAlert(`Updated password successfuly`, 'success');
         } else {
-          Alert.alert(`Updated ${props.label.toLowerCase()} successfully`);
+          showAlert(`Updated ${props.label} successfuly`, 'success');
         }
       }
       props.setEditField('');
     } catch (error) {
-      Alert.alert('Something went wrong while updating. Please try again');
+        showAlert(`Updated ${props.label} successfuly`, 'success');
     } finally {
       setLoading(false);
     }
@@ -173,6 +206,7 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
           </TouchableOpacity>
         )}
       </View>
+      <CustomizableAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
     </View>
   );
 };

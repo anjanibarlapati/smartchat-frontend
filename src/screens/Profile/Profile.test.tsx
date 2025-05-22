@@ -199,7 +199,7 @@ describe('Tests related to the Profile Screen', () => {
             fireEvent.press(await screen.findByText('Delete'));
         });
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Failed to delete account');
+            expect(screen.getByText('Failed to delete account')).toBeTruthy();
         });
     });
 
@@ -214,7 +214,7 @@ describe('Tests related to the Profile Screen', () => {
             fireEvent.press(await screen.findByText('Delete'));
         });
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Something went wrong while deleting account. Please try again');
+            expect(screen.getByText('Something went wrong while deleting account. Please try again')).toBeTruthy();
         });
     });
 
@@ -230,7 +230,7 @@ describe('Tests related to the Profile Screen', () => {
             fireEvent.press(await screen.findByText('Yes'));
         });
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Something went wrong while signing out. Please try again');
+            expect(screen.getByText('Something went wrong while signing out. Please try again')).toBeTruthy();
         });
     });
 
@@ -274,7 +274,7 @@ describe('Tests related to the Profile Screen', () => {
         });
         fireEvent.press(screen.getByText('Remove'));
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Something went wrong while removing profile picture. Please try again');
+            expect(screen.getByText('Something went wrong while removing profile picture. Please try again')).toBeTruthy();
         });
     });
 
@@ -291,7 +291,7 @@ describe('Tests related to the Profile Screen', () => {
         });
         fireEvent.press(screen.getByText('Remove'));
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Successfully Removed Profile');
+            expect(screen.getByText('Successfully Removed Profile')).toBeTruthy();
             expect(mockDispatch).toHaveBeenCalledWith(
                 expect.objectContaining({
                     type: 'user/setUserProperty',
@@ -343,7 +343,7 @@ describe('Tests related to the Profile Screen', () => {
         });
         fireEvent.press(screen.getByText('Gallery'));
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Profile picture updated');
+            expect(screen.getByText('Profile picture updated')).toBeTruthy();
             expect(mockDispatch).toHaveBeenCalledWith(
                 expect.objectContaining({
                     type: 'user/setUserProperty',
@@ -405,7 +405,7 @@ describe('Tests related to the Profile Screen', () => {
         });
         fireEvent.press(screen.getByText('Gallery'));
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Image size exceeded');
+            expect(screen.getByText('Image size exceeded')).toBeTruthy();
         });
     });
 
@@ -427,7 +427,7 @@ describe('Tests related to the Profile Screen', () => {
         });
         fireEvent.press(screen.getByText('Gallery'));
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Profile upload failed', 'Please try again later!');
+            expect(screen.getByText('Profile upload failed. Please try again later')).toBeTruthy();
         });
     });
 });

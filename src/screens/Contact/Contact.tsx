@@ -1,21 +1,23 @@
-import React, {useEffect, useState} from 'react';
-import {Alert, FlatList, Text, TouchableOpacity, View} from 'react-native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import Contacts from 'react-native-contacts';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {useDispatch, useSelector} from 'react-redux';
-import {ContactCard} from '../../components/ContactCard/ContactCard.tsx';
-import LoadingIndicator from '../../components/Loading/Loading.tsx';
-import {getStyles} from './Contact.styles';
-import {useAppTheme} from '../../hooks/appTheme';
-import {requestPermission} from '../../permissions/permissions.ts';
-import {setContacts} from '../../redux/reducers/contacts.reducer.ts';
-import {storeState} from '../../redux/store.ts';
-import {Contact as ContactType} from '../../types/Contacts.ts';
-import {RootStackParamList} from '../../types/Navigations.ts';
-import {getContactsDetails} from '../../utils/getContactsDetails.ts';
-import {getTokens} from '../../utils/getTokens.ts';
-import {Theme} from '../../utils/themes';
+import { useDispatch, useSelector } from 'react-redux';
+import { CustomizableAlert } from '../../components/Alert/CustomizableAlert.tsx';
+import { ContactCard } from '../../components/ContactCard/ContactCard.tsx';
+import { useAppTheme } from '../../hooks/appTheme';
+import { useAlertModal } from '../../hooks/useAlertModal.ts';
+import { requestPermission } from '../../permissions/permissions.ts';
+import { setContacts } from '../../redux/reducers/contacts.reducer.ts';
+import { storeState } from '../../redux/store.ts';
+import { Contact as ContactType } from '../../types/Contacts.ts';
+import { RootStackParamList } from '../../types/Navigations.ts';
+import { getContactsDetails } from '../../utils/getContactsDetails.ts';
+import { getTokens } from '../../utils/getTokens.ts';
+import { Theme } from '../../utils/themes';
+import { getStyles } from './Contact.styles';
+
 
 export function Contact(): React.JSX.Element {
   const theme: Theme = useAppTheme();
@@ -23,8 +25,11 @@ export function Contact(): React.JSX.Element {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [selectedTab, setSelectedTab] = useState('Contacts');
   const dispatch = useDispatch();
-  const contacts = useSelector((state: storeState) => state.contacts.contacts);
-  const user = useSelector((state: storeState) => state.user);
+  const contacts = useSelector((state: storeState)=> state.contacts.contacts);
+  const user = useSelector((state: storeState)=> state.user);
+  const {
+      alertVisible, alertMessage, alertType, showAlert, hideAlert,
+    } = useAlertModal();
   const [filteredContacts, setFilteredContacts] = useState<ContactType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -34,7 +39,7 @@ export function Contact(): React.JSX.Element {
         setIsLoading(true);
         const hasPermission = await requestPermission('contacts');
         if (!hasPermission) {
-          Alert.alert('Permission for contacts was denied');
+          showAlert('Permission for contacts was denied', 'warning');
           return;
         }
         const tokens = await getTokens(user.mobileNumber);
@@ -46,26 +51,21 @@ export function Contact(): React.JSX.Element {
           });
           return;
         }
-        const deviceContacts = await Contacts.getAll();
-        if (deviceContacts.length === 0) {
-          dispatch(setContacts([]));
-          return;
+          const deviceContacts = await Contacts.getAll();
+          if(deviceContacts.length === 0 ){
+            dispatch(setContacts([]));
+            return;
+          }
+          const resultantContacts = await getContactsDetails(deviceContacts, tokens.access_token);
+          dispatch(setContacts(resultantContacts));
+        } catch (error) {
+          showAlert('Something went wrong while fetching contacts details. Please try again', 'error');
+        } finally{
+          setIsLoading(false);
         }
-        const resultantContacts = await getContactsDetails(
-          deviceContacts,
-          tokens.access_token,
-        );
-        dispatch(setContacts(resultantContacts));
-      } catch (error) {
-        Alert.alert(
-          'Something went wrong while fetching contacts details. Please try again',
-        );
-      } finally {
-        setIsLoading(false);
-      }
     };
-    loadContacts();
-  }, [dispatch, navigation, user.mobileNumber]);
+        loadContacts();
+  }, [dispatch, navigation, showAlert, user.mobileNumber]);
 
   useEffect(() => {
     const filterContacts = (userContacts: ContactType[]) => {
@@ -145,6 +145,7 @@ export function Contact(): React.JSX.Element {
             />
           )}
         </View>
+        <CustomizableAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
       </View>
     </>
   );

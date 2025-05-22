@@ -1,38 +1,23 @@
-import {useCallback, useEffect, useRef, useState} from 'react';
-import {
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {
-  NavigationProp,
-  useFocusEffect,
-  useNavigation,
-} from '@react-navigation/native';
-import {useDispatch, useSelector} from 'react-redux';
-import {AlertModal} from '../../components/Modal/AlertModal';
-import {ProfileInfoTile} from '../../components/ProfileInfoTile/ProfileInfoTile';
-import {ProfilePicturePickerModal} from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
-import {useAppTheme} from '../../hooks/appTheme';
+import { useDispatch, useSelector } from 'react-redux';
+import { CustomizableAlert } from '../../components/Alert/CustomizableAlert';
 import LoadingIndicator from '../../components/Loading/Loading';
-import {
-  deleteAccount,
-  removeProfilePic,
-  updateProfilePic,
-} from './Profile.services';
-import {getStyles} from './Profile.styles';
-import {storeState} from '../../redux/store';
-import {setUserProperty} from '../../redux/reducers/user.reducer';
-import {RootStackParamList} from '../../types/Navigations';
-import {UploadImage} from '../../types/UploadImage';
-import {getTokens} from '../../utils/getTokens';
-import {Theme} from '../../utils/themes';
+import { AlertModal } from '../../components/Modal/AlertModal';
+import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTile';
+import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
+import { useAppTheme } from '../../hooks/appTheme';
+import { useAlertModal } from '../../hooks/useAlertModal';
+import { setUserProperty } from '../../redux/reducers/user.reducer';
+import { storeState } from '../../redux/store';
+import { RootStackParamList } from '../../types/Navigations';
+import { UploadImage } from '../../types/UploadImage';
+import { getTokens } from '../../utils/getTokens';
+import { Theme } from '../../utils/themes';
+import { deleteAccount, removeProfilePic, updateProfilePic } from './Profile.services';
+import { getStyles } from './Profile.styles';
 
 export const Profile = (): React.JSX.Element => {
   const userDetails = useSelector((state: storeState) => state.user);
@@ -40,6 +25,9 @@ export const Profile = (): React.JSX.Element => {
   const styles = getStyles(theme);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useDispatch();
+  const {
+      alertVisible, alertMessage, alertType, showAlert, hideAlert,
+    } = useAlertModal();
   const [editField, setEditField] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [signoutModal, setSignoutModal] = useState(false);
@@ -98,30 +86,27 @@ export const Profile = (): React.JSX.Element => {
             setUserProperty({
               property: 'profilePicture',
               value: result.profilePicture,
-            }),
-          );
-          setProfilePicUrl(result.profilePicture);
-          await EncryptedStorage.setItem(
-            'User Data',
-            JSON.stringify(updatedUser),
-          );
-          Alert.alert('Profile picture updated');
-        } else {
-          Alert.alert(result.message || 'Failed to upload profile picture');
+            }));
+            setProfilePicUrl(result.profilePicture);
+            await EncryptedStorage.setItem('User Data', JSON.stringify(updatedUser));
+            showAlert('Profile picture updated', 'success');
+          } else {
+            showAlert(result.message || 'Failed to upload profile picture', 'error');
+          }
+        } catch (error) {
+          showAlert('Profile upload failed. Please try again later', 'error');
+        } finally {
+          setUploadImage(null);
+          setLoading(false);
+          imageUploaded.current = false;
         }
-      } catch (error) {
-        Alert.alert('Profile upload failed', 'Please try again later!');
-      } finally {
-        setUploadImage(null);
-        setLoading(false);
-        imageUploaded.current = false;
-      }
+    
     };
 
     if (uploadImage) {
       handleUploadProfilePic();
-    }
-  }, [dispatch, navigation, uploadImage, userDetails]);
+    }  
+}, [dispatch, navigation, showAlert, uploadImage, userDetails]);
 
   const signout = async () => {
     try {
@@ -131,7 +116,7 @@ export const Profile = (): React.JSX.Element => {
         routes: [{name: 'WelcomeScreen'}],
       });
     } catch (error) {
-      Alert.alert('Something went wrong while signing out. Please try again');
+      showAlert('Something went wrong while signing out. Please try again', 'error');
     }
   };
 
@@ -145,38 +130,25 @@ export const Profile = (): React.JSX.Element => {
       });
       return;
     }
-    try {
+    try{
       setLoading(true);
-      const response = await removeProfilePic(
-        profilePicUrl as string,
-        userDetails.mobileNumber,
-        tokens.access_token,
-      );
-      if (response.ok) {
-        const updatedUser = {
-          ...userDetails,
-          profilePicture: '',
-        };
-        dispatch(
-          setUserProperty({
-            property: 'profilePicture',
-            value: '',
-          }),
-        );
-        await EncryptedStorage.setItem(
-          'User Data',
-          JSON.stringify(updatedUser),
-        );
-        Alert.alert('Successfully Removed Profile');
+      const response = await removeProfilePic(profilePicUrl as string, userDetails.mobileNumber, tokens.access_token);
+      if(response.ok) {
+          const updatedUser = {
+              ...userDetails,
+              profilePicture: '',
+          };
+          dispatch(setUserProperty({
+              property: 'profilePicture',
+              value: '',
+          }));
+          await EncryptedStorage.setItem('User Data', JSON.stringify(updatedUser));
+          showAlert('Successfully Removed Profile', 'success');
       }
       setProfilePicUrl('');
       setVisibleProfilePicModal(false);
-    } catch (error) {
-      Alert.alert(
-        'Something went wrong while removing profile picture. Please try again',
-      );
-    } finally{
-      setLoading(false);
+    } catch(error) {
+      showAlert('Something went wrong while removing profile picture. Please try again', 'error');
     }
   };
 
@@ -202,12 +174,10 @@ export const Profile = (): React.JSX.Element => {
           routes: [{name: 'WelcomeScreen'}],
         });
       } else {
-        Alert.alert('Failed to delete account');
+        showAlert('Failed to delete account', 'error');
       }
-    } catch (error) {
-      Alert.alert(
-        'Something went wrong while deleting account. Please try again',
-      );
+    } catch(error) {
+      showAlert('Something went wrong while deleting account. Please try again', 'error');
     }
   };
 
@@ -351,6 +321,7 @@ export const Profile = (): React.JSX.Element => {
           />
         </View>
       </ScrollView>
+      <CustomizableAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
     </KeyboardAvoidingView>
   );
 };

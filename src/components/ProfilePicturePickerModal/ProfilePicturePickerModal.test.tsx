@@ -107,19 +107,19 @@ describe('Profile Picture Picker Modal', ()=> {
 
     test('Should show alert when permissions are denied for camera', async () => {
         (CameraUtil.openCamera as jest.Mock).mockResolvedValue(null);
-        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, handleRemove);
+        const { getByLabelText, getByText } = renderModal(true, handleClose, '', setProfilePic, handleRemove);
         fireEvent.press(getByLabelText('camera-icon'));
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('You do not have permissions to select the picture');
+            expect(getByText('You do not have permissions to select the picture')).toBeTruthy();
         });
     });
 
     test('Should show alert when permissions are denied for gallery', async () => {
         (GalleryUtil.openPhotoLibrary as jest.Mock).mockResolvedValue(null);
-        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, handleRemove);
+        const { getByLabelText, getByText } = renderModal(true, handleClose, '', setProfilePic, handleRemove);
         fireEvent.press(getByLabelText('gallery-icon'));
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('You do not have permissions to select the picture');
+            expect(getByText('You do not have permissions to select the picture')).toBeTruthy();
         });
     });
 
@@ -129,10 +129,10 @@ describe('Profile Picture Picker Modal', ()=> {
             mime: 'text/plain',
             filename: 'invalid-file.txt',
         });
-        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, handleRemove);
+        const { getByLabelText, getByText } = renderModal(true, handleClose, '', setProfilePic, handleRemove);
         fireEvent.press(getByLabelText('camera-icon'));
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('File should be JPG/PNG/JPEG format');
+            expect(getByText('File should be JPG/PNG/JPEG format')).toBeTruthy();
         });
     });
 
@@ -142,10 +142,10 @@ describe('Profile Picture Picker Modal', ()=> {
             mime: 'text/plain',
             filename: 'invalid-file.txt',
         });
-        const { getByLabelText } = renderModal(true, handleClose, '', setProfilePic, handleRemove);
+        const { getByLabelText, getByText } = renderModal(true, handleClose, '', setProfilePic, handleRemove);
         fireEvent.press(getByLabelText('gallery-icon'));
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('File should be JPG/PNG/JPEG format');
+            expect(getByText('File should be JPG/PNG/JPEG format')).toBeTruthy();
         });
     });
 });

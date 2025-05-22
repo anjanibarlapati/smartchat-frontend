@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Image, Modal, Pressable, Text, View } from 'react-native';
+import { Image, Modal, Pressable, Text, View } from 'react-native';
 import { getStyles } from './ProfilePicturePickerModal.styles';
 import { UploadImage } from '../../types/UploadImage';
 import { openPhotoLibrary } from '../../utils/openPhotoLibrary';
@@ -7,23 +7,28 @@ import { openCamera } from '../../utils/openCamera';
 import { Theme } from '../../utils/themes';
 import { useAppTheme } from '../../hooks/appTheme';
 import { ProfilePicturePickerModalProps } from '../../types/ProfilePicturePickerModalProps';
+import { useAlertModal } from '../../hooks/useAlertModal';
+import { CustomizableAlert } from '../Alert/CustomizableAlert';
 
 
 export function ProfilePicturePickerModal(props: ProfilePicturePickerModalProps): React.JSX.Element{
 
     const theme: Theme = useAppTheme();
     const styles = getStyles(theme);
+    const {
+        alertVisible, alertMessage, alertType, showAlert, hideAlert,
+    } = useAlertModal();
 
     const validFileTypes = ['image/jpg', 'image/jpeg', 'image/png'];
 
     const selectPicture = async() => {
         const selectedPicture = await openPhotoLibrary();
         if(selectedPicture === null) {
-            Alert.alert('You do not have permissions to select the picture');
+            showAlert('You do not have permissions to select the picture', 'info');
             return;
         }
         if(!validFileTypes.find(type => type === selectedPicture.mime)) {
-            Alert.alert('File should be JPG/PNG/JPEG format');
+            showAlert('File should be JPG/PNG/JPEG format');
             return;
         }
         props.close();
@@ -37,11 +42,11 @@ export function ProfilePicturePickerModal(props: ProfilePicturePickerModalProps)
     const capturePicture = async() => {
         const selectedPicture = await openCamera();
         if(selectedPicture === null) {
-            Alert.alert('You do not have permissions to select the picture');
+            showAlert('You do not have permissions to select the picture', 'info');
             return;
         }
         if(!validFileTypes.find(type => type === selectedPicture.mime)) {
-            Alert.alert('File should be JPG/PNG/JPEG format');
+            showAlert('File should be JPG/PNG/JPEG format');
             return;
         }
         props.close();
@@ -81,6 +86,7 @@ export function ProfilePicturePickerModal(props: ProfilePicturePickerModalProps)
                         </View>
                     </View>
                 </View>
+                <CustomizableAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
         </Modal>
     );
 }

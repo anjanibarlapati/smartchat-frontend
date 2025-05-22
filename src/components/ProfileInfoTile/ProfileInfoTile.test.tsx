@@ -160,7 +160,7 @@ describe('Tests related to the Profile Info Tile component', () => {
         fireEvent.changeText(firtsNameValue, 'Virat');
         fireEvent.press(screen.getByLabelText('edit'));
         await waitFor(() => {
-            expect(Alert.alert).toHaveBeenCalledWith('Something went wrong while updating. Please try again');
+            expect(screen.getByText('Something went wrong while updating. Please try again')).toBeTruthy();
         });
     });
     it('Should not enter edit mode for Contact field', () => {

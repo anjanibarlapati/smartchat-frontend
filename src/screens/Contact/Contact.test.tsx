@@ -1,4 +1,4 @@
-import {fireEvent, render, waitFor} from '@testing-library/react-native';
+import {fireEvent, render, screen, waitFor} from '@testing-library/react-native';
 import './Contact';
 import {Contact} from './Contact';
 import {store} from '../../redux/store';
@@ -69,7 +69,7 @@ describe('Contacts Screen', () => {
       renderContactScreen();
 
       await waitFor(() => {
-        expect(Alert.alert).toHaveBeenCalledWith('Permission for contacts was denied');
+        expect(screen.getByText('Permission for contacts was denied')).toBeTruthy();
       });
     });
 
@@ -84,9 +84,7 @@ describe('Contacts Screen', () => {
       renderContactScreen();
 
       await waitFor(() => {
-        expect(Alert.alert).toHaveBeenCalledWith(
-          `Something went wrong while fetching contacts details. Please try again`
-        );
+        expect(screen.getByText(`Something went wrong while fetching contacts details. Please try again`)).toBeTruthy();
       });
     });
 
