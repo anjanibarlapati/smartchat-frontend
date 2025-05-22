@@ -1,76 +1,193 @@
+
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {socketConnection, socketDisconnect} from './socket';
-import {io} from 'socket.io-client';
+import { io } from 'socket.io-client';
+import { store } from '../redux/store';
+import { decryptMessage } from './decryptMessage';
+import { socketConnection, socketDisconnect } from './socket';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
 }));
 
-const mockOn = jest.fn();
-const mockDisconnect = jest.fn();
-
-jest.mock('socket.io-client', () => ({
-  io: jest.fn(() => ({
-    on: mockOn,
-    disconnect: mockDisconnect,
-    connected: true,
-    id: 'mock-socket-id',
-  })),
+jest.mock('./decryptMessage', () => ({
+  decryptMessage: jest.fn().mockResolvedValue('Decrypted message'),
 }));
 
-describe('Check for socket creation', () => {
+const mockOn = jest.fn();
+const mockDisconnect = jest.fn();
+const mockEmit = jest.fn();
+const mockRemoveAllListeners = jest.fn();
+
+jest.mock('socket.io-client', () => ({
+  io: jest.fn(),
+}));
+
+jest.spyOn(store, 'dispatch');
+const mockSocket = {
+  connected: false,
+  on: mockOn,
+  emit: mockEmit,
+  disconnect: mockDisconnect,
+  removeAllListeners: mockRemoveAllListeners,
+};
+
+(EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+  JSON.stringify({ access_token: 'valid_token' })
+);
+
+describe('Socket Utility', () => {
+  const mobileNumber = '6303974994';
+
   beforeEach(() => {
     jest.clearAllMocks();
+    mockOn.mockReset();
+    mockDisconnect.mockReset();
+    mockEmit.mockReset();
+    mockRemoveAllListeners.mockReset();
   });
 
   it('Should not connect if token is missing', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
-    await socketConnection();
+
+    await socketConnection(mobileNumber);
+
     expect(io).not.toHaveBeenCalled();
   });
 
-  it('Should disconnect socket when socketDisconnect is called', async () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    const mockToken = JSON.stringify({access_token: 'valid_token'});
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(mockToken);
-    await socketConnection();
-    await socketDisconnect();
-    expect(mockDisconnect).toHaveBeenCalled();
-    expect(consoleSpy).toHaveBeenCalledWith('Socket manually disconnected');
-  });
-
-
-  it('should handle error during token fetch', async () => {
-    const errorSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    (EncryptedStorage.getItem as jest.Mock).mockRejectedValue(
-      new Error('Fetch error'),
-    );
-    await socketConnection();
-    expect(errorSpy).toHaveBeenCalledWith(expect.any(Error));
-  });
-
-   it('should establish socket connection if access token is present', async () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+  it('Should not reconnect if already connected', async () => {
     const mockToken = JSON.stringify({ access_token: 'valid_token' });
 
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(mockToken);
-    await socketConnection();
 
-    expect(EncryptedStorage.getItem).toHaveBeenCalledWith('token');
+    (io as jest.Mock).mockReturnValueOnce({
+      connected: true,
+      on: mockOn,
+      emit: mockEmit,
+      disconnect: mockDisconnect,
+      removeAllListeners: mockRemoveAllListeners,
+    });
+
+    await socketConnection(mobileNumber);
+
+
+    expect(io).toHaveBeenCalledTimes(1);
+  });
+
+  it('Should disconnect socket when socketDisconnect is called', async () => {
+    const mockToken = JSON.stringify({ access_token: 'valid_token' });
+
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(mockToken);
+
+    (io as jest.Mock).mockReturnValueOnce({
+      connected: false,
+      on: mockOn,
+      emit: mockEmit,
+      disconnect: mockDisconnect,
+      removeAllListeners: mockRemoveAllListeners,
+    });
+
+    await socketConnection(mobileNumber);
+    await socketDisconnect();
+
+    expect(mockDisconnect).toHaveBeenCalled();
+  });
+
+  it('Should establish socket connection and emit register', async () => {
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      JSON.stringify({ access_token: 'valid_token' })
+    );
+
+    (io as jest.Mock).mockReturnValue(mockSocket);
+
+    await socketConnection(mobileNumber);
+
+    expect(EncryptedStorage.getItem).toHaveBeenCalledWith(mobileNumber);
     expect(io).toHaveBeenCalledWith(expect.any(String), {
       transports: ['websocket'],
     });
 
-    expect(mockOn).toHaveBeenCalledWith('connect', expect.any(Function));
-    expect(mockOn).toHaveBeenCalledWith('disconnect', expect.any(Function));
 
     const connectHandler = mockOn.mock.calls.find(call => call[0] === 'connect')?.[1];
-    if (connectHandler) {connectHandler();}
-    expect(consoleSpy).toHaveBeenCalledWith('socket connection', true);
-    expect(consoleSpy).toHaveBeenCalledWith('socket id is', 'mock-socket-id');
+    expect(connectHandler).toBeDefined();
 
-
+    connectHandler?.();
+    expect(mockEmit).toHaveBeenCalledWith('register', mobileNumber);
   });
+
+
+  it('Should handle newMessage and dispatch decrypted message', async () => {
+    const mockMsgData = {
+      senderMobileNumber: '6303977010',
+      message: 'encrypted',
+      nonce: 'nonce123',
+      sentAt: '2024-01-01T12:00:00Z',
+      receiverMobileNumber: mobileNumber,
+    };
+
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      JSON.stringify({ access_token: 'valid_token' })
+    );
+
+    (io as jest.Mock).mockReturnValue(mockSocket);
+
+    await socketConnection(mobileNumber);
+
+    const newMessageHandler = mockOn.mock.calls.find(call => call[0] === 'newMessage')?.[1];
+    expect(newMessageHandler).toBeDefined();
+
+    await newMessageHandler(mockMsgData);
+
+    expect(decryptMessage).toHaveBeenCalledWith(
+      mockMsgData.senderMobileNumber,
+      mockMsgData.message,
+      mockMsgData.nonce,
+      'valid_token'
+    );
+
+    expect(store.dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: expect.stringContaining('message'),
+        payload: expect.objectContaining({
+          chatId: mockMsgData.senderMobileNumber,
+          message: expect.objectContaining({
+            sender: mockMsgData.senderMobileNumber,
+            receiver: mockMsgData.receiverMobileNumber,
+            message: 'Decrypted message',
+            sentAt: mockMsgData.sentAt,
+            isSender: false,
+          }),
+        }),
+      })
+    );
+  });
+
+  it("Should register 'disconnect' event and log when disconnected", async () => {
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      JSON.stringify({ access_token: 'valid_token' })
+    );
+
+    (io as jest.Mock).mockReturnValue(mockSocket);
+
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
+
+    await socketConnection(mobileNumber);
+
+    const disconnectHandler = mockOn.mock.calls.find(call => call[0] === 'disconnect')?.[1];
+    expect(disconnectHandler).toBeDefined();
+
+    disconnectHandler?.();
+
+    expect(consoleSpy).toHaveBeenCalledWith('Socket disconnected');
+
+    consoleSpy.mockRestore();
+  });
+
+  it('Should throw an error if something fails during socket setup', async () => {
+    (EncryptedStorage.getItem as jest.Mock).mockRejectedValue(new Error('Failed to get token'));
+
+    await expect(socketConnection(mobileNumber)).rejects.toThrow('Unable to establish socket connection');
+  });
+
 
 
 });

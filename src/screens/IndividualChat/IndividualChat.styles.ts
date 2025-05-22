@@ -8,6 +8,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.primaryBackground,
+        padding: 8,
     },
 
 });

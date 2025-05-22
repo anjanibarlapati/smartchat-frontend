@@ -12,6 +12,7 @@ import Registration from '../screens/Registration/Registration.tsx';
 import WelcomeScreen from '../screens/Welcome/Welcome.tsx';
 import { RootStackParamList } from '../types/Navigations.ts';
 import { checkAccessToken } from '../utils/checkToken.ts';
+import {socketConnection} from '../utils/socket.ts';
 import { Tabs } from './tabs/Tabs.tsx';
 
 
@@ -46,6 +47,16 @@ export function AppNavigator(): React.JSX.Element {
       };
       loadUser();
     }, [dispatch, showAlert]);
+    useEffect(() => {
+    const setupsocket = async () => {
+      const storedUser = await EncryptedStorage.getItem('User Data');
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        socketConnection(user.mobileNumber);
+      }
+    };
+    setupsocket();
+  }, []);
 
     if(!isReady) {
       return <></>;

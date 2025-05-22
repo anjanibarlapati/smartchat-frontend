@@ -1,17 +1,32 @@
-import { IndividualChat } from './IndividualChat';
-import { Provider } from 'react-redux';
-import { store } from '../../redux/store';
-import { NavigationContainer } from '@react-navigation/native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { render, screen } from '@testing-library/react-native';
+import {
+  NavigationContainer,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
+import {render, screen} from '@testing-library/react-native';
+import {Provider} from 'react-redux';
+import {store} from '../../redux/store';
+import {IndividualChat} from './IndividualChat';
 
+jest.mock('react-native-encrypted-storage', () => ({
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+}));
 
-
+jest.mock('react-native-localize', () => ({
+  getCountry: jest.fn(() => 'IN'),
+}));
 
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
   useNavigation: jest.fn(),
   useRoute: jest.fn(),
+}));
+jest.mock('react-native-libsodium', () => ({
+  from_base64: jest.fn(),
+  randombytes_buf: jest.fn(),
+  crypto_box_easy: jest.fn(),
+  to_base64: jest.fn(),
 }));
 
 describe('IndividualChat', () => {
@@ -43,7 +58,7 @@ describe('IndividualChat', () => {
         <Provider store={store}>
           <IndividualChat />
         </Provider>
-      </NavigationContainer>
+      </NavigationContainer>,
     );
 
     const inputChatBox = screen.getByPlaceholderText('Type a message');
@@ -56,7 +71,7 @@ describe('IndividualChat', () => {
         <Provider store={store}>
           <IndividualChat />
         </Provider>
-      </NavigationContainer>
+      </NavigationContainer>,
     );
 
     const menuIcon = screen.getByLabelText('send-icon');
@@ -69,11 +84,10 @@ describe('IndividualChat', () => {
         <Provider store={store}>
           <IndividualChat />
         </Provider>
-      </NavigationContainer>
+      </NavigationContainer>,
     );
 
     const navigation = useNavigation();
     expect(navigation.setOptions).toHaveBeenCalledTimes(2);
   });
-
 });

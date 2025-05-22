@@ -16,10 +16,11 @@ import { setSuccessMessage } from '../../redux/reducers/auth.reducer';
 import { setUserDetails } from '../../redux/reducers/user.reducer';
 import { Credentials } from '../../types/Credentials';
 import { RegistrationScreenNavigationProps } from '../../types/Navigations';
-import { socketConnection } from '../../utils/socket';
+import { generateKeyPair, storePublicKey } from '../../utils/keyPairs';
 import { Theme } from '../../utils/themes';
 import { login } from './Login.service';
 import { getStyles } from './Login.styles';
+
 
 
 const LoginScreen = () => {
@@ -117,7 +118,20 @@ const LoginScreen = () => {
           'User Data',
           JSON.stringify(result.user),
         );
-        socketConnection();
+        const keyPair: any = await generateKeyPair();
+        const keys = await storePublicKey(
+          result.user.mobileNumber,
+          keyPair.publicKey,
+        );
+        if (keys.ok) {
+          await EncryptedStorage.setItem(
+            'privateKey',
+            JSON.stringify({
+              privateKey: keyPair.privateKey,
+            }),
+          );
+        }
+
         navigation.reset({
           index: 0,
           routes: [{name: 'Tabs'}],
