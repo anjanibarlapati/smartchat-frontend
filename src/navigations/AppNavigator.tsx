@@ -1,17 +1,18 @@
-import React, {useEffect, useState} from 'react';
-import {Alert} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React, {useEffect, useState} from 'react';
+import {Alert} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import SplashScreen from 'react-native-splash-screen';
 import {useDispatch} from 'react-redux';
-import {Tabs} from './tabs/Tabs.tsx';
-import WelcomeScreen from '../screens/Welcome/Welcome.tsx';
-import Registration from '../screens/Registration/Registration.tsx';
-import Login from '../screens/Login/Login.tsx';
-import {RootStackParamList} from '../types/Navigations.ts';
 import {setUserDetails} from '../redux/reducers/user.reducer.ts';
+import Login from '../screens/Login/Login.tsx';
+import Registration from '../screens/Registration/Registration.tsx';
+import WelcomeScreen from '../screens/Welcome/Welcome.tsx';
+import {RootStackParamList} from '../types/Navigations.ts';
 import {checkAccessToken} from '../utils/checkToken.ts';
+import {socketConnection} from '../utils/socket.ts';
+import {Tabs} from './tabs/Tabs.tsx';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -39,6 +40,16 @@ export function AppNavigator(): React.JSX.Element {
     };
     loadUser();
   }, [dispatch]);
+  useEffect(() => {
+    const setupsocket = async () => {
+      const storedUser = await EncryptedStorage.getItem('User Data');
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        socketConnection(user.mobileNumber);
+      }
+    };
+    setupsocket();
+  }, []);
 
   if (!isReady) {
     return <></>;
