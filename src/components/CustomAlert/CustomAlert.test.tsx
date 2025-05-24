@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
 import { store } from '../../redux/store';
 import { AlertType } from '../../types/AlertType';
-import { CustomizableAlert } from './CustomAlert';
+import { CustomeAlert } from './CustomAlert';
 
 describe('Tests related to CustomizabeAlert modal', () => {
   const renderCustomizableAlertModal = (
@@ -13,7 +13,7 @@ describe('Tests related to CustomizabeAlert modal', () => {
   ) => {
     return render(
       <Provider store={store}>
-        <CustomizableAlert
+        <CustomeAlert
           visible={visible}
           message={message}
           onClose={onClose}

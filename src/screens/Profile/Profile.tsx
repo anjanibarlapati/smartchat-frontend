@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
-import { CustomizableAlert } from '../../components/CustomAlert/CustomAlert';
+import { CustomeAlert } from '../../components/CustomAlert/CustomAlert';
 import LoadingIndicator from '../../components/Loading/Loading';
 import { AlertModal } from '../../components/AlertModal/AlertModal';
 import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTile';
@@ -322,7 +322,7 @@ export const Profile = (): React.JSX.Element => {
           />
         </View>
       </ScrollView>
-      <CustomizableAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+      <CustomeAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
     </KeyboardAvoidingView>
   );
 };

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { CustomizableAlert } from '../../components/CustomAlert/CustomAlert';
+import { CustomeAlert } from '../../components/CustomAlert/CustomAlert';
 import {getStyles} from './Home.styles';
 import {useAppTheme} from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal';
@@ -46,7 +46,7 @@ export function Home(): React.JSX.Element {
           />
         </TouchableOpacity>
       </View>
-      <CustomizableAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+      <CustomeAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
     </View>
   );
 }

@@ -25,7 +25,7 @@ const iconForAlertType = (type: AlertType) => {
   }
 };
 
-export const CustomizableAlert = ({
+export const CustomeAlert = ({
   visible,
   message,
   type = 'info',

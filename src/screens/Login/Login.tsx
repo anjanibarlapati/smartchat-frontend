@@ -6,7 +6,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
-import { CustomizableAlert } from '../../components/CustomAlert/CustomAlert';
+import { CustomeAlert } from '../../components/CustomAlert/CustomAlert';
 import Button from '../../components/Button/Button';
 import InputField from '../../components/InputField/InputField';
 import LoadingIndicator from '../../components/Loading/Loading';
@@ -194,7 +194,7 @@ const LoginScreen = () => {
         </TouchableOpacity>
       </View>
     </ScrollView>
-    <CustomizableAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+    <CustomeAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
   </KeyboardAvoidingView>
   );
 };

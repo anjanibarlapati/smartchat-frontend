@@ -8,7 +8,7 @@ import { Theme } from '../../utils/themes';
 import { useAppTheme } from '../../hooks/appTheme';
 import { ProfilePicturePickerModalProps } from '../../types/ProfilePicturePickerModalProps';
 import { useAlertModal } from '../../hooks/useAlertModal';
-import { CustomizableAlert } from '../CustomAlert/CustomAlert';
+import { CustomeAlert } from '../CustomAlert/CustomAlert';
 
 
 export function ProfilePicturePickerModal(props: ProfilePicturePickerModalProps): React.JSX.Element{
@@ -86,7 +86,7 @@ export function ProfilePicturePickerModal(props: ProfilePicturePickerModalProps)
                         </View>
                     </View>
                 </View>
-                <CustomizableAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+                <CustomeAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
         </Modal>
     );
 }
