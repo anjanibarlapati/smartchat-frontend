@@ -6,7 +6,9 @@ export const getStyles = (theme: Theme, isSender: boolean) =>
     container: {
       maxWidth: '80%',
       padding: 8,
-      borderRadius: 12,
+      borderRadius:12,
+      borderTopRightRadius: isSender ? 0 : 12,
+      borderTopLeftRadius: isSender ? 12 : 0,
       marginVertical: 8,
       alignSelf: isSender ? 'flex-end' : 'flex-start',
     },
