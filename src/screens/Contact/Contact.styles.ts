@@ -12,7 +12,6 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     gap: 10,
-    marginLeft: '1%',
   },
   backIcon: {
     height: 30,
