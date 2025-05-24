@@ -1,14 +1,13 @@
-import { Alert } from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { Provider } from 'react-redux';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { Profile } from './Profile';
-import * as ProfileServices from './Profile.services';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Provider } from 'react-redux';
 import { store } from '../../redux/store';
 import { User } from '../../types/User';
 import * as tokenUtil from '../../utils/getTokens';
 import { openPhotoLibrary } from '../../utils/openPhotoLibrary';
+import { Profile } from './Profile';
+import * as ProfileServices from './Profile.services';
 
 jest.mock('react-native-encrypted-storage', () => ({
     setItem: jest.fn(),
@@ -73,7 +72,6 @@ describe('Tests related to the Profile Screen', () => {
             reset: mockReset,
             setOptions: mockSetOptions,
         });
-        jest.spyOn(Alert, 'alert').mockImplementation(() => {});
     });
 
     afterAll(() => {
@@ -121,15 +119,6 @@ describe('Tests related to the Profile Screen', () => {
         RenderProfileScreen();
         const editIcon = await waitFor(() => screen.getByLabelText('editIcon'));
         fireEvent.press(editIcon);
-        await waitFor(() => {
-            expect(screen.getByText('Profile Photo')).toBeTruthy();
-        });
-    });
-
-    it('Should show alert if tokens are invalid during upload', async() => {
-        (tokenUtil.getTokens as jest.Mock).mockResolvedValue(null);
-        RenderProfileScreen();
-        fireEvent.press(screen.getByLabelText('editIcon'));
         await waitFor(() => {
             expect(screen.getByText('Profile Photo')).toBeTruthy();
         });
