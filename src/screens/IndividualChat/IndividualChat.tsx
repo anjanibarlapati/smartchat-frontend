@@ -47,14 +47,26 @@ export const IndividualChat = () => {
   const renderMenu = useCallback(() => <Menu />, []);
 
   useEffect(() => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: {display: 'none'},
+  const parentNav = navigation.getParent();
+
+  parentNav?.setOptions({
+    tabBarStyle: { display: 'none' },
+  });
+
+  return () => {
+    parentNav?.setOptions({
+      tabBarStyle: {
+        backgroundColor: theme.primaryBackground,
+        height: '12%',
+        shadowColor: theme.primaryShadowColor,
+        shadowOffset: { width: 1, height: 0.4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 1,
+      },
     });
-    return () =>
-      navigation.getParent()?.setOptions({
-        tabBarStyle: undefined,
-      });
-  }, [navigation]);
+  };
+}, [navigation, theme]);
 
   useEffect(() => {
     navigation.setOptions({

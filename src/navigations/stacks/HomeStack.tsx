@@ -1,20 +1,15 @@
-import {
-  createNativeStackNavigator,
-  NativeStackNavigationOptions,
-} from '@react-navigation/native-stack';
-import {Contact} from '../../screens/Contact/Contact';
-import {getStyles} from '../../screens/Contact/Contact.styles';
-import {Home} from '../../screens/Home/Home';
-import {
-  ContactScreenNavigationProps,
-  HomeStackParamList,
-} from '../../types/Navigations';
-import {Image, Text, TouchableOpacity, View} from 'react-native';
-import {Theme} from '../../utils/themes';
-import {useAppTheme} from '../../hooks/appTheme';
+import { createNativeStackNavigator, NativeStackNavigationOptions} from '@react-navigation/native-stack';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { useAppTheme } from '../../hooks/appTheme';
+import { Contact } from '../../screens/Contact/Contact';
 import '../../screens/Contact/Contact.styles';
-import {getStyles as getHomeScreenStyles} from '../../screens/Home/Home.styles';
-import {IndividualChat} from '../../screens/IndividualChat/IndividualChat';
+import { getStyles } from '../../screens/Contact/Contact.styles';
+import { Home } from '../../screens/Home/Home';
+import { getStyles as getHomeScreenStyles } from '../../screens/Home/Home.styles';
+import { IndividualChat } from '../../screens/IndividualChat/IndividualChat';
+import { Unread } from '../../screens/Unread/Unread';
+import {  ContactScreenNavigationProps,HomeStackParamList } from '../../types/Navigations';
+import { Theme } from '../../utils/themes';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -69,14 +64,14 @@ function getContactScreenOptions(
     };
 }
 
-export function HomeStack(): React.JSX.Element {
+export function HomeStack({ showUnread = false }: { showUnread?: boolean }): React.JSX.Element {
   const theme: Theme = useAppTheme();
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="Home"
-        component={Home}
-        options={GetHomeScreenOptions()}
+       component={showUnread ? Unread : Home}
+       options={GetHomeScreenOptions()}
       />
       <Stack.Screen
         name="Contact"
