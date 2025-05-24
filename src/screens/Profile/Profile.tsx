@@ -5,7 +5,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { CustomizableAlert } from '../../components/Alert/CustomizableAlert';
 import LoadingIndicator from '../../components/Loading/Loading';
-import { AlertModal } from '../../components/Modal/AlertModal';
+import { AlertModal } from '../../components/AlertModal/AlertModal';
 import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTile';
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
 import { useAppTheme } from '../../hooks/appTheme';
