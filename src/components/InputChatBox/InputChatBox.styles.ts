@@ -8,7 +8,7 @@ export const ChatInputStyles = (theme: Theme) =>
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: 12,
-      paddingVertical: 20,
+      paddingVertical: 5,
       gap:10,
     },
     container: {
