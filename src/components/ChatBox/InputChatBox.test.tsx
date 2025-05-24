@@ -16,8 +16,10 @@ jest.mock('react-native-libsodium', () => ({
   randombytes_buf: jest.fn(),
   crypto_box_easy: jest.fn(),
   to_base64: jest.fn(),
+  crypto_box_seal: jest.fn().mockReturnValue('mockEncryptedMessage'),
+  crypto_secretbox_easy: jest.fn().mockReturnValue('mockEncryptedMessage'),
 }));
-jest.mock('../SendButton/SendButton.service', () => ({
+jest.mock('./InputChatBox.service', () => ({
   sendMessage: jest.fn(() => Promise.resolve()),
 }));
 
@@ -28,9 +30,10 @@ describe('InputChatBox', () => {
         <InputChatBox receiverMobileNumber="" onSendMessage={() => {}} />
       </Provider>,
     );
-
     const input = screen.getByPlaceholderText('Type a message');
     expect(input).toBeTruthy();
+    const image = screen.getByLabelText('send-icon');
+    expect(image.props.source).toEqual(require('../../../assets/icons/send.png'));
   });
 
   test('Should send message and clear input', () => {

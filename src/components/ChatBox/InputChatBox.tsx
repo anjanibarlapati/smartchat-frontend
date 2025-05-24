@@ -1,9 +1,13 @@
 import React, {useState} from 'react';
-import {KeyboardAvoidingView, TextInput, View} from 'react-native';
+import {Image, KeyboardAvoidingView, TextInput, TouchableOpacity, View} from 'react-native';
 import {useAppTheme} from '../../hooks/appTheme';
 import {Theme} from '../../utils/themes';
-import {SendButton} from '../SendButton/SendButton';
 import {ChatInputStyles} from './InputChatBox.styles';
+import { addMessage, Message } from '../../redux/reducers/messages.reducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { storeState } from '../../redux/store';
+import { normalizeNumber } from '../../utils/getContactsDetails';
+import { sendMessage } from './InputChatBox.service';
 
 interface InputChatBoxProps {
   receiverMobileNumber: string;
@@ -16,18 +20,43 @@ export function InputChatBox({
   const theme: Theme = useAppTheme();
   const styles = ChatInputStyles(theme);
   const [message, setMessage] = useState('');
+  const dispatch = useDispatch();
+  const user = useSelector((state: storeState) => state.user);
+  const generateId = () => `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 
   const sendTextMessage = () => {
-    if (message.trim() === '') {
-      return;
-    }
     onSendMessage(message);
     setMessage('');
   };
 
+  const handleSend = async () => {
+    if (message.trim() === '') {
+      return;
+    }
+    const normalizedmobileNumber: any = normalizeNumber(receiverMobileNumber);
+    const msg: Message = {
+      id: generateId(),
+      sender: user.mobileNumber,
+      receiver: normalizedmobileNumber,
+      message,
+      sentAt: new Date().toISOString(),
+      isSender: true,
+      status: 'sent',
+    };
+
+    dispatch(addMessage({chatId: normalizedmobileNumber, message: msg}));
+    sendTextMessage();
+
+    try {
+      await sendMessage(user.mobileNumber, receiverMobileNumber, message);
+    } catch (error) {
+      throw new Error('unable to encrypt message');
+    }
+  };
+
   return (
     <KeyboardAvoidingView>
-      <View style={styles.wrapper}>
+      <View style= {styles.wrapper}>
         <View style={styles.container}>
           <TextInput
             style={styles.input}
@@ -37,14 +66,15 @@ export function InputChatBox({
             multiline
             maxLength={1000}
             scrollEnabled={true}
-            textAlignVertical="top"
           />
         </View>
-        <SendButton
-          receiverMobileNumber={receiverMobileNumber}
-          message={message}
-          onSend={sendTextMessage}
-        />
+        <TouchableOpacity onPress={handleSend} style={styles.sendButton}>
+          <Image
+            source={theme.images.send}
+            style={styles.sendButtonIcon}
+            accessibilityLabel="send-icon"
+          />
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );

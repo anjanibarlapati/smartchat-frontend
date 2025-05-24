@@ -1,6 +1,6 @@
 import { encryptMessage } from '../../utils/encryptMessage';
 import { getTokens } from '../../utils/getTokens';
-import { sendMessage } from './SendButton.service';
+import { sendMessage } from './InputChatBox.service';
 
 jest.mock('../../utils/getTokens');
 jest.mock('../../utils/encryptMessage');
