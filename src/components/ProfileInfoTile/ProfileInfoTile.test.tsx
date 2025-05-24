@@ -7,7 +7,6 @@ import { setUserProperty } from '../../redux/reducers/user.reducer';
 import * as ProfileServices from '../../screens/Profile/Profile.services';
 import * as tokenUtil from '../../utils/getTokens';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { Alert } from 'react-native';
 
 jest.mock('react-native-encrypted-storage', () => ({
     setItem: jest.fn(),
@@ -53,7 +52,6 @@ describe('Tests related to the Profile Info Tile component', () => {
         (useNavigation as jest.Mock).mockReturnValue({
             reset: mockReset,
         });
-        jest.spyOn(Alert, 'alert').mockImplementation(() => {});
     });
 
     const renderUI = (label: string, value: string, editField: string = '') => {
@@ -126,6 +124,7 @@ describe('Tests related to the Profile Info Tile component', () => {
             expect(screen.getByText('Updated first name successfully')).toBeTruthy();
         });
     });
+
     it('Should update password, dispatch action, set encrypted storage on success and show alert', async () => {
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'access-token' });
         (ProfileServices.updateProfileDetails as jest.Mock).mockResolvedValue({ ok: true });
@@ -202,4 +201,44 @@ describe('Tests related to the Profile Info Tile component', () => {
             expect(setEditFieldMock).toHaveBeenCalledWith('');
         });
     });
+
+    it('Should display an alert if unappropriate value is given', async () => {
+        const setEditFieldMock = jest.fn();
+        const setLoading = jest.fn();
+        render(
+            <NavigationContainer>
+                <Provider store={store}>
+                    <ProfileInfoTile
+                        label="First Name"
+                        value="Varun"
+                        editField="First Name"
+                        setEditField={setEditFieldMock}
+                        setLoading={setLoading}
+                        image={require('../../../assets/icons/user-icon.png')}
+                    />
+                </Provider>
+            </NavigationContainer>
+        );
+        const firtsNameValue = screen.getByPlaceholderText('Varun');
+        fireEvent.changeText(firtsNameValue, '');
+        fireEvent.press(screen.getByLabelText('edit'));
+        await waitFor(() => {
+            expect(screen.getByText('Please give a different value')).toBeTruthy();
+        });
+        fireEvent.press(screen.getByText(/ok/i));
+        await waitFor(() => {
+            expect(setEditFieldMock).toHaveBeenCalledWith('');
+        });
+    });
+
+    it('Should display an alert if invalid email is given', async () => {
+        renderUI('Email', 'anjani@gmail.com', 'Email');
+        const emailValue = screen.getByPlaceholderText('anjani@gmail.com');
+        fireEvent.changeText(emailValue, 'Virat');
+        fireEvent.press(screen.getByLabelText('edit'));
+        await waitFor(() => {
+            expect(screen.getByText('Invalid email format')).toBeTruthy();
+        });
+    });
+
 });
