@@ -3,7 +3,7 @@ import {format} from 'date-fns';
 import React, {useCallback, useEffect} from 'react';
 import {FlatList, View} from 'react-native';
 import {useSelector} from 'react-redux';
-import {InputChatBox} from '../../components/ChatBox/InputChatBox';
+import {InputChatBox} from '../../components/InputChatBox/InputChatBox';
 import {ChatHeader} from '../../components/ChatHeader/ChatHeader';
 import {Menu} from '../../components/Menu/Menu';
 import {MessageBox} from '../../components/MessageBox/MessageBox';
