@@ -34,14 +34,12 @@ export const ChatOptionsModal = ({
       onRequestClose={onClose}
       >
       <TouchableWithoutFeedback onPress={onClose} >
-        <View style={Platform.OS === 'android' ? [styles.overlay, {paddingTop: 57}] : [styles.overlay, {paddingTop: 101}]}  accessibilityLabel="overlay">
+        <View style={Platform.OS === 'android' ? [styles.overlay, {paddingTop: 50}] : [styles.overlay, {paddingTop: 101}]}  accessibilityLabel="overlay">
             <View style={styles.modalContainer} >
-              <TouchableOpacity
-                onPress={onClearChat}
-                style={styles.clearChatButton}>
+              <TouchableOpacity onPress={onClearChat}>
                 <Text style={styles.text}>Clear Chat</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={onBlock} style={styles.blockButton}>
+              <TouchableOpacity onPress={onBlock}>
                 <Text style={styles.text}>Block</Text>
               </TouchableOpacity>
             </View>

@@ -60,7 +60,7 @@ describe('ChatOptionsModal Component', () => {
     const overlayView = getByLabelText('overlay');
     const styles = overlayView.props.style;
 
-    expect(styles).toContainEqual({ paddingTop: 57 });
+    expect(styles).toContainEqual({ paddingTop: 50 });
   });
 
   it('should apply correct paddingTop based on the platform (iOS)', () => {
