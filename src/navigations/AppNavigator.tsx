@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import SplashScreen from 'react-native-splash-screen';
 import { useDispatch } from 'react-redux';
-import { CustomizableAlert } from '../components/Alert/CustomizableAlert.tsx';
+import { CustomizableAlert } from '../components/CustomAlert/CustomAlert.tsx';
 import { useAlertModal } from '../hooks/useAlertModal.ts';
 import { setUserDetails } from '../redux/reducers/user.reducer.ts';
 import Login from '../screens/Login/Login.tsx';
@@ -12,7 +12,7 @@ import Registration from '../screens/Registration/Registration.tsx';
 import WelcomeScreen from '../screens/Welcome/Welcome.tsx';
 import { RootStackParamList } from '../types/Navigations.ts';
 import { checkAccessToken } from '../utils/checkToken.ts';
-import {socketConnection} from '../utils/socket.ts';
+import { socketConnection } from '../utils/socket.ts';
 import { Tabs } from './tabs/Tabs.tsx';
 
 

@@ -13,7 +13,7 @@ import { User } from '../../types/User';
 import { getTokens } from '../../utils/getTokens';
 import { Properties } from '../../utils/Properties';
 import { Theme } from '../../utils/themes';
-import { CustomizableAlert } from '../Alert/CustomizableAlert';
+import { CustomizableAlert } from '../CustomAlert/CustomAlert';
 import { getStyles } from './ProfileInfoTile.styles';
 interface ProfileInfoTileProps {
   label: string;

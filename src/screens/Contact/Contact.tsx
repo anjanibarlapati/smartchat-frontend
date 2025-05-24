@@ -4,7 +4,7 @@ import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import Contacts from 'react-native-contacts';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
-import { CustomizableAlert } from '../../components/Alert/CustomizableAlert.tsx';
+import { CustomizableAlert } from '../../components/CustomAlert/CustomAlert.tsx';
 import { ContactCard } from '../../components/ContactCard/ContactCard.tsx';
 import LoadingIndicator from '../../components/Loading/Loading.tsx';
 import { useAppTheme } from '../../hooks/appTheme';

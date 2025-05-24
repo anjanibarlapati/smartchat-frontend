@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
 import { store } from '../../redux/store';
 import { AlertType } from '../../types/AlertType';
-import { CustomizableAlert } from './CustomizableAlert';
+import { CustomizableAlert } from './CustomAlert';
 
 describe('Tests related to CustomizabeAlert modal', () => {
   const renderCustomizableAlertModal = (

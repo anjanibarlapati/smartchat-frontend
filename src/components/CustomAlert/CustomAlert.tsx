@@ -2,7 +2,7 @@ import { Image, Modal, Text, TouchableOpacity, View } from 'react-native';
 import { useAppTheme } from '../../hooks/appTheme';
 import { AlertType } from '../../types/AlertType';
 import { Theme } from '../../utils/themes';
-import { getStyles } from './CustomizableAlert.styles';
+import { getStyles } from './CustomAlert.styles';
 
 interface CustomizableAlertProps {
   visible: boolean;
