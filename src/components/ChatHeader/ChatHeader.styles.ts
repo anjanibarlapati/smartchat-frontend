@@ -16,14 +16,13 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
-        gap:10,
-        backgroundColor: theme.primaryBackground,
+        gap:15,
         width: '100%',
     },
     profileImage: {
-        height:35,
-        width:35,
-        borderRadius: 20,
+        height:40,
+        width:40,
+        borderRadius: 50,
     },
     profileDetails: {
         display: 'flex',
@@ -31,12 +30,12 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
         gap:2,
     },
     nameText: {
-        fontSize: 12,
+        fontSize: 16,
         color: theme.primaryTextColor,
         fontFamily:'Nunito-Bold',
     },
     numberText: {
-        fontSize: 10,
+        fontSize: 14,
         color: theme.primaryTextColor,
         fontFamily:'Nunito-SemiBold',
     },
