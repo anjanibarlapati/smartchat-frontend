@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useState } from 'react';
 import { Image, ImageSourcePropType, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
@@ -128,6 +128,7 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
               <View style={styles.statusBox}>
                 <TouchableOpacity
                   onPress={() => {
+                    props.setEditField('');
                     updateDetails();
                   }}>
                   <Image
