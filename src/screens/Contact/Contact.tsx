@@ -139,7 +139,7 @@ export function Contact(): React.JSX.Element {
           ) : (
             <FlatList
               data={filteredContacts}
-              keyExtractor={item => `${item.mobileNumber}+${item.name}`}
+              keyExtractor={item => `${item.originalNumber}+${item.name}`}
               contentContainerStyle={styles.contactsBody}
               initialNumToRender={10}
               renderItem={({item}) => <ContactCard contact={item} />}
