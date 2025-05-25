@@ -18,8 +18,8 @@ function ContactCard ({contact}: {contact: Contact}):React.JSX.Element {
         <TouchableOpacity style={styles.body} accessibilityLabel="contact-card"
             onPress={()=> {
                 contact.doesHaveAccount ?
-                navigation.replace('IndividualChat', {name: contact.name, mobileNumber: contact.mobileNumber, profilePic: contact.profilePicture ? contact.profilePicture : ''})
-                : sendSmsInvite(contact.mobileNumber);}
+                navigation.replace('IndividualChat', {name: contact.name, originalNumber: contact.originalNumber, mobileNumber: contact.mobileNumber, profilePic: contact.profilePicture ? contact.profilePicture : ''})
+                : sendSmsInvite(contact.originalNumber);}
             }
         >
             <Image
@@ -32,11 +32,11 @@ function ContactCard ({contact}: {contact: Contact}):React.JSX.Element {
             <View style={styles.contactContainer}>
                 <View style={styles.nameInviteContainer}>
                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.contactName}>{contact.name}</Text>
-                    { !contact.doesHaveAccount && <Pressable onPress= {()=> sendSmsInvite(contact.mobileNumber)}>
+                    { !contact.doesHaveAccount && <Pressable onPress= {()=> sendSmsInvite(contact.originalNumber)}>
                         <Text style={styles.inviteText}>Invite</Text>
                     </Pressable> }
                 </View>
-                <Text style={styles.contactNumber}>{contact.mobileNumber}</Text>
+                <Text style={styles.contactNumber}>{contact.originalNumber}</Text>
             </View>
         </TouchableOpacity>
     );
