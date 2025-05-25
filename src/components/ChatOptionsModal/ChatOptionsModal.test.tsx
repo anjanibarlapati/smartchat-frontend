@@ -1,8 +1,8 @@
-import { render, screen, fireEvent } from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
+import { Platform } from 'react-native';
 import { Provider } from 'react-redux';
 import { store } from '../../redux/store';
 import { ChatOptionsModal } from './ChatOptionsModal';
-import { Platform } from 'react-native';
 const renderChatOptionsModal = ({
   visible = true,
   onClearChat = jest.fn(),
@@ -17,7 +17,7 @@ const renderChatOptionsModal = ({
         onBlock={onBlock}
         onClose={onClose}
       />
-    </Provider>
+    </Provider>,
   );
 };
 
@@ -31,23 +31,39 @@ describe('ChatOptionsModal Component', () => {
 
   it('should call onClearChat when "Clear Chat" is pressed', () => {
     const handleClearChat = jest.fn();
-    renderChatOptionsModal({ onClearChat: handleClearChat });
+    renderChatOptionsModal({onClearChat: handleClearChat});
 
     fireEvent.press(screen.getByText('Clear Chat'));
+    fireEvent.press(screen.getByText('Yes'));
     expect(handleClearChat).toHaveBeenCalledTimes(1);
   });
 
   it('should call onBlock when "Block" is pressed', () => {
     const handleBlock = jest.fn();
-    renderChatOptionsModal({ onBlock: handleBlock });
+    renderChatOptionsModal({onBlock: handleBlock});
 
     fireEvent.press(screen.getByText('Block'));
+    fireEvent.press(screen.getByText('Yes'));
     expect(handleBlock).toHaveBeenCalledTimes(1);
+  });
+  it('should close clear alert when "Cancel" is pressed', () => {
+    renderChatOptionsModal();
+
+    fireEvent.press(screen.getByText('Clear Chat'));
+    fireEvent.press(screen.getByText('Cancel'));
+    expect(screen.queryByText('Cancel')).toBeNull();
+  });
+  it('should close block alert when " Cancel" is pressed', () => {
+    renderChatOptionsModal();
+
+    fireEvent.press(screen.getByText('Block'));
+    fireEvent.press(screen.getByText('Cancel'));
+    expect(screen.queryByText('Cancel')).toBeNull();
   });
 
   it('should call onClose when clicking outside the modal', () => {
     const handleClose = jest.fn();
-    renderChatOptionsModal({ onClose: handleClose });
+    renderChatOptionsModal({onClose: handleClose});
 
     fireEvent.press(screen.getByLabelText('overlay'));
     expect(handleClose).toHaveBeenCalledTimes(1);
@@ -55,21 +71,21 @@ describe('ChatOptionsModal Component', () => {
 
   it('should apply correct paddingTop based on the platform (Android)', () => {
     Platform.OS = 'android';
-    const { getByLabelText } = renderChatOptionsModal();
+    const {getByLabelText} = renderChatOptionsModal();
 
     const overlayView = getByLabelText('overlay');
     const styles = overlayView.props.style;
 
-    expect(styles).toContainEqual({ paddingTop: 50 });
+    expect(styles).toContainEqual({paddingTop: 50});
   });
 
   it('should apply correct paddingTop based on the platform (iOS)', () => {
     Platform.OS = 'ios';
-    const { getByLabelText } = renderChatOptionsModal();
+    const {getByLabelText} = renderChatOptionsModal();
 
     const overlayView = getByLabelText('overlay');
     const styles = overlayView.props.style;
 
-    expect(styles).toContainEqual({ paddingTop: 101 });
+    expect(styles).toContainEqual({paddingTop: 101});
   });
 });
