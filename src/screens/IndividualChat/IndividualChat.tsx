@@ -10,7 +10,6 @@ import {MessageBox} from '../../components/MessageBox/MessageBox';
 import {useAppTheme} from '../../hooks/appTheme';
 import {storeState} from '../../redux/store';
 import {HomeStackParamList} from '../../types/Navigations';
-import {normalizeNumber} from '../../utils/getContactsDetails';
 import {Theme} from '../../utils/themes';
 import {getStyles} from './IndividualChat.styles';
 
@@ -25,23 +24,21 @@ export const IndividualChat = () => {
   const styles = getStyles(theme);
   const route = useRoute<IndividualChatRouteProp>();
 
-  const {name, mobileNumber, profilePic} = route.params;
-
-  const normalizedmobileNumber: any = normalizeNumber(mobileNumber);
+  const {name, originalNumber, mobileNumber, profilePic} = route.params;
 
   const messages = useSelector(
-    (state: storeState) => state.messages[normalizedmobileNumber] || [],
+    (state: storeState) => state.messages[mobileNumber] || [],
   );
 
   const renderChatHeader = useCallback(
     () => (
       <ChatHeader
         name={name}
-        mobileNumber={mobileNumber}
+        originalNumber={originalNumber}
         profilePic={profilePic}
       />
     ),
-    [name, mobileNumber, profilePic],
+    [name, originalNumber, profilePic],
   );
 
   const renderMenu = useCallback(() => <Menu />, []);

@@ -34,6 +34,7 @@ export type HomeStackParamList = {
     Contact: undefined;
     IndividualChat: {
         name: string;
+        originalNumber: string,
         mobileNumber: string;
         profilePic: string | null;
       };

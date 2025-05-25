@@ -46,7 +46,8 @@ describe('IndividualChat', () => {
     (useRoute as jest.Mock).mockReturnValue({
       params: {
         name: 'Shailu',
-        mobileNumber: '+91 9392345627',
+        originalNumber: '9392345627',
+        mobileNumber: '+91 93923 45627',
         profilePic: 'pic-url',
       },
     });
