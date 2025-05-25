@@ -18,6 +18,7 @@ import { getTokens } from '../../utils/getTokens';
 import { Theme } from '../../utils/themes';
 import { deleteAccount, removeProfilePic, updateProfilePic } from './Profile.services';
 import { getStyles } from './Profile.styles';
+import { socketDisconnect } from '../../utils/socket';
 
 export const Profile = (): React.JSX.Element => {
   const userDetails = useSelector((state: storeState) => state.user);
@@ -109,6 +110,7 @@ export const Profile = (): React.JSX.Element => {
 
   const signout = async () => {
     try {
+      await socketDisconnect();
       await EncryptedStorage.clear();
       navigation.reset({
         index: 0,

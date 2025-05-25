@@ -16,19 +16,17 @@ export const socketConnection = async (mobileNumber: string) => {
     const generateId = () => `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const token = await EncryptedStorage.getItem(mobileNumber);
     if (!token) { return; }
-
     const tokenData = JSON.parse(token);
-    if (socket && socket.connected) { return; }
+    await socketDisconnect();
 
     if (tokenData.access_token) {
-      socket = io(BASE_URL, { transports: ['websocket'] });
+      socket = io(BASE_URL, { transports: ['websocket']});
 
       socket.on('connect', () => {
         socket?.emit('register', mobileNumber);
       });
 
       socket.on('newMessage', async (data) => {
-
         const actualMessage = await decryptMessage(
           data.senderMobileNumber,
           data.message,
@@ -56,7 +54,7 @@ export const socketConnection = async (mobileNumber: string) => {
 };
 
 
-export const socketDisconnect = () => {
+export const socketDisconnect = async () => {
   if (socket) {
     socket.removeAllListeners();
     socket.disconnect();
