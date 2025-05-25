@@ -1,19 +1,13 @@
 import { BASE_URL } from '../../utils/constants';
 import { encryptMessage } from '../../utils/encryptMessage';
-import { normalizeNumber } from '../../utils/getContactsDetails';
 import { getTokens } from '../../utils/getTokens';
 
 
 export const sendMessage = async (senderMobileNumber: string, receiverMobileNumber: string, message: string) => {
   try {
     const tokens = await getTokens(senderMobileNumber);
-    const receiverMobile = receiverMobileNumber;
-    const normalizedreceiverMobileNumber = normalizeNumber(receiverMobile);
-    if (!normalizedreceiverMobileNumber) {
-      throw new Error('Invalid mobile number');
-    }
-    const { ciphertext, nonce } = await encryptMessage(normalizedreceiverMobileNumber, message, tokens.access_token);
 
+    const { ciphertext, nonce } = await encryptMessage(receiverMobileNumber, message, tokens.access_token);
     const response = await fetch(`${BASE_URL}user/message`, {
       method: 'POST',
       headers: {
@@ -22,7 +16,7 @@ export const sendMessage = async (senderMobileNumber: string, receiverMobileNumb
       },
       body: JSON.stringify({
         senderMobileNumber: senderMobileNumber,
-        receiverMobileNumber: normalizedreceiverMobileNumber,
+        receiverMobileNumber: receiverMobileNumber,
         message: ciphertext,
         nonce: nonce,
       }),

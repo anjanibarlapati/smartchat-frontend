@@ -28,7 +28,8 @@ jest.mock('@react-navigation/native', () => ({
 
 const contact:Contact = {
     name:'Anjani',
-    mobileNumber:'8639523822',
+    originalNumber: '8639523822',
+    mobileNumber:'+91 86395 23822',
     profilePicture:'/image.jpg',
     doesHaveAccount: false,
 };
@@ -48,7 +49,7 @@ describe('Contact Card Component', () => {
       const {getByLabelText, getByText} = renderContactCard(contact);
       expect(getByLabelText('profile-image').props.source).toEqual({uri: contact.profilePicture});
       expect(getByText(contact.name)).toBeTruthy();
-      expect(getByText(contact.mobileNumber)).toBeTruthy();
+      expect(getByText(contact.originalNumber)).toBeTruthy();
       expect(getByText(/invite/i)).toBeTruthy();
    });
 
@@ -56,7 +57,7 @@ describe('Contact Card Component', () => {
       const {getByLabelText, getByText} = renderContactCard({...contact, profilePicture:''});
       expect(getByLabelText('profile-image').props.source).toEqual(require('../../../assets/images/profileImage.png'));
       expect(getByText(contact.name)).toBeTruthy();
-      expect(getByText(contact.mobileNumber)).toBeTruthy();
+      expect(getByText(contact.originalNumber)).toBeTruthy();
       expect(getByText(/invite/i)).toBeTruthy();
    });
 
@@ -65,14 +66,14 @@ describe('Contact Card Component', () => {
         const inviteButton = getByText(/invite/i);
          expect(inviteButton).toBeTruthy();
         fireEvent.press(inviteButton);
-        expect(sendSmsInvite).toHaveBeenCalledWith(contact.mobileNumber);
+        expect(sendSmsInvite).toHaveBeenCalledWith(contact.originalNumber);
     });
 
     test('Should send sms invite on clicking contact who are not on app', async () => {
         const { getByLabelText } = renderContactCard(contact);
         const contactCard = getByLabelText(/contact-card/i);
         fireEvent.press(contactCard);
-        expect(sendSmsInvite).toHaveBeenCalledWith(contact.mobileNumber);
+        expect(sendSmsInvite).toHaveBeenCalledWith(contact.originalNumber);
     });
 
     test('Should navigate to individual screen on clicking contact who are on app', async () => {
@@ -85,6 +86,7 @@ describe('Contact Card Component', () => {
         fireEvent.press(contactCard);
         expect(mockReplace).toHaveBeenCalledWith('IndividualChat', {
           name: contact.name,
+          originalNumber: contact.originalNumber,
           mobileNumber: contact.mobileNumber,
           profilePic: contact.profilePicture,
         });
@@ -101,6 +103,7 @@ describe('Contact Card Component', () => {
         fireEvent.press(contactCard);
         expect(mockReplace).toHaveBeenCalledWith('IndividualChat', {
           name: contact.name,
+          originalNumber: contact.originalNumber,
           mobileNumber: contact.mobileNumber,
           profilePic: '',
         });

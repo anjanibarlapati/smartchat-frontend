@@ -9,7 +9,7 @@ jest.mock('@react-navigation/native', () => ({
 
 const contact = {
     name: 'Virat',
-    mobileNumber: '+91 9393939393',
+    originalNumber: '+91 93939 939393',
     profilePic: 'https://amazon.s3.bucket.profile-images/my-pic.png',
 };
 
@@ -23,7 +23,7 @@ describe('Tests related to the ChatHeader component', () => {
     const renderChatHeader = () => {
         return render(
             <Provider store={store}>
-                <ChatHeader name={contact.name} mobileNumber={contact.mobileNumber} />
+                <ChatHeader name={contact.name} originalNumber={contact.originalNumber} />
             </Provider>
         );
     };
@@ -31,7 +31,7 @@ describe('Tests related to the ChatHeader component', () => {
     it('Should render all fields in the Chat Header component', () => {
         renderChatHeader();
         expect(screen.getByText(contact.name)).toBeTruthy();
-        expect(screen.getByText(contact.mobileNumber)).toBeTruthy();
+        expect(screen.getByText(contact.originalNumber)).toBeTruthy();
         expect(screen.getByLabelText('Back-Icon')).toBeTruthy();
         expect(screen.getByLabelText('Profile-Image')).toBeTruthy();
         expect(screen.getByLabelText('Profile-Image').props.source).toEqual(require('../../../assets/images/profileImage.png'));
@@ -40,7 +40,7 @@ describe('Tests related to the ChatHeader component', () => {
     it('Should render the contact profile Image', () => {
         render(
             <Provider store={store}>
-                <ChatHeader name={contact.name} mobileNumber={contact.mobileNumber} profilePic={contact.profilePic}/>
+                <ChatHeader name={contact.name} originalNumber={contact.originalNumber} profilePic={contact.profilePic}/>
             </Provider>
         );
         expect(screen.getByLabelText('Profile-Image').props.source).toEqual({uri: contact.profilePic});

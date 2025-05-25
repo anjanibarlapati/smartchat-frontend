@@ -6,11 +6,11 @@ import { useNavigation } from '@react-navigation/native';
 
 interface ChatHeaderProps {
     name: string,
-    mobileNumber: string,
+    originalNumber: string,
     profilePic?: string | null
 }
 
-export const ChatHeader = ({name, mobileNumber, profilePic}: ChatHeaderProps) => {
+export const ChatHeader = ({name, originalNumber, profilePic}: ChatHeaderProps) => {
     const theme: Theme = useAppTheme();
     const styles = getStyles(theme);
     const navigation = useNavigation();
@@ -32,7 +32,7 @@ export const ChatHeader = ({name, mobileNumber, profilePic}: ChatHeaderProps) =>
                     style={styles.nameText}>
                     {name}
                 </Text>
-                <Text style={styles.numberText}>{mobileNumber}</Text>
+                <Text style={styles.numberText}>{originalNumber}</Text>
             </View>
         </View>
     </View>

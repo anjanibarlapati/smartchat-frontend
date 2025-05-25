@@ -6,7 +6,6 @@ import {ChatInputStyles} from './InputChatBox.styles';
 import { addMessage, Message } from '../../redux/reducers/messages.reducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { storeState } from '../../redux/store';
-import { normalizeNumber } from '../../utils/getContactsDetails';
 import { sendMessage } from './InputChatBox.service';
 
 interface InputChatBoxProps {
@@ -33,22 +32,22 @@ export function InputChatBox({
     if (message.trim() === '') {
       return;
     }
-    const normalizedmobileNumber: any = normalizeNumber(receiverMobileNumber);
     const msg: Message = {
       id: generateId(),
       sender: user.mobileNumber,
-      receiver: normalizedmobileNumber,
-      message,
+      receiver: receiverMobileNumber,
+      message: message.trim(),
       sentAt: new Date().toISOString(),
       isSender: true,
       status: 'sent',
     };
 
-    dispatch(addMessage({chatId: normalizedmobileNumber, message: msg}));
-    sendTextMessage();
 
+    dispatch(addMessage({chatId: receiverMobileNumber, message: msg}));
+    sendTextMessage();
     try {
-      await sendMessage(user.mobileNumber, receiverMobileNumber, message);
+      await sendMessage(user.mobileNumber, receiverMobileNumber, message.trim());
+
     } catch (error) {
       throw new Error('unable to encrypt message');
     }

@@ -43,7 +43,8 @@ export const getContactsDetails = async (contacts: Contact[], access_token: stri
       const data = result.find((resultantContact: UserContact) => resultantContact.mobileNumber === contact.mobileNumber);
       return {
         name: contact.name,
-        mobileNumber: contact.originalNumber,
+        originalNumber: contact.originalNumber,
+        mobileNumber: data ? data.mobileNumber : contact.originalNumber,
         doesHaveAccount: data ? data.doesHaveAccount : false,
         profilePicture: data ? data.profilePicture : null,
       };

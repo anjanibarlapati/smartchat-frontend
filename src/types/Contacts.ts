@@ -6,6 +6,7 @@ export type UserContact = {
 
 export type Contact = UserContact & {
   name: string;
+  originalNumber: string;
 }
 
 export type Contacts = {
