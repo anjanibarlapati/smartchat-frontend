@@ -22,6 +22,7 @@ import {generateKeyPair, storePublicKey} from '../../utils/keyPairs';
 import { Theme } from '../../utils/themes';
 import { register } from './Registration.service';
 import { getStyles } from './Registration.styles';
+import { socketConnection } from '../../utils/socket';
 
 
 const Registration = () => {
@@ -178,6 +179,7 @@ const Registration = () => {
             }),
           );
         }
+        await socketConnection(result.user.mobileNumber);
         navigation.reset({
           index: 0,
           routes: [{name: 'Tabs'}],

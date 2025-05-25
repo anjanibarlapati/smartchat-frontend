@@ -20,6 +20,7 @@ import { generateKeyPair, storePublicKey } from '../../utils/keyPairs';
 import { Theme } from '../../utils/themes';
 import { login } from './Login.service';
 import { getStyles } from './Login.styles';
+import { socketConnection } from '../../utils/socket';
 
 
 
@@ -131,7 +132,7 @@ const LoginScreen = () => {
             }),
           );
         }
-
+        await socketConnection(result.user.mobileNumber);
         navigation.reset({
           index: 0,
           routes: [{name: 'Tabs'}],
