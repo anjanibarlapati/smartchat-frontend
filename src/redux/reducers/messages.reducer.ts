@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { storeState } from '../store';
+import {  createSelector } from 'reselect';
 
 export interface Message {
     id: string;
@@ -27,6 +29,12 @@ const messagesSlice = createSlice({
         },
     },
 });
+
+export const selectMessages = (state: storeState) => state.messages;
+
+export const selectMessagesByChatId = (chatId: string) =>
+  createSelector([selectMessages], (messages) => messages[chatId] || []);
+
 
 export const { addMessage } = messagesSlice.actions;
 export default messagesSlice.reducer;
