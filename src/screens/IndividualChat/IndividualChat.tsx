@@ -1,6 +1,6 @@
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {format} from 'date-fns';
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useMemo} from 'react';
 import {FlatList, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {InputChatBox} from '../../components/InputChatBox/InputChatBox';
@@ -8,10 +8,10 @@ import {ChatHeader} from '../../components/ChatHeader/ChatHeader';
 import {Menu} from '../../components/Menu/Menu';
 import {MessageBox} from '../../components/MessageBox/MessageBox';
 import {useAppTheme} from '../../hooks/appTheme';
-import {storeState} from '../../redux/store';
 import {HomeStackParamList} from '../../types/Navigations';
 import {Theme} from '../../utils/themes';
 import {getStyles} from './IndividualChat.styles';
+import { selectMessagesByChatId } from '../../redux/reducers/messages.reducer';
 
 export type IndividualChatRouteProp = RouteProp<
   HomeStackParamList,
@@ -26,10 +26,8 @@ export const IndividualChat = () => {
 
   const {name, originalNumber, mobileNumber, profilePic} = route.params;
 
-  const messages = useSelector(
-    (state: storeState) => state.messages[mobileNumber] || [],
-  );
-
+    const selectMessages = useMemo(() => selectMessagesByChatId(mobileNumber), [mobileNumber]);
+     const messages = useSelector(selectMessages);
   const renderChatHeader = useCallback(
     () => (
       <ChatHeader
