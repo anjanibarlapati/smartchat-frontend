@@ -1,9 +1,15 @@
-import { Alert } from 'react-native';
+import {Alert} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useNavigation } from '@react-navigation/native';
-import { Provider } from 'react-redux';
-import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
-import { store } from '../../redux/store';
+import {useNavigation} from '@react-navigation/native';
+import {Provider} from 'react-redux';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
+import {store} from '../../redux/store';
 import {generateKeyPair, storePublicKey} from '../../utils/keyPairs';
 import Registration from './Registration';
 import * as RegistrationHandler from './Registration.service';
@@ -173,7 +179,8 @@ describe('Registration Screen check', () => {
     };
     mockRegister.mockResolvedValue(response);
     (EncryptedStorage.setItem as jest.Mock).mockReturnValue(() => {});
-    const { getByLabelText, getByPlaceholderText, getByText } = renderRegistrationScreen();
+    const {getByLabelText, getByPlaceholderText, getByText} =
+      renderRegistrationScreen();
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
@@ -185,7 +192,7 @@ describe('Registration Screen check', () => {
     await act(async () => {
       fireEvent.press(getByText('Register'));
     });
-    await waitFor(async() => {
+    await waitFor(async () => {
       expect(EncryptedStorage.setItem).toHaveBeenCalled();
     });
   });
@@ -297,5 +304,24 @@ describe('Registration Screen check', () => {
         routes: [{name: 'Tabs'}],
       });
     });
+  });
+  it('Should open profile picture modal on image press', async () => {
+    renderRegistrationScreen();
+    const image = await waitFor(() => screen.getByLabelText('profile-image'));
+    fireEvent.press(image);
+    await waitFor(() => {
+      expect(screen.getByText('Profile Photo')).toBeTruthy();
+    });
+  });
+  it('Should close profile picture modal on cancel icon press', async () => {
+    renderRegistrationScreen();
+    const editIcon = await waitFor(() =>
+      screen.getByLabelText('profile-image'),
+    );
+    fireEvent.press(editIcon);
+    const cancelIcon = await waitFor(() =>
+      screen.getByLabelText('cancel-icon'),
+    );
+    fireEvent.press(cancelIcon);
   });
 });
