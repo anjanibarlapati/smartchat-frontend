@@ -1,17 +1,17 @@
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import {format} from 'date-fns';
-import React, {useCallback, useEffect, useMemo} from 'react';
-import {FlatList, View} from 'react-native';
-import {useSelector} from 'react-redux';
-import {InputChatBox} from '../../components/InputChatBox/InputChatBox';
-import {ChatHeader} from '../../components/ChatHeader/ChatHeader';
-import {Menu} from '../../components/Menu/Menu';
-import {MessageBox} from '../../components/MessageBox/MessageBox';
-import {useAppTheme} from '../../hooks/appTheme';
-import {HomeStackParamList} from '../../types/Navigations';
-import {Theme} from '../../utils/themes';
-import {getStyles} from './IndividualChat.styles';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { format } from 'date-fns';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { FlatList, View } from 'react-native';
+import { useSelector } from 'react-redux';
+import { ChatHeader } from '../../components/ChatHeader/ChatHeader';
+import { InputChatBox } from '../../components/InputChatBox/InputChatBox';
+import { Menu } from '../../components/Menu/Menu';
+import { MessageBox } from '../../components/MessageBox/MessageBox';
+import { useAppTheme } from '../../hooks/appTheme';
 import { selectMessagesByChatId } from '../../redux/reducers/messages.reducer';
+import { HomeStackParamList } from '../../types/Navigations';
+import { Theme } from '../../utils/themes';
+import { getStyles } from './IndividualChat.styles';
 
 export type IndividualChatRouteProp = RouteProp<
   HomeStackParamList,
