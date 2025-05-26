@@ -87,6 +87,9 @@ describe('Tests related to the Profile Info Tile component', () => {
         fireEvent.changeText(email, 'email');
         fireEvent.press(screen.getByLabelText('edit'));
         await waitFor(() => {
+            expect(screen.getByText('Invalid email format')).toBeTruthy();
+        });
+        await waitFor(() => {
             expect(email.props.value).toBe('');
         });
     });
