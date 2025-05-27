@@ -27,8 +27,14 @@ const messagesSlice = createSlice({
             if (!state[chatId]) { state[chatId] = []; }
             state[chatId].push(message);
         },
+        clearUserMessages(state, action: PayloadAction<{ chatId: string}> ){
+            const {chatId} = action.payload;
+              if(state[chatId]){
+                state[chatId] = []; }
+              },
+        },
     },
-});
+);
 
 export const selectMessages = (state: storeState) => state.messages;
 
@@ -36,5 +42,5 @@ export const selectMessagesByChatId = (chatId: string) =>
   createSelector([selectMessages], (messages) => messages[chatId] || []);
 
 
-export const { addMessage } = messagesSlice.actions;
+export const { addMessage, clearUserMessages } = messagesSlice.actions;
 export default messagesSlice.reducer;
