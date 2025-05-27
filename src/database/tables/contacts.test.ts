@@ -19,6 +19,9 @@ const mockDbInstance = {
 };
 
 describe('Contacts table creation', ()=> {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
   const query = `
       CREATE TABLE IF NOT EXISTS contacts (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
