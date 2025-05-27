@@ -39,7 +39,7 @@ export const IndividualChat = () => {
     [name, originalNumber, profilePic],
   );
 
-  const renderMenu = useCallback(() => <Menu />, []);
+  const renderMenu = useCallback(() => <Menu receiverMobileNumber={mobileNumber}/>, [mobileNumber]);
 
   useEffect(() => {
   const parentNav = navigation.getParent();
