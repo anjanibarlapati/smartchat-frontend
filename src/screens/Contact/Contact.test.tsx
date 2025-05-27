@@ -1,15 +1,46 @@
-import {fireEvent, render, screen, waitFor} from '@testing-library/react-native';
-import './Contact';
-import {Contact} from './Contact';
-import {store} from '../../redux/store';
-import {Provider} from 'react-redux';
-import { requestPermission } from '../../permissions/permissions';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import NetInfo from '@react-native-community/netinfo';
+import { useNavigation } from '@react-navigation/native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import Contacts from 'react-native-contacts';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Provider } from 'react-redux';
+import { closeConnection, getDBConnection } from '../../database/connection.ts';
+import { clearContacts } from '../../database/queries/contacts/clearContacts.ts';
+import { deleteContacts } from '../../database/queries/contacts/deleteContacts.ts';
+import { getContacts } from '../../database/queries/contacts/getContacts.ts';
+import { insertOrReplaceContacts } from '../../database/queries/contacts/insertOrReplaceContacts.ts';
+import { createContactsTable } from '../../database/tables/contacts.ts';
+import { requestPermission } from '../../permissions/permissions';
+import { store } from '../../redux/store';
+import { Contact as ContactType } from '../../types/Contacts.ts';
 import { getContactsDetails } from '../../utils/getContactsDetails';
 import { getTokens } from '../../utils/getTokens.ts';
-import { Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { Contact } from './Contact';
+
+jest.mock('../../database/connection.ts', () => ({
+  closeConnection: jest.fn(),
+  getDBConnection: jest.fn(),
+}));
+
+jest.mock('../../database/tables/contacts.ts', () => ({
+  createContactsTable: jest.fn(),
+}));
+
+jest.mock('../../database/queries/contacts/clearContacts.ts', ()=> ({
+  clearContacts: jest.fn(),
+}));
+
+jest.mock('../../database/queries/contacts/getContacts.ts', ()=> ({
+  getContacts: jest.fn(),
+}));
+
+jest.mock('../../database/queries/contacts/deleteContacts.ts', ()=> ({
+  deleteContacts: jest.fn(),
+}));
+
+jest.mock('../../database/queries/contacts/insertOrReplaceContacts.ts', ()=> ({
+  insertOrReplaceContacts: jest.fn(),
+}));
 
 jest.mock('react-native-contacts', () => ({
   getAll: jest.fn(),
@@ -22,8 +53,6 @@ jest.mock('../../utils/getContactsDetails.ts', () => ({
 jest.mock('../../permissions/permissions.ts', () => ({
   requestPermission: jest.fn(),
 }));
-
-jest.spyOn(Alert, 'alert').mockImplementation(() => {});
 
 jest.mock('../../utils/getTokens', () => ({
     getTokens: jest.fn(),
@@ -40,9 +69,22 @@ jest.mock('react-native-encrypted-storage', () => ({
   clear: jest.fn(),
 }));
 
+jest.mock('react-native-sqlite-storage', () => {
+  return {
+    enablePromise: jest.fn(),
+    DEBUG: jest.fn(),
+    openDatabase: jest.fn(),
+  };
+});
+
+jest.mock('@react-native-community/netinfo', () => ({
+  fetch: jest.fn(),
+}));
+
+
 const mockContacts = [
-  { name: 'Anjani', mobileNumber: '+91 8639523822', doesHaveAccount: true, profilePicture: '/image.jpg' },
-  { name: 'Anj', mobileNumber: '+91 8639523823', doesHaveAccount: false, profilePicture: null},
+  { name: 'Anjani', originalNumber: '8639523822', mobileNumber: '+91 86395 23822', doesHaveAccount: true, profilePicture: '/image.jpg' },
+  { name: 'Anjaniiii', originalNumber: '8639523823', mobileNumber: '+91 86395 23823', doesHaveAccount: false, profilePicture: null},
 ];
 
 
@@ -53,6 +95,18 @@ const renderContactScreen = () => {
     </Provider>,
   );
 };
+
+const mockFunctions = (netStatus: boolean, contacts: ContactType[]) => {
+      (NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: netStatus });
+      (Contacts.getAll as jest.Mock).mockResolvedValue(contacts);
+      (getContactsDetails as jest.Mock).mockResolvedValue(contacts);
+      (getDBConnection as jest.Mock).mockResolvedValue({});
+      (createContactsTable as jest.Mock).mockResolvedValue({});
+      (deleteContacts as jest.Mock).mockResolvedValue({});
+      (insertOrReplaceContacts as jest.Mock).mockResolvedValue({});
+      (closeConnection as jest.Mock).mockResolvedValue({});
+};
+
 describe('Contacts Screen', () => {
   const mockReset = jest.fn();
 
@@ -65,11 +119,9 @@ describe('Contacts Screen', () => {
 
     it('should display alert if permission is denied', async () => {
       (requestPermission as jest.Mock).mockResolvedValue(false);
-
       await waitFor(() => {
         renderContactScreen();
       });
-
       await waitFor(() => {
         expect(screen.getByText('Permission for contacts was denied')).toBeTruthy();
       });
@@ -82,7 +134,6 @@ describe('Contacts Screen', () => {
         JSON.stringify({ access_token: 'mock_token' })
       );
       (Contacts.getAll as jest.Mock).mockRejectedValue(new Error('Could not load contacts.'));
-
       await waitFor(() => {
         renderContactScreen();
       });
@@ -92,10 +143,8 @@ describe('Contacts Screen', () => {
     });
 
     it('should clear encrypted storage, clear stack and navigate to welcome screen if empty tokens are returned from async storage', async () => {
-
       (requestPermission as jest.Mock).mockResolvedValue(true);
       (getTokens as jest.Mock).mockResolvedValue(null);
-
       await waitFor(() => {
         renderContactScreen();
       });
@@ -108,15 +157,28 @@ describe('Contacts Screen', () => {
       });
     });
 
+    it('should load contacts from DB when user is offline', async () => {
+      (NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: false });
+      (requestPermission as jest.Mock).mockResolvedValue(true);
+      (getTokens as jest.Mock).mockResolvedValue({ access_token: 'access_token' });
+      (getDBConnection as jest.Mock).mockResolvedValue({});
+      (createContactsTable as jest.Mock).mockResolvedValue({});
+      (getContacts as jest.Mock).mockResolvedValue(mockContacts);
+      (closeConnection as jest.Mock).mockResolvedValue({});
+
+      await waitFor(() => {
+        renderContactScreen();
+      });
+      expect(screen.getByText('Anjani')).toBeTruthy();
+    });
+
     it('should switch to Invite tab and show contacts who are not on app', async () => {
 
       (requestPermission as jest.Mock).mockResolvedValue(true);
       (getTokens as jest.Mock).mockResolvedValue(
         JSON.stringify({ access_token: 'access_token' })
       );
-      (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
-      (getContactsDetails as jest.Mock).mockResolvedValue(mockContacts);
-
+      mockFunctions(true, mockContacts);
       await waitFor(() => {
         renderContactScreen();
       });
@@ -124,10 +186,9 @@ describe('Contacts Screen', () => {
         fireEvent.press(screen.getByText('Invite to SmartChat'));
       });
       await waitFor(()=> {
-        expect(screen.getByText('Anj')).toBeTruthy();
+        expect(screen.getByText('Anjaniiii')).toBeTruthy();
         expect(screen.queryByText('Anjani')).toBeNull();
       });
-
     });
 
     it('should switch to Contacts tab and show contacts who are on app', async () => {
@@ -136,19 +197,16 @@ describe('Contacts Screen', () => {
       (getTokens as jest.Mock).mockResolvedValue(
         JSON.stringify({ access_token: 'access_token' })
       );
-      (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
-      (getContactsDetails as jest.Mock).mockResolvedValue(mockContacts);
-
+      mockFunctions(true, mockContacts);
       await waitFor(() => {
         renderContactScreen();
       });
       await waitFor(() => {
         fireEvent.press(screen.getByText('Contacts on SmartChat'));
       });
-
       await waitFor(()=> {
         expect(screen.getByText('Anjani')).toBeTruthy();
-        expect(screen.queryByText('Anj')).toBeNull();
+        expect(screen.queryByText('Anjaniiii')).toBeNull();
       });
 
     });
@@ -158,9 +216,8 @@ describe('Contacts Screen', () => {
       (getTokens as jest.Mock).mockResolvedValue(
         JSON.stringify({ access_token: 'access_token' })
       );
-      (Contacts.getAll as jest.Mock).mockResolvedValue([]);
-      (getContactsDetails as jest.Mock).mockResolvedValue([]);
-
+      (clearContacts as jest.Mock).mockResolvedValue({});
+      mockFunctions(true, []);
       await waitFor(() => {
         renderContactScreen();
       });
@@ -170,14 +227,12 @@ describe('Contacts Screen', () => {
       });
     });
 
-    it('should show a message when no contacts are on app', async () => {
+    it('should show a message when no contacts are on app in contacts tab', async () => {
       (requestPermission as jest.Mock).mockResolvedValue(true);
       (getTokens as jest.Mock).mockResolvedValue(
         JSON.stringify({ access_token: 'access_token' })
       );
-      (Contacts.getAll as jest.Mock).mockResolvedValue([mockContacts[1]]);
-      (getContactsDetails as jest.Mock).mockResolvedValue([mockContacts[1]]);
-
+      mockFunctions(true, [mockContacts[1]]);
       await waitFor(() => {
         renderContactScreen();
       });
@@ -190,13 +245,12 @@ describe('Contacts Screen', () => {
       });
     });
 
-    it('should show a message when all contacts are on app', async () => {
+    it('should show a message when all contacts are on app in invite tab', async () => {
       (requestPermission as jest.Mock).mockResolvedValue(true);
       (getTokens as jest.Mock).mockResolvedValue(
         JSON.stringify({ access_token: 'access_token' })
       );
-      (Contacts.getAll as jest.Mock).mockResolvedValue([mockContacts[0]]);
-      (getContactsDetails as jest.Mock).mockResolvedValue([mockContacts[0]]);
+      mockFunctions(true, [mockContacts[0]]);
       await waitFor(() => {
         renderContactScreen();
       });
@@ -204,11 +258,9 @@ describe('Contacts Screen', () => {
         fireEvent.press(screen.getByText('Invite to SmartChat'));
       });
       await waitFor(() => {
-        fireEvent.press(screen.getByText('Invite to SmartChat'));
-      });
-
-      await waitFor(() => {
         expect(screen.getByText('All your contacts are on SmartChat. Continue your conversations with them')).toBeTruthy();
       });
     });
+
+
 });
