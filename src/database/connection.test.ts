@@ -1,5 +1,5 @@
 import SQLite from 'react-native-sqlite-storage';
-import { closeConnection, getDBConnection, getDBinstance } from './connection';
+import { closeConnection, deleteDatabase, getDBConnection, getDBinstance } from './connection';
 
 jest.mock('react-native-sqlite-storage', () => {
   return {
@@ -69,3 +69,20 @@ describe('DB Instance', () => {
     });
 });
 
+describe('Delete Database', ()=> {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+    test('Should delete the database', async()=> {
+        (SQLite.deleteDatabase as jest.Mock).mockResolvedValue({});
+        await deleteDatabase();
+        expect(SQLite.deleteDatabase).toHaveBeenCalledWith({
+        name: 'smartchat.db',
+        location: 'default',
+        });
+    });
+    test('Should throw error if deleting database fails', async () => {
+        (SQLite.deleteDatabase as jest.Mock).mockRejectedValue(new Error(''));
+        await expect(deleteDatabase()).rejects.toThrow('Failed to delete database');
+    });
+});
