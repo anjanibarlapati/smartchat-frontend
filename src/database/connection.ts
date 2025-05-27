@@ -28,3 +28,10 @@ export const closeConnection = async (db: SQLite.SQLiteDatabase) => {
   }
 };
 
+export const deleteDatabase = async()=> {
+  try{
+      await SQLite.deleteDatabase({ name: 'smartchat.db', location: 'default' });
+  }catch(error) {
+      throw new Error('Failed to delete database');
+  }
+};
