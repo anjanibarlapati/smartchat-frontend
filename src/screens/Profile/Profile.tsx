@@ -3,11 +3,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
+import { AlertModal } from '../../components/AlertModal/AlertModal';
 import { CustomeAlert } from '../../components/CustomAlert/CustomAlert';
 import LoadingIndicator from '../../components/Loading/Loading';
-import { AlertModal } from '../../components/AlertModal/AlertModal';
 import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTile';
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
+import { deleteDatabase } from '../../database/connection';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal';
 import { setUserProperty } from '../../redux/reducers/user.reducer';
@@ -15,10 +16,11 @@ import { storeState } from '../../redux/store';
 import { RootStackParamList } from '../../types/Navigations';
 import { UploadImage } from '../../types/UploadImage';
 import { getTokens } from '../../utils/getTokens';
+import { socketDisconnect } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { deleteAccount, removeProfilePic, updateProfilePic } from './Profile.services';
 import { getStyles } from './Profile.styles';
-import { socketDisconnect } from '../../utils/socket';
+
 
 export const Profile = (): React.JSX.Element => {
   const userDetails = useSelector((state: storeState) => state.user);
@@ -112,6 +114,7 @@ export const Profile = (): React.JSX.Element => {
     try {
       await socketDisconnect();
       await EncryptedStorage.clear();
+      await deleteDatabase();
       navigation.reset({
         index: 0,
         routes: [{name: 'WelcomeScreen'}],
@@ -172,6 +175,7 @@ export const Profile = (): React.JSX.Element => {
       );
       if (response.ok) {
         await EncryptedStorage.clear();
+        await deleteDatabase();
         navigation.reset({
           index: 0,
           routes: [{name: 'WelcomeScreen'}],
