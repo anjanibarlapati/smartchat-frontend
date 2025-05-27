@@ -2,6 +2,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Provider } from 'react-redux';
+import { deleteDatabase } from '../../database/connection';
 import { store } from '../../redux/store';
 import { User } from '../../types/User';
 import * as tokenUtil from '../../utils/getTokens';
@@ -50,6 +51,11 @@ jest.mock('react-redux', () => ({
     ...jest.requireActual('react-redux'),
     useSelector: () => mockUser,
     useDispatch: () => mockDispatch,
+}));
+
+
+jest.mock('../../database/connection.ts', () => ({
+  deleteDatabase: jest.fn(),
 }));
 
 describe('Tests related to the Profile Screen', () => {
@@ -127,6 +133,8 @@ describe('Tests related to the Profile Screen', () => {
     it('Should delete account, clear stack and navigate to welcome screen', async() => {
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
         (ProfileServices.deleteAccount as jest.Mock).mockResolvedValue({ ok: true });
+        (deleteDatabase as jest.Mock).mockResolvedValue({});
+
         RenderProfileScreen();
         const editTextIcon = await screen.findAllByLabelText('edit-text');
         fireEvent.press(editTextIcon[0]);
@@ -138,6 +146,7 @@ describe('Tests related to the Profile Screen', () => {
         });
         await waitFor(() => {
             expect(EncryptedStorage.clear).toHaveBeenCalled();
+            expect(deleteDatabase).toHaveBeenCalled();
             expect(mockReset).toHaveBeenCalledWith({
                 index: 0,
                 routes: [{ name: 'WelcomeScreen' }],
@@ -224,6 +233,7 @@ describe('Tests related to the Profile Screen', () => {
     });
 
     it('Should clear encrypted storage and stack and navigate to welcome screen upon clicking on sign out', async() => {
+        (deleteDatabase as jest.Mock).mockResolvedValue({});
         RenderProfileScreen();
         await waitFor(async() => {
             fireEvent.press(await screen.findByText('Sign out'));
@@ -233,6 +243,7 @@ describe('Tests related to the Profile Screen', () => {
         });
         await waitFor(() => {
             expect(EncryptedStorage.clear).toHaveBeenCalled();
+            expect(deleteDatabase).toHaveBeenCalled();
             expect(mockReset).toHaveBeenCalledWith({
                 index: 0,
                 routes: [{ name: 'WelcomeScreen' }],
