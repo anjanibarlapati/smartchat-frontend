@@ -1,7 +1,8 @@
+import { Platform } from 'react-native';
 import { Contact } from 'react-native-contacts';
-import { getContactsDetails } from './getContactsDetails';
 import { fetchContacts } from '../screens/Contact/Contact.service';
 import { Contact as ContactType } from '../types/Contacts';
+import { getContactsDetails } from './getContactsDetails';
 
 jest.mock('../screens/Contact/Contact.service', () => {
   const originalModule = jest.requireActual('../screens/Contact/Contact.service');
@@ -25,16 +26,16 @@ describe('getContactsDetails', () => {
       backTitle: '',
       company: '',
       department: '',
-      displayName: 'Rekha hii Korepu',
+      displayName: 'Rekha',
       emailAddresses: [],
-      familyName: 'Korepu',
+      familyName: '',
       givenName: 'Rekha',
       hasThumbnail: false,
       isStarred: false,
       jobTitle: '',
-      middleName: 'hii',
+      middleName: '',
       note: '',
-      phoneNumbers: [{ label: 'mobile', number: '8639523822' }],
+      phoneNumbers: [{ label: 'mobile', number: '8639523822' }, { label: 'mobile', number: '8639523822' }],
       postalAddresses: [],
       prefix: '',
       suffix: '',
@@ -80,7 +81,7 @@ describe('getContactsDetails', () => {
       jobTitle: '',
       middleName: '',
       note: '',
-      phoneNumbers: [{ label: 'Mobile', number: '' }],
+      phoneNumbers: [],
       postalAddresses: [],
       prefix: '',
       suffix: '',
@@ -123,6 +124,12 @@ describe('getContactsDetails', () => {
       profilePicture: 'smartchatpic1.jpg',
     },
     {
+      originalNumber: '8639523833',
+      mobileNumber: '+91 86395 23833',
+      doesHaveAccount: true,
+      profilePicture: 'smartchatpic1.jpg',
+    },
+    {
       originalNumber: '9849545903',
       mobileNumber: '+91 98495 45903',
       doesHaveAccount: false,
@@ -149,17 +156,17 @@ describe('getContactsDetails', () => {
     const result: ContactType[] = await getContactsDetails(mockContacts, mockAccessToken);
 
     expect(mockFetchContacts).toHaveBeenCalledWith(
-      ['+91 86395 23822', '+91 98495 45903'],
+      ['+91 86395 23822', '+91 86395 23822', '+91 98495 45903'],
       mockAccessToken
     );
 
     expect(result).toEqual([
       {
-        name: 'Rekha hii Korepu',
-        originalNumber: '8639523822',
-        mobileNumber: '+91 86395 23822',
-        doesHaveAccount: true,
-        profilePicture: 'smartchatpic1.jpg',
+        name: 'Anjaniii',
+        originalNumber:'12345',
+        mobileNumber: '12345',
+        doesHaveAccount: false,
+        profilePicture: null,
       },
       {
         name: 'Anush',
@@ -169,18 +176,11 @@ describe('getContactsDetails', () => {
         profilePicture: null,
       },
       {
-        name: 'Anjani',
-        originalNumber:'',
-        mobileNumber: '',
-        doesHaveAccount: false,
-        profilePicture: null,
-      },
-      {
-        name: 'Anjaniii',
-        originalNumber:'12345',
-        mobileNumber: '12345',
-        doesHaveAccount: false,
-        profilePicture: null,
+        name: 'Rekha',
+        originalNumber: '8639523822',
+        mobileNumber: '+91 86395 23822',
+        doesHaveAccount: true,
+        profilePicture: 'smartchatpic1.jpg',
       },
     ]);
   });
@@ -193,15 +193,15 @@ describe('getContactsDetails', () => {
     const result: ContactType[] = await getContactsDetails(mockContacts, mockAccessToken);
 
     expect(mockFetchContacts).toHaveBeenCalledWith(
-      ['+91 86395 23822', '+91 98495 45903'],
+      ['+91 86395 23822', '+91 86395 23822', '+91 98495 45903'],
       mockAccessToken
     );
 
     expect(result).toEqual([
       {
-        name: 'Rekha hii Korepu',
-        originalNumber: '8639523822',
-        mobileNumber: '8639523822',
+        name: 'Anjaniii',
+        originalNumber:'12345',
+        mobileNumber: '12345',
         doesHaveAccount: false,
         profilePicture: null,
       },
@@ -213,18 +213,64 @@ describe('getContactsDetails', () => {
         profilePicture: null,
       },
       {
-        name: 'Anjani',
-        originalNumber:'',
-        mobileNumber: '',
+        name: 'Rekha',
+        originalNumber: '8639523822',
+        mobileNumber: '8639523822',
         doesHaveAccount: false,
         profilePicture: null,
       },
+    ]);
+  });
+
+  it('Should to take only first number from each contact phone numbers for Android', async()=>{
+    Platform.OS = 'android';
+
+    const mockAndroidResponseData = [
+      {
+        originalNumber: '8639523822',
+        mobileNumber: '+91 86395 23822',
+        doesHaveAccount: true,
+        profilePicture: 'smartchatpic1.jpg',
+      },
+      {
+        originalNumber: '9849545903',
+        mobileNumber: '+91 98495 45903',
+        doesHaveAccount: false,
+        profilePicture: null,
+      },
+    ];
+    mockFetchContacts.mockResolvedValueOnce({
+      json: jest.fn().mockResolvedValue(mockAndroidResponseData),
+    });
+
+    const result: ContactType[] = await getContactsDetails(mockContacts, mockAccessToken);
+
+    expect(mockFetchContacts).toHaveBeenCalledWith(
+      ['+91 86395 23822', '+91 98495 45903'],
+      mockAccessToken
+    );
+
+    expect(result).toEqual([
       {
         name: 'Anjaniii',
         originalNumber:'12345',
         mobileNumber: '12345',
         doesHaveAccount: false,
         profilePicture: null,
+      },
+      {
+        name: 'Anush',
+        originalNumber: '9849545903',
+        mobileNumber: '+91 98495 45903',
+        doesHaveAccount: false,
+        profilePicture: null,
+      },
+      {
+        name: 'Rekha',
+        originalNumber: '8639523822',
+        mobileNumber: '+91 86395 23822',
+        doesHaveAccount: true,
+        profilePicture: 'smartchatpic1.jpg',
       },
     ]);
   });
