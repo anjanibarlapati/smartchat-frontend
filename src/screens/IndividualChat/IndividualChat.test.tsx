@@ -7,6 +7,11 @@ import {render, screen} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import {store} from '../../redux/store';
 import {IndividualChat} from './IndividualChat';
+import {configureStore} from '@reduxjs/toolkit';
+import messagesReducer, {
+  addMessage,
+} from '../../redux/reducers/messages.reducer';
+import {themeReducer} from '../../redux/reducers/theme.reducer';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -51,6 +56,40 @@ describe('IndividualChat', () => {
         profilePic: 'pic-url',
       },
     });
+  });
+  const renderWithMessage = () => {
+    const store = configureStore({
+      reducer: {
+        messages: messagesReducer,
+        theme: themeReducer,
+      },
+    });
+    store.dispatch(
+      addMessage({
+        chatId: '+91 93923 45627',
+        message: {
+          id: '1',
+          sender: '+91 93923 45627',
+          receiver: 'me',
+          message: 'Hello there!',
+          sentAt: new Date().toISOString(),
+          isSender: true,
+          status: 'sent',
+        },
+      }),
+    );
+    render(
+      <NavigationContainer>
+        <Provider store={store}>
+          <IndividualChat />
+        </Provider>
+      </NavigationContainer>,
+    );
+  };
+
+  test('Should render message from the FlatList', () => {
+    renderWithMessage();
+    expect(screen.getByText('Hello there!')).toBeTruthy();
   });
 
   test('should render the InputChatBox', () => {
