@@ -1,16 +1,22 @@
+import NetInfo from '@react-native-community/netinfo';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import Contacts from 'react-native-contacts';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useDispatch, useSelector } from 'react-redux';
-import { CustomeAlert } from '../../components/CustomAlert/CustomAlert.tsx';
+import { useSelector } from 'react-redux';
 import { ContactCard } from '../../components/ContactCard/ContactCard.tsx';
+import { CustomeAlert } from '../../components/CustomAlert/CustomAlert.tsx';
 import LoadingIndicator from '../../components/Loading/Loading.tsx';
+import { closeConnection, getDBConnection } from '../../database/connection.ts';
+import { clearContacts } from '../../database/queries/contacts/clearContacts.ts';
+import { deleteContacts } from '../../database/queries/contacts/deleteContacts.ts';
+import { getContacts } from '../../database/queries/contacts/getContacts.ts';
+import { insertOrReplaceContacts } from '../../database/queries/contacts/insertOrReplaceContacts.ts';
+import { createContactsTable } from '../../database/tables/contacts.ts';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal.ts';
 import { requestPermission } from '../../permissions/permissions.ts';
-import { setContacts } from '../../redux/reducers/contacts.reducer.ts';
 import { storeState } from '../../redux/store.ts';
 import { Contact as ContactType } from '../../types/Contacts.ts';
 import { RootStackParamList } from '../../types/Navigations.ts';
@@ -25,17 +31,16 @@ export function Contact(): React.JSX.Element {
   const styles = getStyles(theme);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [selectedTab, setSelectedTab] = useState('Contacts');
-  const dispatch = useDispatch();
-  const contacts = useSelector((state: storeState)=> state.contacts.contacts);
+  const [contacts, setContacts] = useState<ContactType[]>([]);
   const user = useSelector((state: storeState)=> state.user);
   const {
       alertVisible, alertMessage, alertType, showAlert, hideAlert,
     } = useAlertModal();
-  const [filteredContacts, setFilteredContacts] = useState<ContactType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const loadContacts = async () => {
+      const db = await getDBConnection();
       try {
         setIsLoading(true);
         const hasPermission = await requestPermission('contacts');
@@ -52,39 +57,45 @@ export function Contact(): React.JSX.Element {
           });
           return;
         }
-          const deviceContacts = await Contacts.getAll();
-          if(deviceContacts.length === 0 ){
-            dispatch(setContacts([]));
-            return;
-          }
-          const resultantContacts = await getContactsDetails(deviceContacts, tokens.access_token);
-          dispatch(setContacts(resultantContacts));
-        } catch (error) {
+
+        await createContactsTable(db);
+
+        const netState = await NetInfo.fetch();
+        const isOnline = netState.isConnected;
+        if (!isOnline) {
+          const dbContacts = await getContacts(db);
+          setContacts(dbContacts);
+          return;
+        }
+
+        const deviceContacts = await Contacts.getAll();
+        if (!deviceContacts || deviceContacts.length === 0) {
+          await clearContacts(db);
+          setContacts([]);
+          return;
+        }
+        const resultantContacts = await getContactsDetails(deviceContacts, tokens.access_token);
+        const currentNumbers = resultantContacts.map(contact => contact.mobileNumber);
+        await deleteContacts(db, currentNumbers);
+        await insertOrReplaceContacts(db, resultantContacts);
+
+        setContacts(resultantContacts);
+      } catch (error) {
           showAlert('Something went wrong while fetching contacts details. Please try again', 'error');
         } finally{
           setIsLoading(false);
+          await closeConnection(db);
         }
     };
-        loadContacts();
-  }, [dispatch, navigation, showAlert, user.mobileNumber]);
+    loadContacts();
+  }, [ navigation, showAlert, user.mobileNumber]);
 
-  useEffect(() => {
-    const filterContacts = (userContacts: ContactType[]) => {
-      if (userContacts.length === 0) {
-        return [];
-      }
-      if (selectedTab === 'Contacts') {
-        setFilteredContacts(
-          userContacts.filter(contact => contact.doesHaveAccount),
-        );
-      } else {
-        setFilteredContacts(
-          userContacts.filter(contact => !contact.doesHaveAccount),
-        );
-      }
-    };
-    filterContacts(contacts);
-  }, [contacts, selectedTab]);
+const filteredContacts = useMemo(() => {
+  if (contacts.length === 0) {
+    return [];
+  }
+  return selectedTab === 'Contacts' ? contacts.filter(contact => contact.doesHaveAccount) : contacts.filter(contact => !contact.doesHaveAccount);
+}, [contacts, selectedTab]);
 
   return (
     <>
