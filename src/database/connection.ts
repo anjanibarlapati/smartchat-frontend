@@ -3,17 +3,21 @@ import SQLite from 'react-native-sqlite-storage';
 SQLite.enablePromise(true);
 SQLite.DEBUG(true);
 
+let dbInstance: SQLite.SQLiteDatabase;
 
 export const getDBConnection = async () => {
   try {
-    const db = await SQLite.openDatabase({
+    dbInstance = await SQLite.openDatabase({
       name: 'smartchat.db',
       location: 'default',
     });
-    return db;
   } catch (error) {
     throw new Error('Failed to open database');
   }
+};
+
+export const getDBinstance = async() => {
+  return dbInstance;
 };
 
 export const closeConnection = async (db: SQLite.SQLiteDatabase) => {
