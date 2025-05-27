@@ -1,5 +1,5 @@
-import { closeConnection, getDBConnection } from './connection';
 import SQLite from 'react-native-sqlite-storage';
+import { closeConnection, getDBConnection } from './connection';
 
 jest.mock('react-native-sqlite-storage', () => {
   return {
@@ -54,7 +54,7 @@ describe('Close DB Connection', () => {
     });
 
     test('Should throw error if closing of database fails', async () => {
-        (mockDbInstance.close as jest.Mock).mockRejectedValue(new Error('Failed to close database'));
+        (mockDbInstance.close as jest.Mock).mockRejectedValue(new Error(''));
         await expect(closeConnection(mockDbInstance)).rejects.toThrow('Failed to close database');
     });
 });
