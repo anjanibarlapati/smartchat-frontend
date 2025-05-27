@@ -1,11 +1,12 @@
 import SQLite from 'react-native-sqlite-storage';
-import { closeConnection, getDBConnection } from './connection';
+import { closeConnection, getDBConnection, getDBinstance } from './connection';
 
 jest.mock('react-native-sqlite-storage', () => {
   return {
     enablePromise: jest.fn(),
     DEBUG: jest.fn(),
     openDatabase: jest.fn(),
+    deleteDatabase: jest.fn(),
   };
 });
 
@@ -25,15 +26,13 @@ describe('DB Connection', ()=> {
     });
     test('Should return the db instance', async () => {
         (SQLite.openDatabase as jest.Mock).mockResolvedValue(mockDbInstance);
-        const db = await getDBConnection();
+        await getDBConnection();
         expect(SQLite.openDatabase).toHaveBeenCalledWith({
         name: 'smartchat.db',
         location: 'default',
         });
-        expect(db).toBe(mockDbInstance);
     });
     test('Should throw error if openDatabase fails', async () => {
-        SQLite.openDatabase = jest.fn();
         (SQLite.openDatabase as jest.Mock).mockRejectedValue(new Error(''));
         await expect(getDBConnection()).rejects.toThrow('Failed to open database');
     });
@@ -58,3 +57,15 @@ describe('Close DB Connection', () => {
         await expect(closeConnection(mockDbInstance)).rejects.toThrow('Failed to close database');
     });
 });
+
+
+
+describe('DB Instance', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+    test('Should return the db instance', async () => {
+        expect(await getDBinstance()).toBe(mockDbInstance);
+    });
+});
+
