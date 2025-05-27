@@ -4,12 +4,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react-nativ
 import Contacts from 'react-native-contacts';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Provider } from 'react-redux';
-import { closeConnection, getDBConnection } from '../../database/connection.ts';
+import { getDBinstance } from '../../database/connection.ts';
 import { clearContacts } from '../../database/queries/contacts/clearContacts.ts';
 import { deleteContacts } from '../../database/queries/contacts/deleteContacts.ts';
 import { getContacts } from '../../database/queries/contacts/getContacts.ts';
 import { insertOrReplaceContacts } from '../../database/queries/contacts/insertOrReplaceContacts.ts';
-import { createContactsTable } from '../../database/tables/contacts.ts';
 import { requestPermission } from '../../permissions/permissions';
 import { store } from '../../redux/store';
 import { Contact as ContactType } from '../../types/Contacts.ts';
@@ -18,12 +17,7 @@ import { getTokens } from '../../utils/getTokens.ts';
 import { Contact } from './Contact';
 
 jest.mock('../../database/connection.ts', () => ({
-  closeConnection: jest.fn(),
-  getDBConnection: jest.fn(),
-}));
-
-jest.mock('../../database/tables/contacts.ts', () => ({
-  createContactsTable: jest.fn(),
+  getDBinstance: jest.fn(),
 }));
 
 jest.mock('../../database/queries/contacts/clearContacts.ts', ()=> ({
@@ -100,11 +94,9 @@ const mockFunctions = (netStatus: boolean, contacts: ContactType[]) => {
       (NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: netStatus });
       (Contacts.getAll as jest.Mock).mockResolvedValue(contacts);
       (getContactsDetails as jest.Mock).mockResolvedValue(contacts);
-      (getDBConnection as jest.Mock).mockResolvedValue({});
-      (createContactsTable as jest.Mock).mockResolvedValue({});
+      (getDBinstance as jest.Mock).mockResolvedValue({});
       (deleteContacts as jest.Mock).mockResolvedValue({});
       (insertOrReplaceContacts as jest.Mock).mockResolvedValue({});
-      (closeConnection as jest.Mock).mockResolvedValue({});
 };
 
 describe('Contacts Screen', () => {
@@ -161,10 +153,8 @@ describe('Contacts Screen', () => {
       (NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: false });
       (requestPermission as jest.Mock).mockResolvedValue(true);
       (getTokens as jest.Mock).mockResolvedValue({ access_token: 'access_token' });
-      (getDBConnection as jest.Mock).mockResolvedValue({});
-      (createContactsTable as jest.Mock).mockResolvedValue({});
+      (getDBinstance as jest.Mock).mockResolvedValue({});
       (getContacts as jest.Mock).mockResolvedValue(mockContacts);
-      (closeConnection as jest.Mock).mockResolvedValue({});
 
       await waitFor(() => {
         renderContactScreen();
