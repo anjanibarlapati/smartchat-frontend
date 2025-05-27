@@ -18,7 +18,7 @@ export const getDBConnection = async () => {
 
 export const closeConnection = async (db: SQLite.SQLiteDatabase) => {
     try{
-    return db.close();
+    return await db.close();
   } catch(error){
     throw new Error('Failed to close database');
   }
