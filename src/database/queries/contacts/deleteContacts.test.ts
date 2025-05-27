@@ -19,6 +19,9 @@ const mockDbInstance = {
 };
 
 describe('Removed contacts deletion in contacts table', ()=> {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
     const currentContacts = ['+91 8639523822', '+91 8639523833'];
     test('Should delete removed contacts from contacts table', async()=> {
         await deleteContacts(mockDbInstance,currentContacts);
