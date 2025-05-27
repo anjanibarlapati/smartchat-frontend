@@ -30,7 +30,7 @@ describe('blockUserChat', () => {
             ok: true,
         });
       (getTokens as jest.Mock).mockResolvedValue(mockTokens);
-       await blockUserChat({senderMobileNumber, receiverMobileNumber});
+       await blockUserChat(senderMobileNumber, receiverMobileNumber);
         expect(fetch).toHaveBeenCalled();
 
   });
