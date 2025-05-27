@@ -5,6 +5,8 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import SplashScreen from 'react-native-splash-screen';
 import { useDispatch } from 'react-redux';
 import { CustomeAlert } from '../components/CustomAlert/CustomAlert.tsx';
+import { getDBConnection, getDBinstance } from '../database/connection.ts';
+import { createContactsTable } from '../database/tables/contacts.ts';
 import { useAlertModal } from '../hooks/useAlertModal.ts';
 import { setUserDetails } from '../redux/reducers/user.reducer.ts';
 import Login from '../screens/Login/Login.tsx';
@@ -36,6 +38,9 @@ export function AppNavigator(): React.JSX.Element {
           if (storedUser) {
             const user = JSON.parse(storedUser);
             dispatch(setUserDetails(user));
+            await getDBConnection();
+            const dbInstance = await getDBinstance();
+            await createContactsTable(dbInstance);
             setIsUserStored(true);
           }
         } catch (error) {
