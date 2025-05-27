@@ -19,6 +19,9 @@ const mockDbInstance = {
 };
 
 describe('Contacts table deletion', ()=> {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
     test('Should clear contacts table', async()=> {
         await clearContacts(mockDbInstance);
         expect(mockDbInstance.executeSql).toHaveBeenCalledWith('DELETE FROM contacts');
