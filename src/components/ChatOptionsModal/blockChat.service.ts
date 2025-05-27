@@ -1,15 +1,10 @@
 import {BASE_URL} from '../../utils/constants';
 import {getTokens} from '../../utils/getTokens';
 
- type BlockChatProps = {
-  senderMobileNumber: string;
-  receiverMobileNumber: string;
-};
-
-export const blockUserChat = async ({
-  senderMobileNumber,
-  receiverMobileNumber,
-}: BlockChatProps) => {
+export const blockUserChat = async (
+  senderMobileNumber: string,
+  receiverMobileNumber: string,
+) => {
   const token = await getTokens(senderMobileNumber);
 
   const response = await fetch(`${BASE_URL}/user/block/chat`, {
