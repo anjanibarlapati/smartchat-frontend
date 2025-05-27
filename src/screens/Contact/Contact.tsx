@@ -8,12 +8,11 @@ import { useSelector } from 'react-redux';
 import { ContactCard } from '../../components/ContactCard/ContactCard.tsx';
 import { CustomeAlert } from '../../components/CustomAlert/CustomAlert.tsx';
 import LoadingIndicator from '../../components/Loading/Loading.tsx';
-import { closeConnection, getDBConnection } from '../../database/connection.ts';
+import { getDBinstance } from '../../database/connection.ts';
 import { clearContacts } from '../../database/queries/contacts/clearContacts.ts';
 import { deleteContacts } from '../../database/queries/contacts/deleteContacts.ts';
 import { getContacts } from '../../database/queries/contacts/getContacts.ts';
 import { insertOrReplaceContacts } from '../../database/queries/contacts/insertOrReplaceContacts.ts';
-import { createContactsTable } from '../../database/tables/contacts.ts';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal.ts';
 import { requestPermission } from '../../permissions/permissions.ts';
@@ -40,7 +39,7 @@ export function Contact(): React.JSX.Element {
 
   useEffect(() => {
     const loadContacts = async () => {
-      const db = await getDBConnection();
+      const db = await getDBinstance();
       try {
         setIsLoading(true);
         const hasPermission = await requestPermission('contacts');
@@ -57,8 +56,6 @@ export function Contact(): React.JSX.Element {
           });
           return;
         }
-
-        await createContactsTable(db);
 
         const netState = await NetInfo.fetch();
         const isOnline = netState.isConnected;
@@ -84,7 +81,6 @@ export function Contact(): React.JSX.Element {
           showAlert('Something went wrong while fetching contacts details. Please try again', 'error');
         } finally{
           setIsLoading(false);
-          await closeConnection(db);
         }
     };
     loadContacts();
