@@ -3,6 +3,7 @@ import React from 'react';
 import {Provider} from 'react-redux';
 import {store} from '../../redux/store';
 import {InputChatBox} from './InputChatBox';
+import { sendMessage } from './InputChatBox.service';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -20,7 +21,7 @@ jest.mock('react-native-libsodium', () => ({
   crypto_secretbox_easy: jest.fn().mockReturnValue('mockEncryptedMessage'),
 }));
 jest.mock('./InputChatBox.service', () => ({
-  sendMessage: jest.fn(() => Promise.resolve()),
+  sendMessage: jest.fn(),
 }));
 
 describe('InputChatBox', () => {
@@ -93,5 +94,25 @@ describe('InputChatBox', () => {
     fireEvent.press(sendButton);
 
     expect(onSendMessageMock).not.toHaveBeenCalled();
+  });
+
+  test('Should throw an error with a message of unable to encrypt message', async() => {
+    const onSendMessageMock = jest.fn();
+    (sendMessage as jest.Mock).mockRejectedValue(new Error('unable to encrypt message'));
+    render(
+      <Provider store={store}>
+        <InputChatBox
+          receiverMobileNumber=""
+          onSendMessage={onSendMessageMock}
+        />
+      </Provider>,
+    );
+    const input = screen.getByPlaceholderText('Type a message');
+    fireEvent.changeText(input, 'Hello');
+    const sendButton = screen.getByLabelText('send-icon');
+    await expect(async() => {
+      await fireEvent.press(sendButton);
+    }).rejects.toThrow('unable to encrypt message');
+    expect(onSendMessageMock).toHaveBeenCalled();
   });
 });

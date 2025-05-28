@@ -7,7 +7,7 @@ import { getStyles } from './CustomAlert.styles';
 interface CustomizableAlertProps {
   visible: boolean;
   message: string;
-  type?: AlertType;
+  type: AlertType;
   onClose: () => void;
 }
 
@@ -20,7 +20,6 @@ const iconForAlertType = (type: AlertType) => {
     case 'warning':
       return require('../../../assets/icons/warning.png');
     case 'info':
-    default:
       return require('../../../assets/icons/info.png');
   }
 };
@@ -28,7 +27,7 @@ const iconForAlertType = (type: AlertType) => {
 export const CustomeAlert = ({
   visible,
   message,
-  type = 'info',
+  type,
   onClose,
 }: CustomizableAlertProps) => {
   const theme: Theme = useAppTheme();

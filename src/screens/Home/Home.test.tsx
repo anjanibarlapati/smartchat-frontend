@@ -4,6 +4,10 @@ import {Provider} from 'react-redux';
 import {Home} from './Home';
 import {store} from '../../redux/store';
 import {useNavigation} from '@react-navigation/native';
+import * as useAlertModalHook from '../../hooks/useAlertModal';
+import { authReducer } from '../../redux/reducers/auth.reducer';
+import { configureStore } from '@reduxjs/toolkit';
+import { themeReducer } from '../../redux/reducers/theme.reducer';
 
 function renderHomeScreen() {
   return render(
@@ -18,9 +22,19 @@ jest.mock('@react-navigation/native', () => ({
 }));
 describe('Home Screen', () => {
   const mockNavigate = jest.fn();
+  const showAlertMock = jest.fn();
+  const hideAlertMock = jest.fn();
   beforeEach(() => {
     (useNavigation as jest.Mock).mockReturnValue({
       navigate: mockNavigate,
+    });
+
+    jest.spyOn(useAlertModalHook, 'useAlertModal').mockReturnValue({
+      alertMessage: 'Test success message',
+      alertType: 'success',
+      alertVisible: true,
+      hideAlert: hideAlertMock,
+      showAlert: showAlertMock,
     });
     jest.clearAllMocks();
   });
@@ -39,5 +53,25 @@ describe('Home Screen', () => {
     const {getByLabelText} = renderHomeScreen();
     fireEvent.press(getByLabelText('addContact'));
     expect(mockNavigate).toHaveBeenCalledWith('Contact');
+  });
+
+  it('should show alert if successMessage exists in the store', () => {
+    const storeWithSuccessMessage = configureStore({
+      reducer: {
+        auth: authReducer,
+        theme: themeReducer,
+      },
+      preloadedState: {
+        auth: {
+          successMessage: 'Profile updated successfully',
+        },
+      },
+    });
+    render(
+      <Provider store={storeWithSuccessMessage}>
+        <Home />
+      </Provider>
+    );
+    expect(showAlertMock).toHaveBeenCalledWith('Profile updated successfully', 'success');
   });
 });
