@@ -40,4 +40,10 @@ describe('Home Screen', () => {
     fireEvent.press(getByLabelText('addContact'));
     expect(mockNavigate).toHaveBeenCalledWith('Contact');
   });
+
+  test('Should render the home image properly', ()=>{
+    const {getByLabelText} = renderHomeScreen();
+    expect(getByLabelText('home-image')).toBeTruthy();
+  });
+
 });
