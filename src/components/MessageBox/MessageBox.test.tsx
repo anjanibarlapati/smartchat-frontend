@@ -1,8 +1,8 @@
-import { render, screen } from '@testing-library/react-native';
-import { MessageBox } from './MessageBox';
-import { Provider } from 'react-redux';
-import { store } from '../../redux/store';
-import { MessageProps } from '../../types/MessageProps';
+import {render, screen} from '@testing-library/react-native';
+import {Provider} from 'react-redux';
+import {store} from '../../redux/store';
+import {MessageProps} from '../../types/MessageProps';
+import {MessageBox} from './MessageBox';
 
 const renderMessageBox = ({
   message = '',
@@ -18,7 +18,7 @@ const renderMessageBox = ({
         status={status}
         isSender={isSender}
       />
-    </Provider>
+    </Provider>,
   );
 };
 
@@ -39,7 +39,7 @@ describe('MessageBox Component Check', () => {
     renderMessageBox({
       message: 'Hi!',
       timestamp: '1:00 PM',
-      status: 'read',
+      status: 'seen',
       isSender: false,
     });
 
@@ -56,7 +56,9 @@ describe('MessageBox Component Check', () => {
       isSender: true,
     });
 
-    expect(screen.getByLabelText('sent-tick-icon').props.source).toEqual(require('../../../assets/images/singleTick.png'));
+    expect(screen.getByLabelText('sent-tick-icon').props.source).toEqual(
+      require('../../../assets/images/singleTick.png'),
+    );
   });
 
   it('Should render double tick icon when status is "delivered"', () => {
@@ -67,16 +69,20 @@ describe('MessageBox Component Check', () => {
       isSender: true,
     });
 
-    expect(screen.getByLabelText('delivered-tick-icon').props.source).toEqual(require('../../../assets/images/doubleTick.png'));
+    expect(screen.getByLabelText('delivered-tick-icon').props.source).toEqual(
+      require('../../../assets/images/doubleTick.png'),
+    );
   });
 
   it('Should render read tick icon when status is "read"', () => {
     renderMessageBox({
       message: 'Test Read',
       timestamp: '1:03 PM',
-      status: 'read',
+      status: 'seen',
       isSender: true,
     });
-    expect(screen.getByLabelText('read-tick-icon').props.source).toEqual(require('../../../assets/images/readTick.png'));
+    expect(screen.getByLabelText('read-tick-icon').props.source).toEqual(
+      require('../../../assets/images/readTick.png'),
+    );
   });
 });

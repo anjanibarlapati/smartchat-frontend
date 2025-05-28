@@ -1,10 +1,8 @@
 import {Image, Text, View} from 'react-native';
 import {useAppTheme} from '../../hooks/appTheme';
-import {getStyles} from './MessageBox.styles';
-import { MessageProps } from '../../types/MessageProps';
+import {MessageProps} from '../../types/MessageProps';
 import {Theme} from '../../utils/themes';
-
-
+import {getStyles} from './MessageBox.styles';
 
 export const MessageBox = ({
   message,
@@ -14,6 +12,7 @@ export const MessageBox = ({
 }: MessageProps) => {
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme, isSender);
+
   const getTickIcon = () => {
     switch (status) {
       case 'sent':
@@ -32,7 +31,7 @@ export const MessageBox = ({
             style={styles.tickIcon}
           />
         );
-      case 'read':
+      case 'seen':
         return (
           <Image
             accessibilityLabel="read-tick-icon"
