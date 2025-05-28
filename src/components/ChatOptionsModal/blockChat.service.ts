@@ -1,17 +1,22 @@
 import {BASE_URL} from '../../utils/constants';
 import {getTokens} from '../../utils/getTokens';
 
-export const blockUserChat = async (
-  senderMobileNumber: string,
-  receiverMobileNumber: string,
-) => {
+type BlockChatProps = {
+  senderMobileNumber: string;
+  receiverMobileNumber: string;
+};
+
+export const blockUserChat = async ({
+  senderMobileNumber,
+  receiverMobileNumber,
+}: BlockChatProps) => {
   const token = await getTokens(senderMobileNumber);
 
-  const response = await fetch(`${BASE_URL}/user/block/chat`, {
+  const response = await fetch(`${BASE_URL}user/block/chat`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      'smart-chat-token-header-key': `Bearer ${token.access_token}`,
     },
     body: JSON.stringify({
       senderMobileNumber,
