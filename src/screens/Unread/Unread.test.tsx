@@ -55,4 +55,10 @@ describe('Unread Screen', () => {
     fireEvent.press(getByLabelText('addContact'));
     expect(mockNavigateToContact).toHaveBeenCalledWith('Contact');
   });
+
+test('Should render the home image properly', ()=>{
+    const {getByLabelText} = renderUnreadScreen();
+    expect(getByLabelText('unread-image')).toBeTruthy();
+  });
+
 });

@@ -18,6 +18,11 @@ export function Unread(): React.JSX.Element {
       <View style={styles.totalContainer}>
         <ScrollView contentContainerStyle={styles.bodyContainer}>
           <View style={styles.textContainer}>
+             <Image
+                               source={theme.images.unreadImageIcon}
+                                style={styles.homeImageStyles}
+                                accessibilityLabel="unread-image"
+                              />
             <Text style={Ustyles.bodyText}>
               No unread chats here
             </Text>
