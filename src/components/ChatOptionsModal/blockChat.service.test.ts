@@ -24,7 +24,7 @@ describe('blockUserChat', () => {
     jest.clearAllMocks();
   });
 
-  it('should call fetch when blcokUser fucntion called', async () => {
+  it('should call fetch when blcokUser function called', async () => {
  const mockTokens = { access_token: 'valid_token' };
       (global.fetch as jest.Mock).mockResolvedValue({
             ok: true,
