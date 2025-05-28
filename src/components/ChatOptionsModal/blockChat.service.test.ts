@@ -30,7 +30,7 @@ describe('blockUserChat', () => {
             ok: true,
         });
       (getTokens as jest.Mock).mockResolvedValue(mockTokens);
-       await blockUserChat(senderMobileNumber, receiverMobileNumber);
+       await blockUserChat({senderMobileNumber, receiverMobileNumber});
         expect(fetch).toHaveBeenCalled();
 
   });
@@ -40,7 +40,7 @@ describe('blockUserChat', () => {
     (fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
 
     await expect(
-      blockUserChat(senderMobileNumber, receiverMobileNumber),
+      blockUserChat({senderMobileNumber, receiverMobileNumber}),
     ).rejects.toThrow('Network error');
   });
 });
