@@ -3,15 +3,14 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
+import {configureStore} from '@reduxjs/toolkit';
 import {render, screen} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
-import {store} from '../../redux/store';
-import {IndividualChat} from './IndividualChat';
-import {configureStore} from '@reduxjs/toolkit';
 import messagesReducer, {
   addMessage,
 } from '../../redux/reducers/messages.reducer';
 import {themeReducer} from '../../redux/reducers/theme.reducer';
+import {IndividualChat} from './IndividualChat';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -34,8 +33,20 @@ jest.mock('react-native-libsodium', () => ({
   to_base64: jest.fn(),
 }));
 
+let mockEmit: jest.Mock = jest.fn();
+jest.mock('../../utils/socket', () => ({
+  mockEmit: jest.fn(),
+  getSocket: jest.fn(() => ({
+    connected: true,
+    emit: mockEmit,
+  })),
+}));
+
 describe('IndividualChat', () => {
+  let store: ReturnType<typeof configureStore>;
+
   beforeEach(() => {
+    jest.clearAllMocks();
     const setOptionsMock = jest.fn();
 
     const getParentMock = jest.fn().mockReturnValue({
@@ -56,14 +67,15 @@ describe('IndividualChat', () => {
         profilePic: 'pic-url',
       },
     });
-  });
-  const renderWithMessage = () => {
-    const store = configureStore({
+
+    store = configureStore({
       reducer: {
         messages: messagesReducer,
         theme: themeReducer,
       },
     });
+  });
+  const renderWithMessage = () => {
     store.dispatch(
       addMessage({
         chatId: '+91 93923 45627',
@@ -78,6 +90,22 @@ describe('IndividualChat', () => {
         },
       }),
     );
+
+    store.dispatch(
+      addMessage({
+        chatId: '+91 93923 45627',
+        message: {
+          id: '2',
+          sender: '+91 93923 45627',
+          receiver: 'me',
+          message: 'Unread message from them',
+          sentAt: new Date().toISOString(),
+          isSender: false,
+          status: 'delivered',
+        },
+      }),
+    );
+
     render(
       <NavigationContainer>
         <Provider store={store}>
@@ -90,6 +118,7 @@ describe('IndividualChat', () => {
   test('Should render message from the FlatList', () => {
     renderWithMessage();
     expect(screen.getByText('Hello there!')).toBeTruthy();
+    expect(screen.getByText('Unread message from them')).toBeTruthy();
   });
 
   test('should render the InputChatBox', () => {
@@ -129,5 +158,13 @@ describe('IndividualChat', () => {
 
     const navigation = useNavigation();
     expect(navigation.setOptions).toHaveBeenCalledTimes(2);
+  });
+  test('Should emit messageRead for unread received messages', () => {
+    renderWithMessage();
+
+    expect(mockEmit).toHaveBeenCalledWith('messageRead', {
+      messageId: '2',
+      chatId: '+91 93923 45627',
+    });
   });
 });
