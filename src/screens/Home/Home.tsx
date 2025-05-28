@@ -31,6 +31,11 @@ export function Home(): React.JSX.Element {
       <View style={styles.totalContainer}>
         <ScrollView contentContainerStyle={styles.bodyContainer}>
           <View style={styles.textContainer}>
+           <Image
+                    source={theme.images.homeImageIcon}
+                    style={styles.homeImageStyles}
+                    accessibilityLabel="home-image"
+                  />
             <Text style={styles.bodyText}>
               Start conversations with your closed ones
             </Text>
