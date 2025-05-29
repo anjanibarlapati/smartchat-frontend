@@ -58,3 +58,14 @@ export const updateProfilePic = async(form: FormData, accessToken: string) => {
     return response;
 };
 
+export const logout = async(mobileNumber: string, accessToken: string) => {
+    const response = await fetch(`${BASE_URL}logout`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'smart-chat-token-header-key': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({mobileNumber: mobileNumber}),
+    });
+    return response;
+};
