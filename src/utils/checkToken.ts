@@ -1,5 +1,6 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { BASE_URL } from './constants';
+import { getDeviceId } from 'react-native-device-info';
 
 export const checkAccessToken = async () => {
   try {
@@ -17,6 +18,8 @@ export const checkAccessToken = async () => {
           body: JSON.stringify({
             accessToken: access_token,
             refreshToken: refresh_token,
+            mobileNumber: user.mobileNumber,
+            deviceId: getDeviceId(),
           }),
         });
 
@@ -33,8 +36,10 @@ export const checkAccessToken = async () => {
               }),
             );
           }
+          return true;
         }
       }
+      return false;
     }
   } catch (error) {
     throw new Error('Token check failed');
