@@ -1,6 +1,6 @@
+import { getDeviceId } from 'react-native-device-info';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { BASE_URL } from './constants';
-import { getDeviceId } from 'react-native-device-info';
 
 export const checkAccessToken = async () => {
   try {

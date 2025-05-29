@@ -1,6 +1,6 @@
+import { getDeviceId } from 'react-native-device-info';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { checkAccessToken } from './checkToken';
-import { getDeviceId } from 'react-native-device-info';
 
 
 global.fetch = jest.fn();
