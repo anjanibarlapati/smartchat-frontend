@@ -1,3 +1,4 @@
+import { getDeviceId } from 'react-native-device-info';
 import { Credentials } from '../../types/Credentials';
 import { BASE_URL } from '../../utils/constants';
 
@@ -7,7 +8,7 @@ export const login = async(credentials: Credentials) => {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(credentials),
+        body: JSON.stringify({...credentials, deviceId: getDeviceId()}),
     });
     return response;
 };
