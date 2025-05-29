@@ -2,6 +2,7 @@
 import { DefaultEventsMap } from '@socket.io/component-emitter';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { io, Socket } from 'socket.io-client';
+import { clearSuccessMessage } from '../redux/reducers/auth.reducer';
 import { addMessage } from '../redux/reducers/messages.reducer';
 import { store } from '../redux/store';
 import { BASE_URL } from './constants';
@@ -42,6 +43,10 @@ export const socketConnection = async (mobileNumber: string) => {
           isSender: false,
         };
         store.dispatch(addMessage({ chatId: data.senderMobileNumber, message: structuredMsg }));
+      });
+
+      socket.on('force-logout', () => {
+        store.dispatch(clearSuccessMessage());
       });
 
       socket.on('disconnect', () => {
