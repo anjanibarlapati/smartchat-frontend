@@ -1,3 +1,4 @@
+import NetInfo from '@react-native-community/netinfo';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
@@ -34,13 +35,15 @@ export function AppNavigator(): React.JSX.Element {
     useEffect(() => {
       const loadUser = async () => {
         try {
-
-        const isAuthenticated = await checkAccessToken();
-        if(!isAuthenticated) {
-          await EncryptedStorage.clear();
-          dispatch(resetUser());
-          return;
-        }
+          const netState = await NetInfo.fetch();
+            if(netState.isConnected) {
+              const isAuthenticated = await checkAccessToken();
+              if(!isAuthenticated) {
+                await EncryptedStorage.clear();
+                dispatch(resetUser());
+                return;
+            }
+          }
          const storedUser = await EncryptedStorage.getItem('User Data');
           if (storedUser) {
             const user = JSON.parse(storedUser);
