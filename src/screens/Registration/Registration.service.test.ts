@@ -1,5 +1,5 @@
-import { register } from './Registration.service';
 import { BASE_URL } from '../../utils/constants';
+import { register } from './Registration.service';
 
 global.fetch = jest.fn();
 
@@ -15,6 +15,10 @@ mockFormData.append('email', 'varun@gmail.com');
 mockFormData.append('mobileNumber', '6303522765');
 mockFormData.append('password', '1234');
 mockFormData.append('profilePic', {});
+
+jest.mock('react-native-device-info', () => ({
+  getDeviceId: jest.fn(),
+}));
 
 describe('RegistrationHandler', () => {
     beforeEach(() => {
