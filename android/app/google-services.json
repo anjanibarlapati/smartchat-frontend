@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "156704156823",
+    "project_id": "smartchat-c0fbe",
+    "storage_bucket": "smartchat-c0fbe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156704156823:android:a8021ebe9f837fc5790dd2",
+        "android_client_info": {
+          "package_name": "com.smartchat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6cIvC_hLm7gTuYP9k8-RcR6yxm5cM6Lo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
