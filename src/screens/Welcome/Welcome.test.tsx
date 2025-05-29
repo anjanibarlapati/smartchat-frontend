@@ -10,6 +10,15 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
 }));
 
+jest.mock('../../database/connection.ts', () => ({
+  getDBConnection: jest.fn(),
+  getDBinstance: jest.fn(),
+}));
+
+jest.mock('../../database/tables/contacts.ts', () => ({
+  createContactsTable: jest.fn(),
+}));
+
 const renderWelcomeScreen = () => {
   return render(
     <Provider store={store}>
