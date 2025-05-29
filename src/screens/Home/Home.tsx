@@ -23,7 +23,7 @@ export function Home(): React.JSX.Element {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (successMessage) {
+    if (successMessage === 'You\'ve successfully logged in to SmartChat!') {
       showAlert(successMessage, 'success');
     }
   }, [dispatch, showAlert, successMessage]);

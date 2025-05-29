@@ -70,7 +70,7 @@ describe('Home Screen', () => {
       },
       preloadedState: {
         auth: {
-          successMessage: 'Profile updated successfully',
+          successMessage: 'You\'ve successfully logged in to SmartChat!',
         },
       },
     });
@@ -79,7 +79,7 @@ describe('Home Screen', () => {
         <Home />
       </Provider>
     );
-    expect(showAlertMock).toHaveBeenCalledWith('Profile updated successfully', 'success');
+    expect(showAlertMock).toHaveBeenCalledWith('You\'ve successfully logged in to SmartChat!', 'success');
   });
   test('Should render the home image properly', ()=>{
     const {getByLabelText} = renderHomeScreen();
