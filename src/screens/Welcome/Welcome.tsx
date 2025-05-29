@@ -1,15 +1,26 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Image, Pressable, Text, useWindowDimensions, View } from 'react-native';
 import { useAppTheme } from '../../hooks/appTheme';
 import { WelcomeScreenNavigationProps } from '../../types/Navigations';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './Welcome.styles';
+import { getDBConnection, getDBinstance } from '../../database/connection';
+import { createContactsTable } from '../../database/tables/contacts';
 
 const WelcomeScreen = ():React.JSX.Element => {
 
   const navigation = useNavigation<WelcomeScreenNavigationProps>();
 const { width, height } = useWindowDimensions();
+
+  useEffect(()=> {
+    const setupDBConnection = async() => {
+      await getDBConnection();
+      const dbInstance = await getDBinstance();
+      await createContactsTable(dbInstance);
+    };
+    setupDBConnection();
+  },[]);
 
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme, width, height);
