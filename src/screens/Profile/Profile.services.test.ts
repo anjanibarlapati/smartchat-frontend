@@ -1,4 +1,4 @@
-import { deleteAccount, removeProfilePic, updateProfileDetails, updateProfilePic } from './Profile.services';
+import { deleteAccount, logout, removeProfilePic, updateProfileDetails, updateProfilePic } from './Profile.services';
 
 global.fetch = jest.fn();
 
@@ -39,6 +39,14 @@ describe('Tests related to Profile screen handlers', () => {
         const formData = new FormData();
         formData.append('image', 'image');
         await updateProfilePic(formData, 'sample-access-token');
+        expect(fetch).toHaveBeenCalled();
+    });
+
+    it('Should call fetch when logout method invokes', async() => {
+        (global.fetch as jest.Mock).mockResolvedValue({
+            ok: true,
+        });
+        await logout('9393939292', 'access_token');
         expect(fetch).toHaveBeenCalled();
     });
 
