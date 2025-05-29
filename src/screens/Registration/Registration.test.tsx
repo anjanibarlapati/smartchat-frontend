@@ -1,10 +1,10 @@
+import { useNavigation } from '@react-navigation/native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useNavigation } from '@react-navigation/native';
 import { Provider } from 'react-redux';
-import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { store } from '../../redux/store';
-import {generateKeyPair, storePublicKey} from '../../utils/keyPairs';
+import { generateKeyPair, storePublicKey } from '../../utils/keyPairs';
 import Registration from './Registration';
 import * as RegistrationHandler from './Registration.service';
 
@@ -22,6 +22,15 @@ jest.mock('react-native-encrypted-storage', () => ({
   removeItem: jest.fn(),
   getAllKeys: jest.fn(),
   clear: jest.fn(),
+}));
+
+jest.mock('react-native-device-info', () => ({
+  getDeviceId: jest.fn(),
+}));
+
+jest.mock('react-native-libsodium', () => ({
+  crypto_box_keypair: jest.fn(),
+  to_base64: jest.fn(),
 }));
 
 jest.mock('@react-navigation/native', () => ({
