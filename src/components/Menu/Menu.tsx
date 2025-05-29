@@ -7,7 +7,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {storeState} from '../../redux/store';
 import {clearUserMessages} from '../../redux/reducers/messages.reducer';
 import {useAlertModal} from '../../hooks/useAlertModal';
-import { CustomeAlert } from '../CustomAlert/CustomAlert';
+import { CustomAlert } from '../CustomAlert/CustomAlert';
 import { useNavigation } from '@react-navigation/native';
 import { HomeScreenNavigationProps } from '../../types/Navigations';
 
@@ -60,7 +60,7 @@ export const Menu = ({
         onBlock={handleBlock}
         onClose={() => setIsModalVisible(false)}
       />
-      <CustomeAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+      <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
     </View>
   );
 };

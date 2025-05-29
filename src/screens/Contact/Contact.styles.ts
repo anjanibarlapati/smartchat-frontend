@@ -1,12 +1,12 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '../../utils/themes';
 
-export const getStyles = (theme: Theme) => StyleSheet.create({
+export const getStyles = (theme: Theme, width: number, height: number) => StyleSheet.create({
     container: {
     flex: 1,
-    backgroundColor:theme.primaryBackground,
+    backgroundColor: theme.primaryBackground,
     display:'flex',
-    gap:15,
+    gap:4,
   },
   headerLeft: {
     display: 'flex',
@@ -18,7 +18,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     width:30,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: width < 360 ? 18 : 20,
     color: theme.primaryColor,
     fontFamily: 'Nunito-Bold',
   },
@@ -28,29 +28,30 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   },
   switchTabs: {
     backgroundColor: theme.secondaryBackgroundColor,
-    height: '8%',
+    height: width > 600 ? '8%' : '7%',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+
   },
   content: {
     alignItems: 'center',
   },
   activeText:{
     color: theme.primaryColor,
-    padding:16,
-    fontSize:15,
+    padding:width < 400 ? 12 : 15,
+    fontSize:width < 360 ? 13 : 15,
     fontFamily:'Nunito-Bold',
   },
   inActiveText:{
     color: theme.secondaryTextColor,
-    padding:16,
-    fontSize:15,
+    padding:width < 400 ? 12 : 15,
+    fontSize:width < 360 ? 13 : 15,
     fontFamily:'Nunito-Bold',
   },
   line:{
-    height:4,
-    width:'100%',
+    height: 4,
+    width: width > 600 ? '120%' : '100%',
     backgroundColor:theme.primaryColor,
   },
   contactsContainer:{
@@ -59,18 +60,19 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   contactsBody:{
     display:'flex',
     flexDirection:'column',
-    paddingBottom:'20%',
+    paddingBottom: height * 0.2,
+
   },
   messageContainer:{
     display:'flex',
     height:'100%',
     alignItems:'center',
     justifyContent:'center',
-    padding:25,
+    padding:20,
   },
   messageText:{
     color: theme.primaryColor,
-    fontSize:16,
+    fontSize:width < 360 ? 14 : 16,
     fontFamily:'Nunito-Bold',
   },
 });

@@ -1,4 +1,4 @@
-import {Image, Text, View} from 'react-native';
+import {Image, Text, useWindowDimensions, View} from 'react-native';
 import {useAppTheme} from '../../hooks/appTheme';
 import {MessageProps} from '../../types/MessageProps';
 import {Theme} from '../../utils/themes';
@@ -10,8 +10,10 @@ export const MessageBox = ({
   status,
   isSender,
 }: MessageProps) => {
+
+  const {width, height} = useWindowDimensions();
   const theme: Theme = useAppTheme();
-  const styles = getStyles(theme, isSender);
+  const styles = getStyles(theme, width, height, isSender);
 
   const getTickIcon = () => {
     switch (status) {

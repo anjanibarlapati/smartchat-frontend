@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {Theme} from '../../utils/themes';
 
-export const getStyles = (theme: Theme) =>
+export const getStyles = (theme: Theme, width: number) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -12,11 +12,11 @@ export const getStyles = (theme: Theme) =>
     },
     box: {
       backgroundColor: theme.primaryInputBackground,
-      padding: 15,
+      padding: width > 600 ? 18 : 15,
       borderRadius: 10,
       alignItems: 'center',
       justifyContent: 'center',
-      width: '90%',
+      width: width > 600 ? '50%' : '90%',
       elevation: 4,
       shadowColor: theme.primaryShadowColor,
       shadowOffset: {width: 0, height: 1},

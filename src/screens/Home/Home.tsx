@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {Image, ScrollView, Text, TouchableOpacity, useWindowDimensions, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { CustomeAlert } from '../../components/CustomAlert/CustomAlert';
+import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
 import {getStyles} from './Home.styles';
 import {useAppTheme} from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal';
@@ -12,8 +12,9 @@ import {ContactScreenNavigationProps} from '../../types/Navigations';
 import {Theme} from '../../utils/themes';
 
 export function Home(): React.JSX.Element {
+  const { width } = useWindowDimensions();
   const theme: Theme = useAppTheme();
-  const styles = getStyles(theme);
+  const styles = getStyles(theme, width);
   const navigation = useNavigation<ContactScreenNavigationProps>();
   const { alertMessage, alertType, alertVisible, hideAlert, showAlert } = useAlertModal();
   const successMessage = useSelector((state: storeState) => state.auth.successMessage);
@@ -51,7 +52,7 @@ export function Home(): React.JSX.Element {
           />
         </TouchableOpacity>
       </View>
-      <CustomeAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+      <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
     </View>
   );
 }

@@ -14,6 +14,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
       borderRadius: 5,
       paddingHorizontal: 10,
       fontFamily:'Nunito-Regular',
+      color: theme.primaryTextColor,
     },
     errorText: {
       color: theme.primaryErrorText,

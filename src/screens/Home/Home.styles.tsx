@@ -1,14 +1,14 @@
 import {StyleSheet} from 'react-native';
 import {Theme} from '../../utils/themes';
 
-export const getStyles = (theme: Theme) =>
+export const getStyles = (theme: Theme, width:number) =>
   StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.primaryBackground,
     },
     headerText: {
-      fontSize: 25,
+      fontSize: width > 600 ? 32 : 25,
       fontFamily: 'Nunito-Bold',
       color: theme.primaryColor,
     },
@@ -21,7 +21,7 @@ export const getStyles = (theme: Theme) =>
       flex: 1,
     },
     textContainer: {
-      marginTop: '30%',
+      paddingTop: width > 600 ? '15%' : '40%',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
@@ -30,13 +30,13 @@ export const getStyles = (theme: Theme) =>
     },
 
     homeImageStyles: {
-      height: 250,
-      width: 250,
+      height: width > 600 ? 300 : 250,
+      width: width > 600 ?  300 : 250,
       resizeMode: 'contain',
       marginBottom: 10,
     },
     bodyText: {
-      fontSize: 20,
+      fontSize: width > 600 ? 24 : 20,
       textAlign: 'center',
       fontFamily: 'Nunito-Bold',
       color: theme.primaryTextColor,
@@ -46,16 +46,16 @@ export const getStyles = (theme: Theme) =>
       display: 'flex',
       position: 'absolute',
       bottom: 0,
-      right: 0,
+      right: width > 600 ? 50 : 0,
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: '#008080',
-      height: '8%',
-      width: '14%',
+      height: width > 700 ? '10%' : '8%',
+      width: width > 600 ? '10%' : '15%',
       borderRadius: 10,
     },
     addContactImage: {
-      height: 45,
-      width: 45,
+      height: width > 600 ? 55 : 45,
+      width: width > 600 ? 65 : 45,
     },
   });

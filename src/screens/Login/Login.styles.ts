@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '../../utils/themes';
 
-export const getStyles = (theme: Theme) => StyleSheet.create({
+export const getStyles = (theme: Theme, width: number) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.primaryBackground,
@@ -14,16 +14,16 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     justifyContent: 'center',
   },
   logoStyles: {
-    width: 250,
-    height: 250,
+    width: width > 600 ? 300 : 250,
+    height: width > 600 ? 300 : 250,
     resizeMode: 'contain',
-    marginBottom: 90,
+    marginBottom: width > 600 ? 120 : 90,
   },
   inputfields: {
     gap: 1,
-    marginTop: '-10%',
+    marginTop: width > 600 ? -40 : -60,
     marginBottom: '5%',
-    width: '90%',
+    width: width > 600 ? '60%' : '90%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -31,6 +31,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   text: {
     fontFamily: 'Nunito-Regular',
     color: theme.primaryTextColor,
+    fontSize: width > 600 ? 18 : 14,
   },
   registerView: {
     display: 'flex',
@@ -44,9 +45,11 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   registerText: {
     color: theme.primaryColor,
     fontFamily: 'Nunito-Bold',
+    fontSize: width > 600 ? 16 : 14,
+
   },
   phoneInputWrapper: {
-    width: '75%',
+    width: width > 600 ? '76%' : '75%',
     marginTop: 10,
     marginBottom: 10,
   },
@@ -60,10 +63,12 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     paddingHorizontal: 10,
     justifyContent: 'center',
     fontFamily: 'Nunito-Regular',
+    fontSize: width > 600 ? 16 : 14,
+
   },
   errorText: {
     color: theme.primaryErrorText,
-    fontSize: 12,
+    fontSize: width > 600 ? 14 : 12,
     marginTop: 5,
     fontFamily: 'Nunito-Regular',
   },

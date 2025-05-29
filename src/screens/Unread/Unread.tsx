@@ -1,15 +1,17 @@
-import { getStyles } from '../Home/Home.styles';
-import {useAppTheme} from '../../hooks/appTheme';
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {AllChatsTabScreenNavigationProps, ContactScreenNavigationProps} from '../../types/Navigations';
-import {Theme} from '../../utils/themes';
-import {getStyles as UnreadStyles} from './Unread.styles';
+import { Image, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { useAppTheme } from '../../hooks/appTheme';
+import { AllChatsTabScreenNavigationProps, ContactScreenNavigationProps } from '../../types/Navigations';
+import { Theme } from '../../utils/themes';
+import { getStyles } from '../Home/Home.styles';
+import { getStyles as UnreadStyles } from './Unread.styles';
 
 export function Unread(): React.JSX.Element {
+
+  const {width} = useWindowDimensions();
   const theme: Theme = useAppTheme();
-  const styles = getStyles(theme);
+  const styles = getStyles(theme, width);
   const Ustyles = UnreadStyles(theme);
   const navigation = useNavigation<ContactScreenNavigationProps>();
   const navigationToAllChats = useNavigation<AllChatsTabScreenNavigationProps>();

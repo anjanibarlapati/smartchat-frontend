@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import SplashScreen from 'react-native-splash-screen';
 import { useDispatch } from 'react-redux';
-import { CustomeAlert } from '../components/CustomAlert/CustomAlert.tsx';
+import { CustomAlert } from '../components/CustomAlert/CustomAlert.tsx';
 import { getDBConnection, getDBinstance } from '../database/connection.ts';
 import { createContactsTable } from '../database/tables/contacts.ts';
 import { useAlertModal } from '../hooks/useAlertModal.ts';
@@ -76,7 +76,7 @@ export function AppNavigator(): React.JSX.Element {
                 <Stack.Screen name="LoginScreen" component={Login}/>
                 </>
             </Stack.Navigator>
-            <CustomeAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+            <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
         </NavigationContainer>
 
     );

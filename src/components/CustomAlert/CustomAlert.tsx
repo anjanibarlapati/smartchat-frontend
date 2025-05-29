@@ -1,4 +1,4 @@
-import { Image, Modal, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Modal, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useAppTheme } from '../../hooks/appTheme';
 import { AlertType } from '../../types/AlertType';
 import { Theme } from '../../utils/themes';
@@ -24,14 +24,16 @@ const iconForAlertType = (type: AlertType) => {
   }
 };
 
-export const CustomeAlert = ({
+export const CustomAlert = ({
   visible,
   message,
   type,
   onClose,
 }: CustomizableAlertProps) => {
   const theme: Theme = useAppTheme();
-  const styles = getStyles(theme);
+
+  const {width} = useWindowDimensions();
+  const styles = getStyles(theme, width);
 
   const icon = iconForAlertType(type);
 
