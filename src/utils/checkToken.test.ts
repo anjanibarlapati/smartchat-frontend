@@ -1,5 +1,6 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { checkAccessToken } from './checkToken';
+import { getDeviceId } from 'react-native-device-info';
 
 
 global.fetch = jest.fn();
@@ -7,6 +8,10 @@ global.fetch = jest.fn();
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
   setItem: jest.fn(),
+}));
+
+jest.mock('react-native-device-info', () => ({
+  getDeviceId: jest.fn(),
 }));
 
 const mockUser = {
@@ -33,6 +38,7 @@ describe('checkAccessToken', () => {
       ok: true,
       json: async () => ({ newAccessToken: 'newAccessToken123' }),
     });
+    (getDeviceId as jest.Mock).mockReturnValueOnce('oppo-reno-8t');
 
     await checkAccessToken();
 
@@ -42,6 +48,8 @@ describe('checkAccessToken', () => {
       body: JSON.stringify({
         accessToken: mockToken.access_token,
         refreshToken: mockToken.refresh_token,
+        mobileNumber: mockUser.mobileNumber,
+        deviceId: 'oppo-reno-8t',
       }),
     });
 
