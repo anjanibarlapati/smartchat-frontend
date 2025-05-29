@@ -7,6 +7,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {storeState} from '../../redux/store';
 import {clearUserMessages} from '../../redux/reducers/messages.reducer';
 import {useAlertModal} from '../../hooks/useAlertModal';
+import { CustomeAlert } from '../CustomAlert/CustomAlert';
+import { useNavigation } from '@react-navigation/native';
+import { HomeScreenNavigationProps } from '../../types/Navigations';
 
 export const Menu = ({
   receiverMobileNumber,
@@ -15,7 +18,10 @@ export const Menu = ({
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const dispatch = useDispatch();
-  const {showAlert} = useAlertModal();
+   const navigateToHomeScreen = useNavigation<HomeScreenNavigationProps>();
+    const {
+      alertVisible, alertMessage, alertType, showAlert, hideAlert,
+    } = useAlertModal();
   const user = useSelector((state: storeState) => state.user);
   const handleClearChat = async () => {
     try {
@@ -25,9 +31,12 @@ export const Menu = ({
       );
       if (response.ok) {
         dispatch(clearUserMessages({chatId: receiverMobileNumber}));
+        setTimeout(()=> {
+           navigateToHomeScreen.replace('Home');
+        },1000);
       }
     } catch (error) {
-      showAlert('Something went wrong. Please try again', 'error');
+      showAlert('Unable to Clear Chat', 'error');
     } finally {
       setIsModalVisible(false);
     }
@@ -51,6 +60,7 @@ export const Menu = ({
         onBlock={handleBlock}
         onClose={() => setIsModalVisible(false)}
       />
+      <CustomeAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
     </View>
   );
 };
