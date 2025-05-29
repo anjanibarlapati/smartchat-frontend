@@ -1,20 +1,22 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect } from 'react';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { CustomeAlert } from '../../components/CustomAlert/CustomAlert';
-import {getStyles} from './Home.styles';
-import {useAppTheme} from '../../hooks/appTheme';
+import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal';
-import { clearSuccessMessage } from '../../redux/reducers/auth.reducer';
+import { resetUser } from '../../redux/reducers/user.reducer';
 import { storeState } from '../../redux/store';
-import {ContactScreenNavigationProps} from '../../types/Navigations';
-import {Theme} from '../../utils/themes';
+import { HomeScreenNavigationProps, WelcomeScreenNavigationProps } from '../../types/Navigations';
+import { Theme } from '../../utils/themes';
+import { getStyles } from './Home.styles';
 
 export function Home(): React.JSX.Element {
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme);
-  const navigation = useNavigation<ContactScreenNavigationProps>();
+  const navigation = useNavigation<HomeScreenNavigationProps>();
+  const welcomeNavigation = useNavigation<WelcomeScreenNavigationProps>();
   const { alertMessage, alertType, alertVisible, hideAlert, showAlert } = useAlertModal();
   const successMessage = useSelector((state: storeState) => state.auth.successMessage);
   const dispatch = useDispatch();
@@ -22,9 +24,23 @@ export function Home(): React.JSX.Element {
   useEffect(() => {
     if (successMessage) {
       showAlert(successMessage, 'success');
-      dispatch(clearSuccessMessage());
     }
   }, [dispatch, showAlert, successMessage]);
+
+  useEffect(() => {
+    const forceLogout = async() => {
+      dispatch(resetUser());
+      await EncryptedStorage.clear();
+      welcomeNavigation.reset({
+        index: 0,
+        routes: [{name: 'WelcomeScreen'}],
+      });
+      Alert.alert('You have been logged out due to another device login.');
+    };
+    if(successMessage === null){
+      forceLogout();
+    }
+  }, [dispatch, welcomeNavigation, successMessage]);
 
   return (
     <View style={styles.container}>

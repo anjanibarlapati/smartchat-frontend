@@ -9,6 +9,10 @@ const mockResponse = {
     json: jest.fn().mockResolvedValue({ success: true, message: 'User login successfully' }),
 };
 
+jest.mock('react-native-device-info', () => ({
+  getDeviceId: jest.fn(),
+}));
+
 const mockedCredentials: Credentials = { mobileNumber: '6303522765', password: '1234'};
 
 describe('LoginHandler', () => {

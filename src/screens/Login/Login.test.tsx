@@ -26,6 +26,15 @@ jest.mock('react-native-encrypted-storage', () => ({
   clear: jest.fn(),
 }));
 
+jest.mock('react-native-device-info', () => ({
+  getDeviceId: jest.fn(),
+}));
+
+jest.mock('react-native-libsodium', () => ({
+  crypto_box_keypair: jest.fn(),
+  to_base64: jest.fn(),
+}));
+
 jest.mock('@react-navigation/native', () => ({
   __esModule: true,
   ...jest.requireActual('@react-navigation/native'),

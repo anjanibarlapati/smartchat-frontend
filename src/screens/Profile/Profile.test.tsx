@@ -20,6 +20,11 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
 }));
 
+jest.mock('react-native-libsodium', () => ({
+  crypto_box_keypair: jest.fn(),
+  to_base64: jest.fn(),
+}));
+
 jest.mock('../../utils/getTokens', () => ({
     getTokens: jest.fn(),
 }));

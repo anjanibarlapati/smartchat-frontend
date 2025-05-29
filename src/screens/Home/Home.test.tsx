@@ -20,6 +20,12 @@ jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
   useNavigation: jest.fn(),
 }));
+
+jest.mock('react-native-encrypted-storage', () => ({
+    setItem: jest.fn(),
+    clear: jest.fn(),
+}));
+
 describe('Home Screen', () => {
   const mockNavigate = jest.fn();
   const showAlertMock = jest.fn();
@@ -27,6 +33,7 @@ describe('Home Screen', () => {
   beforeEach(() => {
     (useNavigation as jest.Mock).mockReturnValue({
       navigate: mockNavigate,
+      reset: jest.fn(),
     });
 
     jest.spyOn(useAlertModalHook, 'useAlertModal').mockReturnValue({

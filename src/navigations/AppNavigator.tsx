@@ -8,7 +8,7 @@ import { CustomeAlert } from '../components/CustomAlert/CustomAlert.tsx';
 import { getDBConnection, getDBinstance } from '../database/connection.ts';
 import { createContactsTable } from '../database/tables/contacts.ts';
 import { useAlertModal } from '../hooks/useAlertModal.ts';
-import { setUserDetails } from '../redux/reducers/user.reducer.ts';
+import { resetUser, setUserDetails } from '../redux/reducers/user.reducer.ts';
 import Login from '../screens/Login/Login.tsx';
 import Registration from '../screens/Registration/Registration.tsx';
 import WelcomeScreen from '../screens/Welcome/Welcome.tsx';
@@ -16,6 +16,7 @@ import { RootStackParamList } from '../types/Navigations.ts';
 import { checkAccessToken } from '../utils/checkToken.ts';
 import { socketConnection } from '../utils/socket.ts';
 import { Tabs } from './tabs/Tabs.tsx';
+
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -33,10 +34,16 @@ export function AppNavigator(): React.JSX.Element {
       const loadUser = async () => {
         try {
 
-        await checkAccessToken();
+        const isAuthenticated = await checkAccessToken();
+        if(!isAuthenticated) {
+          await EncryptedStorage.clear();
+          dispatch(resetUser());
+          return;
+        }
          const storedUser = await EncryptedStorage.getItem('User Data');
           if (storedUser) {
             const user = JSON.parse(storedUser);
+            await socketConnection(user.mobileNumber);
             dispatch(setUserDetails(user));
             await getDBConnection();
             const dbInstance = await getDBinstance();
@@ -52,16 +59,6 @@ export function AppNavigator(): React.JSX.Element {
       };
       loadUser();
     }, [dispatch, showAlert]);
-    useEffect(() => {
-    const setupsocket = async () => {
-      const storedUser = await EncryptedStorage.getItem('User Data');
-      if (storedUser) {
-        const user = JSON.parse(storedUser);
-        socketConnection(user.mobileNumber);
-      }
-    };
-    setupsocket();
-  }, []);
 
     if(!isReady) {
       return <></>;

@@ -5,6 +5,7 @@ import {
   addMessage,
   updateMessageStatus,
 } from '../redux/reducers/messages.reducer';
+import { clearSuccessMessage } from '../redux/reducers/auth.reducer';
 import { store } from '../redux/store';
 import { BASE_URL } from './constants';
 import { decryptMessage } from './decryptMessage';
@@ -74,6 +75,10 @@ export const socketConnection = async (mobileNumber: string) => {
           );
         }, 400);
       });
+      socket.on('force-logout', () => {
+        store.dispatch(clearSuccessMessage());
+      });
+
       socket.on('disconnect', () => {
         console.log('Socket disconnected');
       });
