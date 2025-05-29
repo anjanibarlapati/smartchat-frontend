@@ -21,12 +21,19 @@ export const getStyles = (theme: Theme) =>
       flex: 1,
     },
     textContainer: {
-      marginTop: '75%',
+      marginTop: '30%',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
       padding: 10,
       margin: 10,
+    },
+
+    homeImageStyles: {
+      height: 250,
+      width: 250,
+      resizeMode: 'contain',
+      marginBottom: 10,
     },
     bodyText: {
       fontSize: 20,

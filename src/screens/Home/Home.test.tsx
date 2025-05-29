@@ -74,4 +74,9 @@ describe('Home Screen', () => {
     );
     expect(showAlertMock).toHaveBeenCalledWith('Profile updated successfully', 'success');
   });
+  test('Should render the home image properly', ()=>{
+    const {getByLabelText} = renderHomeScreen();
+    expect(getByLabelText('home-image')).toBeTruthy();
+  });
+
 });

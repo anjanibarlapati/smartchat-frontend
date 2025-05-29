@@ -37,8 +37,11 @@ export const LightTheme = {
     },
     send: require('../../assets/icons/send.png'),
     contactsAddcon: require('../../assets/icons/contacts-add-icon.png'),
+    homeImageIcon:require('../../assets/images/homeImageLight.png'),
+    unreadImageIcon:require('../../assets/images/unreadImageLight.png'),
   },
 };
+
 
 export const DarkTheme = {
   primaryBackground: 'rgb(10, 16, 20)',
@@ -79,6 +82,8 @@ export const DarkTheme = {
     },
     send: require('../../assets/icons/send-dark-theme.png'),
     contactsAddcon: require('../../assets/icons/contacts-add-icon-dark-theme.png'),
+    homeImageIcon:require('../../assets/images/homeImageDark.png'),
+   unreadImageIcon:require('../../assets/images/unreadImageDark.png'),
   },
 };
 
