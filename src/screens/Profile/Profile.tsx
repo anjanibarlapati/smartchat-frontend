@@ -1,10 +1,10 @@
 import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { AlertModal } from '../../components/AlertModal/AlertModal';
-import { CustomeAlert } from '../../components/CustomAlert/CustomAlert';
+import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
 import LoadingIndicator from '../../components/Loading/Loading';
 import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTile';
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
@@ -24,8 +24,9 @@ import { getStyles } from './Profile.styles';
 
 export const Profile = (): React.JSX.Element => {
   const userDetails = useSelector((state: storeState) => state.user);
+  const { width, height } = useWindowDimensions();
   const theme: Theme = useAppTheme();
-  const styles = getStyles(theme);
+  const styles = getStyles(theme, width, height);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useDispatch();
   const {
@@ -328,7 +329,7 @@ export const Profile = (): React.JSX.Element => {
           />
         </View>
       </ScrollView>
-      <CustomeAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+      <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
     </KeyboardAvoidingView>
   );
 };

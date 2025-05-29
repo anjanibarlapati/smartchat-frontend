@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '../../utils/themes';
 
-export const getStyles = (theme: Theme) => StyleSheet.create({
+export const getStyles = (theme: Theme, width: number, height: number) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.primaryBackground,
@@ -12,17 +12,18 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 10,
+   paddingHorizontal: width > 600 ? 100 : 2,
   },
   img: {
-    height: 120,
-    width: 120,
-    borderRadius: 60,
+    height: width > 600 ? 150 : 120,
+    width: width > 600 ? 150 : 120,
+    borderRadius: width > 600 ? 75 : 60,
   },
   inputfields: {
     gap: 1,
-    marginTop: '5%',
-    marginBottom: '5%',
-    width: '100%',
+    marginTop: height < 600 ? '2%' : '5%',
+    marginBottom: height < 600 ? '2%' : '5%',
+        width: width > 600 ? '80%' : '100%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -30,6 +31,8 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   text: {
     fontFamily: 'Nunito-Regular',
     color: theme.primaryTextColor,
+    fontSize: width > 600 ? 18 : 14,
+
   },
   loginView: {
     display: 'flex',
@@ -42,9 +45,11 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
   loginText: {
     color: theme.primaryColor,
     fontFamily: 'Nunito-Bold',
+    fontSize: width > 600 ? 16 : 14,
+
   },
   phoneInputWrapper: {
-    width: '75%',
+     width: width > 600 ? '77%' : '74%',
     marginTop: 10,
     marginBottom: 10,
   },
@@ -58,10 +63,13 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     paddingHorizontal: 10,
     justifyContent: 'center',
     fontFamily:'Nunito-Regular',
+    fontSize: width > 600 ? 16 : 14,
+    color: theme.primaryTextColor,
+
   },
   errorText: {
     color: theme.primaryErrorText,
-    fontSize: 12,
+    fontSize: width > 600 ? 14 : 12,
     marginTop: 5,
     fontFamily:'Nunito-Regular',
   },

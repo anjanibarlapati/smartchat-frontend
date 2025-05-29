@@ -1,4 +1,4 @@
-import { Image, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Pressable, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getStyles } from './ContactCard.styles';
 import { useAppTheme } from '../../hooks/appTheme';
@@ -10,8 +10,9 @@ import { Theme } from '../../utils/themes';
 
 function ContactCard ({contact}: {contact: Contact}):React.JSX.Element {
 
+    const {width} = useWindowDimensions();
     const theme: Theme = useAppTheme();
-    const styles = getStyles(theme);
+    const styles = getStyles(theme, width);
     const navigation = useNavigation<ContactScreenNavigationProps>();
 
     return (

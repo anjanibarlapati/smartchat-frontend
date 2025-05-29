@@ -13,7 +13,7 @@ import { User } from '../../types/User';
 import { getTokens } from '../../utils/getTokens';
 import { Properties } from '../../utils/Properties';
 import { Theme } from '../../utils/themes';
-import { CustomeAlert } from '../CustomAlert/CustomAlert';
+import { CustomAlert } from '../CustomAlert/CustomAlert';
 import { getStyles } from './ProfileInfoTile.styles';
 interface ProfileInfoTileProps {
   label: string;
@@ -168,7 +168,7 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
           </TouchableOpacity>
         )}
       </View>
-      <CustomeAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+      <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
     </View>
   );
 };

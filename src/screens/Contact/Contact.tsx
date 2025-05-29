@@ -1,12 +1,12 @@
 import NetInfo from '@react-native-community/netinfo';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useMemo, useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import Contacts from 'react-native-contacts';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useSelector } from 'react-redux';
 import { ContactCard } from '../../components/ContactCard/ContactCard.tsx';
-import { CustomeAlert } from '../../components/CustomAlert/CustomAlert.tsx';
+import { CustomAlert } from '../../components/CustomAlert/CustomAlert.tsx';
 import LoadingIndicator from '../../components/Loading/Loading.tsx';
 import { getDBinstance } from '../../database/connection.ts';
 import { clearContacts } from '../../database/queries/contacts/clearContacts.ts';
@@ -27,7 +27,9 @@ import { getStyles } from './Contact.styles';
 
 export function Contact(): React.JSX.Element {
   const theme: Theme = useAppTheme();
-  const styles = getStyles(theme);
+
+  const { width, height} = useWindowDimensions();
+  const styles = getStyles(theme, width, height);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [selectedTab, setSelectedTab] = useState('Contacts');
   const [contacts, setContacts] = useState<ContactType[]>([]);
@@ -153,7 +155,7 @@ const filteredContacts = useMemo(() => {
             />
           )}
         </View>
-        <CustomeAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+        <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
       </View>
     </>
   );

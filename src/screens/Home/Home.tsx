@@ -1,20 +1,21 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect } from 'react';
-import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
-import { CustomeAlert } from '../../components/CustomAlert/CustomAlert';
 import { useAppTheme } from '../../hooks/appTheme';
+import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
+import {getStyles} from './Home.styles';
 import { useAlertModal } from '../../hooks/useAlertModal';
 import { resetUser } from '../../redux/reducers/user.reducer';
 import { storeState } from '../../redux/store';
 import { HomeScreenNavigationProps, WelcomeScreenNavigationProps } from '../../types/Navigations';
 import { Theme } from '../../utils/themes';
-import { getStyles } from './Home.styles';
 
 export function Home(): React.JSX.Element {
+  const { width } = useWindowDimensions();
   const theme: Theme = useAppTheme();
-  const styles = getStyles(theme);
+  const styles = getStyles(theme, width);
   const navigation = useNavigation<HomeScreenNavigationProps>();
   const welcomeNavigation = useNavigation<WelcomeScreenNavigationProps>();
   const { alertMessage, alertType, alertVisible, hideAlert, showAlert } = useAlertModal();
@@ -67,7 +68,7 @@ export function Home(): React.JSX.Element {
           />
         </TouchableOpacity>
       </View>
-      <CustomeAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+      <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
     </View>
   );
 }

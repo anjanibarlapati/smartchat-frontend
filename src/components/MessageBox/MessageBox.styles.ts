@@ -1,10 +1,10 @@
 import {StyleSheet} from 'react-native';
 import {Theme} from '../../utils/themes';
 
-export const getStyles = (theme: Theme, isSender: boolean) =>
+export const getStyles = (theme: Theme, width: number, height: number, isSender: boolean) =>
   StyleSheet.create({
     container: {
-      maxWidth: '80%',
+      maxWidth: width > 600 ? '55%' : '80%',
       padding: 8,
       borderRadius:12,
       borderTopRightRadius: isSender ? 0 : 12,

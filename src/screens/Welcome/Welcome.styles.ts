@@ -1,38 +1,40 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '../../utils/themes';
 
-export const getStyles = (theme: Theme) =>  StyleSheet.create({
+export const getStyles = (theme: Theme, width: number, height: number) =>  StyleSheet.create({
     container: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: theme.secondaryBackground,
+      paddingHorizontal: width < 350 ? 10 : 20,
+
     },
     logoStyles: {
-      width: 250,
-      height: 250,
+      width: width * 0.5,
+      height: width * 0.5,
       resizeMode: 'contain',
-      marginBottom: 40,
+      marginBottom: height < 600 ? 20 : 40,
     },
     appnameTagline: {
       alignItems: 'center',
-      marginBottom: 40,
+      marginBottom: height < 600 ? 20 : 40,
     },
     appname: {
-      fontSize: 32,
+      fontSize: width < 360 ? 24 : 32,
       color: theme.primaryColor,
       marginBottom: 10,
       fontFamily: 'Nunito-Bold',
     },
     apptagline: {
-      fontSize: 18,
+      fontSize: width < 360 ? 14 : 18,
       color: theme.primaryColor,
       textAlign: 'center',
       fontFamily: 'Nunito-Regular',
       fontWeight: '400',
     },
     getstartButton: {
-      width: 250,
+      width: Math.min(width * 0.8, 250),
       height: 48,
       backgroundColor: theme.primaryColor,
       borderRadius: 5,
@@ -47,7 +49,7 @@ export const getStyles = (theme: Theme) =>  StyleSheet.create({
 
     getstartText: {
       fontFamily: 'Nunito-Bold',
-      fontSize: 18,
+      fontSize: width < 360 ? 16 : 18,
       color: theme.primaryButtonTextColor,
       marginRight: 45,
     },

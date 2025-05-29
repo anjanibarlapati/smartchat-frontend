@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '../../utils/themes';
 
-const getStyles = (theme: Theme) => StyleSheet.create({
+const getStyles = (theme: Theme, width: number) => StyleSheet.create({
     body:{
         display:'flex',
         flexDirection:'row',
@@ -21,7 +21,7 @@ const getStyles = (theme: Theme) => StyleSheet.create({
         display: 'flex',
         flexDirection:'column',
         gap:5,
-        width:'80%',
+        width: width > 600 ? '85%' : '80%',
     },
     nameInviteContainer:{
         display:'flex',

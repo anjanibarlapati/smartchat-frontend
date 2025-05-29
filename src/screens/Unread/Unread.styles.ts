@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {Theme} from '../../utils/themes';
 
-export const getStyles = (theme: Theme) =>
+export const getStyles = (theme: Theme,) =>
   StyleSheet.create({
     bodyText: {
       fontSize: 20,

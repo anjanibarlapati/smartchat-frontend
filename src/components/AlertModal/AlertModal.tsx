@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { useAppTheme } from '../../hooks/appTheme';
@@ -27,8 +28,9 @@ export const AlertModal = ({
   onConfirm,
   onCancel,
 }: AlertModalProps) => {
+  const {width} = useWindowDimensions();
   const theme: Theme = useAppTheme();
-  const styles = getStyles(theme);
+  const styles = getStyles(theme, width);
   return (
     <Modal
       animationType="fade"

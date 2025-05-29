@@ -1,13 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import React, { useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
-import { CustomeAlert } from '../../components/CustomAlert/CustomAlert';
 import Button from '../../components/Button/Button';
+import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
 import InputField from '../../components/InputField/InputField';
 import LoadingIndicator from '../../components/Loading/Loading';
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
@@ -18,18 +18,18 @@ import { setUserDetails } from '../../redux/reducers/user.reducer';
 import { InputUser } from '../../types/InputUser';
 import { RegistrationScreenNavigationProps } from '../../types/Navigations';
 import { UploadImage } from '../../types/UploadImage';
-import {generateKeyPair, storePublicKey} from '../../utils/keyPairs';
+import { generateKeyPair, storePublicKey } from '../../utils/keyPairs';
+import { socketConnection } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { register } from './Registration.service';
 import { getStyles } from './Registration.styles';
-import { socketConnection } from '../../utils/socket';
 
 
 const Registration = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();
-
+const { width, height } = useWindowDimensions();
   const theme: Theme = useAppTheme();
-  const styles = getStyles(theme);
+  const styles = getStyles(theme, width, height);
 
   const {
     alertVisible, alertMessage, alertType, showAlert, hideAlert,
@@ -310,7 +310,7 @@ const Registration = () => {
           remove={removePicture}
         />
       </ScrollView>
-      <CustomeAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+      <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
     </KeyboardAvoidingView>
   );
 };
