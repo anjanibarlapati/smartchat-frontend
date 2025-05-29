@@ -10,6 +10,7 @@ import {useAlertModal} from '../../hooks/useAlertModal';
 import { CustomeAlert } from '../CustomAlert/CustomAlert';
 import { useNavigation } from '@react-navigation/native';
 import { HomeScreenNavigationProps } from '../../types/Navigations';
+import { blockUserChat } from '../ChatOptionsModal/blockChat.service';
 
 export const Menu = ({
   receiverMobileNumber,
@@ -42,9 +43,28 @@ export const Menu = ({
     }
   };
 
-  const handleBlock = () => {
+  const handleBlock = async () => {
     setIsModalVisible(false);
+    try {
+      const response = await blockUserChat({
+        senderMobileNumber: user.mobileNumber,
+        receiverMobileNumber,
+      });
+      console.log(response);
+      if (response.ok) {
+        showAlert('User has been blocked successfully', 'info');
+
+      }else{
+        const result = await response.json();
+        showAlert(result.message,'warning');
+      }
+    } catch (error) {
+      showAlert(
+        'Something went wrong please try again', 'error'
+      );
+    }
   };
+
   return (
     <View>
       <TouchableOpacity onPress={() => setIsModalVisible(true)}>

@@ -17,6 +17,10 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
 }));
 
+jest.mock('../ChatOptionsModal/blockChat.service', () => ({
+  blockUserChat: jest.fn().mockResolvedValue({ok: true}),
+}));
+
 jest.mock('../ChatOptionsModal/clearChat.service', () => ({
   clearUserChat: jest.fn(),
 }));
@@ -58,7 +62,8 @@ beforeEach(() => {
     expect(getByLabelText('Menu-Image')).toBeTruthy();
   });
   it('should close the modal when "Block" is pressed', async () => {
-    const {getByText, queryByText} = renderMenu();
+    const {queryByText, getByText} = renderMenu();
+
     fireEvent.press(screen.getByLabelText('Menu-Image'));
     expect(getByText('Block')).toBeTruthy();
 
@@ -71,7 +76,8 @@ beforeEach(() => {
   });
 
   it('should close the modal when clicking outside the modal (overlay)', async () => {
-    const {getByText, queryByText, getByLabelText} = renderMenu();
+    const {queryByText, getByText, getByLabelText} = renderMenu();
+
 
     fireEvent.press(getByLabelText('Menu-Image'));
     expect(getByText('Clear Chat')).toBeTruthy();
@@ -132,6 +138,73 @@ it('should navigate Homes screen when the chat is cleared', async () => {
 
       expect(mockShowAlert).toHaveBeenCalledWith(
         'Unable to Clear Chat', 'error'
+      );
+    });
+  });
+
+  it('should show success alert when blockUserChat succeeds', async () => {
+    const mockBlockUserChat =
+      require('../ChatOptionsModal/blockChat.service').blockUserChat;
+    mockBlockUserChat.mockResolvedValue({ok: true});
+
+    render(
+      <Provider store={store}>
+        <Menu receiverMobileNumber={receiverMobileNumber} />
+      </Provider>,
+    );
+
+    fireEvent.press(screen.getByLabelText('Menu-Image'));
+    fireEvent.press(screen.getByText('Block'));
+    fireEvent.press(screen.getByText('Yes'));
+
+    await waitFor(() => {
+      expect(mockShowAlert).toHaveBeenCalledWith(
+        'User has been blocked successfully',
+        'info',
+      );
+    });
+  });
+  it('should show warning alert when blockUserChat fails with message', async () => {
+    const mockBlockUserChat =
+      require('../ChatOptionsModal/blockChat.service').blockUserChat;
+    mockBlockUserChat.mockResolvedValue({
+      ok: false,
+      json: async () => ({message: 'Block failed'}),
+    });
+    render(
+      <Provider store={store}>
+        <Menu receiverMobileNumber={receiverMobileNumber} />
+      </Provider>,
+    );
+
+    fireEvent.press(screen.getByLabelText('Menu-Image'));
+    fireEvent.press(screen.getByText('Block'));
+    fireEvent.press(screen.getByText('Yes'));
+
+    await waitFor(() => {
+      expect(mockShowAlert).toHaveBeenCalledWith('Block failed', 'warning');
+    });
+  });
+
+  it('should show error alert when blockUserChat throws an exception', async () => {
+    const mockBlockUserChat =
+      require('../ChatOptionsModal/blockChat.service').blockUserChat;
+    mockBlockUserChat.mockRejectedValue(new Error('Network error'));
+
+    render(
+      <Provider store={store}>
+        <Menu receiverMobileNumber={receiverMobileNumber} />
+      </Provider>,
+    );
+
+    fireEvent.press(screen.getByLabelText('Menu-Image'));
+    fireEvent.press(screen.getByText('Block'));
+    fireEvent.press(screen.getByText('Yes'));
+
+    await waitFor(() => {
+      expect(mockShowAlert).toHaveBeenCalledWith(
+        'Something went wrong please try again',
+        'error',
       );
     });
   });
