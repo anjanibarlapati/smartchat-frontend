@@ -53,6 +53,11 @@ const messagesSlice = createSlice({
         }
       }
     },
+    clearUserMessages(state, action: PayloadAction<{ chatId: string}> ){
+    const {chatId} = action.payload;
+      if(state[chatId]){
+        state[chatId] = []; }
+    },
   },
 });
 
@@ -61,5 +66,6 @@ export const selectMessages = (state: storeState) => state.messages;
 export const selectMessagesByChatId = (chatId: string) =>
   createSelector([selectMessages], messages => messages[chatId] || []);
 
-export const {addMessage, updateMessageStatus} = messagesSlice.actions;
+export const {addMessage,clearUserMessages, updateMessageStatus} = messagesSlice.actions;
+
 export default messagesSlice.reducer;
