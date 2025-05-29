@@ -1,14 +1,18 @@
-import React, { act } from 'react';
-import { Alert } from 'react-native';
+import React, {act} from 'react';
+import {Alert} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useNavigation } from '@react-navigation/native';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { Provider } from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
+import {Provider} from 'react-redux';
 import {store} from '../../redux/store';
 import {generateKeyPair, storePublicKey} from '../../utils/keyPairs';
 import LoginScreen from './Login';
 import * as LoginService from './Login.service';
-
 
 const renderLoginScreen = () => {
   return render(
@@ -110,103 +114,53 @@ describe('Login Screen check', () => {
       expect(queryByText('Password is required')).toBeFalsy();
     });
   });
-
-  // it('Should give an alert on successful login with message', async () => {
-  //   const response = {
-  //     ok: true,
-  //     json: async () => ({message: 'Login Successful'}),
-  //   };
-  //   mockRegister.mockResolvedValue(response);
-  //   const {getByLabelText, getByPlaceholderText, getByText} =
-  //     renderLoginScreen();
-  //   fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
-  //   fireEvent.changeText(getByPlaceholderText('Password'), '1234');
-  //   await act(async () => {
-  //     fireEvent.press(getByText('Login'));
-  //   });
-  //   await waitFor(() => {
-  //     expect(Alert.alert).toHaveBeenCalledWith(
-  //       'You’ve successfully logged in to SmartChat!',
-  //     );
-  //   });
-  // });
-  // it('Should give an alert with error message if the API gives an error', async () => {
-  //   const response = {
-  //     ok: false,
-  //     json: async () => ({message: 'User do not exist'}),
-  //   };
-  //   mockRegister.mockResolvedValue(response);
-  //   const {getByLabelText, getByPlaceholderText, getByText} =
-  //     renderLoginScreen();
-  //   fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
-  //   fireEvent.changeText(getByPlaceholderText('Password'), '1234');
-  //   await act(async () => {
-  //     fireEvent.press(getByText('Login'));
-  //   });
-  //   await waitFor(() => {
-  //     expect(Alert.alert).toHaveBeenCalledWith('User do not exist');
-  //   });
-  // });
-  // it('Should give an alert with Something went wrong. Please try again message if API throws an error', async () => {
-  //   mockRegister.mockRejectedValue(new Error('Internal server error'));
-  //   const {getByLabelText, getByPlaceholderText, getByText} =
-  //     renderLoginScreen();
-  //   fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
-  //   fireEvent.changeText(getByPlaceholderText('Password'), '1234');
-  //   await act(async () => {
-  //     fireEvent.press(getByText('Login'));
-  //   });
-  //   await waitFor(() => {
-  //     expect(Alert.alert).toHaveBeenCalledWith(
-  //       'Something went wrong. Please try again',
-  //     );
-  //   });
-  // });
-
-    it('Should successfully login upon valid credentials', async () => {
-      const response = {
-        ok: true,
-        json: async () => ({user: {}, access_token: '', refresh_token: ''}),
-      };
-      mockRegister.mockResolvedValue(response);
-      (EncryptedStorage.setItem as jest.Mock).mockResolvedValue({});
-      const { getByLabelText, getByPlaceholderText, getByText } = renderLoginScreen();
-      fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
-      fireEvent.changeText(getByPlaceholderText('Password'), '1234');
-      await act(async ()=> {
-        fireEvent.press(getByText('Login'));
-      });
+  it('Should successfully login upon valid credentials', async () => {
+    const response = {
+      ok: true,
+      json: async () => ({user: {}, access_token: '', refresh_token: ''}),
+    };
+    mockRegister.mockResolvedValue(response);
+    (EncryptedStorage.setItem as jest.Mock).mockResolvedValue({});
+    const {getByLabelText, getByPlaceholderText, getByText} =
+      renderLoginScreen();
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
+    fireEvent.changeText(getByPlaceholderText('Password'), '1234');
+    await act(async () => {
+      fireEvent.press(getByText('Login'));
     });
-    it('Should give an alert with error message if the API gives an error', async () => {
-      const response = {
-        ok: false,
-        json: async () => ({ message: 'User does not exist' }),
-      };
-      mockRegister.mockResolvedValue(response);
-      const { getByLabelText, getByPlaceholderText, getByText } = renderLoginScreen();
-      fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
-      fireEvent.changeText(getByPlaceholderText('Password'), '1234');
-      await act(async ()=> {
-        fireEvent.press(getByText('Login'));
-      });
-      await waitFor(() => {
-        expect(getByText('User does not exist')).toBeTruthy();
-      });
+  });
+  it('Should give an alert with error message if the API gives an error', async () => {
+    const response = {
+      ok: false,
+      json: async () => ({message: 'User does not exist'}),
+    };
+    mockRegister.mockResolvedValue(response);
+    const {getByLabelText, getByPlaceholderText, getByText} =
+      renderLoginScreen();
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
+    fireEvent.changeText(getByPlaceholderText('Password'), '1234');
+    await act(async () => {
+      fireEvent.press(getByText('Login'));
     });
-    it('Should give an alert with Something went wrong. Please try again message if API throws an error', async () => {
-      mockRegister.mockRejectedValue(new Error('Internal server error'));
-      const { getByLabelText, getByPlaceholderText, getByText } = renderLoginScreen();
-      fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
-      fireEvent.changeText(getByPlaceholderText('Password'), '1234');
-      await act(async ()=> {
-        fireEvent.press(getByText('Login'));
-      });
-      await waitFor(() => {
-        expect(getByText('Something went wrong. Please try again')).toBeTruthy();
-      });
+    await waitFor(() => {
+      expect(getByText('User does not exist')).toBeTruthy();
     });
-    it('Should navigate to Registration Screen on pressing login text', () => {
-      const { getByText } = renderLoginScreen();
+  });
+  it('Should give an alert with Something went wrong. Please try again message if API throws an error', async () => {
+    mockRegister.mockRejectedValue(new Error('Internal server error'));
+    const {getByLabelText, getByPlaceholderText, getByText} =
+      renderLoginScreen();
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
+    fireEvent.changeText(getByPlaceholderText('Password'), '1234');
+    await act(async () => {
+      fireEvent.press(getByText('Login'));
+    });
+    await waitFor(() => {
+      expect(getByText('Something went wrong. Please try again')).toBeTruthy();
+    });
+  });
+  it('Should navigate to Registration Screen on pressing login text', () => {
+    const {getByText} = renderLoginScreen();
     fireEvent.press(getByText(/register/i));
     expect(mockReplace).toHaveBeenCalledWith('RegistrationScreen');
   });
@@ -262,5 +216,16 @@ describe('Login Screen check', () => {
         routes: [{name: 'Tabs'}],
       });
     });
+  });
+  it('Should apply styles based on the width of the screen', () => {
+    const {getByLabelText} = renderLoginScreen();
+    const logo = getByLabelText('appLogo').parent;
+    expect(logo?.props.style.width).toBe(300);
+    jest
+      .spyOn(require('react-native'), 'useWindowDimensions')
+      .mockReturnValue({width: 10, height: 100});
+    renderLoginScreen();
+    const logoStyle = screen.getByLabelText('appLogo').parent;
+    expect(logoStyle?.props.style.width).toBe(250);
   });
 });

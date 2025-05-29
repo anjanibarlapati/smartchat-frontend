@@ -56,4 +56,19 @@ describe('Tests related to CustomizabeAlert modal', () => {
       require('../../../assets/icons/warning.png'),
     );
   });
+  it('Should apply styles based on the width of the screen', () => {
+    const {getByLabelText} = renderCustomizableAlertModal(
+      true,
+      'Successfully registered',
+      'success',
+    );
+    const modalContainer = getByLabelText('modal-container').parent;
+    expect(modalContainer?.props.style.width).toBe('50%');
+    jest
+      .spyOn(require('react-native'), 'useWindowDimensions')
+      .mockReturnValue({width: 10, height: 100});
+    renderCustomizableAlertModal(true, 'Successfully registered', 'success');
+    const smallModalContainer = screen.getByLabelText('modal-container').parent;
+    expect(smallModalContainer?.props.style.width).toBe('90%');
+  });
 });

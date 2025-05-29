@@ -44,7 +44,7 @@ export const CustomAlert = ({
       transparent
       onRequestClose={onClose}>
       <View style={styles.container}>
-        <View style={styles.box}>
+        <View style={styles.box} accessibilityLabel="modal-container">
           <Image
             source={icon}
             resizeMode="contain"

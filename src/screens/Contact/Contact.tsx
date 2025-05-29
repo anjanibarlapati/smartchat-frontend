@@ -98,7 +98,7 @@ const filteredContacts = useMemo(() => {
   return (
     <>
       <View style={styles.container}>
-        <View style={styles.switchTabs}>
+        <View style={styles.switchTabs} accessibilityLabel="switch-tabs">
           <TouchableOpacity onPress={() => setSelectedTab('Contacts')}>
             <Text
               style={

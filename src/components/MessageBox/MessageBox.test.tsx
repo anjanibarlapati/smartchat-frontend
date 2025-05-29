@@ -1,8 +1,8 @@
-import {render, screen} from '@testing-library/react-native';
-import {Provider} from 'react-redux';
-import {store} from '../../redux/store';
-import {MessageProps} from '../../types/MessageProps';
-import {MessageBox} from './MessageBox';
+import { render, screen } from '@testing-library/react-native';
+import { Provider } from 'react-redux';
+import { store } from '../../redux/store';
+import { MessageProps } from '../../types/MessageProps';
+import { MessageBox } from './MessageBox';
 
 const renderMessageBox = ({
   message = '',
@@ -84,5 +84,28 @@ describe('MessageBox Component Check', () => {
     expect(screen.getByLabelText('read-tick-icon').props.source).toEqual(
       require('../../../assets/images/readTick.png'),
     );
+  });
+  it('Should apply styles based on the width of the screen', async () => {
+    const {getByLabelText} = renderMessageBox({
+      message: 'Hello, Mamatha!',
+      timestamp: '12:45 PM',
+      status: 'sent',
+      isSender: true,
+    });
+    const messageBoxContainer = getByLabelText('messageBox-container').parent;
+    expect(messageBoxContainer?.props.style[0].maxWidth).toBe('55%');
+    jest
+      .spyOn(require('react-native'), 'useWindowDimensions')
+      .mockReturnValue({width: 10, height: 100});
+    renderMessageBox({
+      message: 'Hello, Mamatha!',
+      timestamp: '12:45 PM',
+      status: 'sent',
+      isSender: true,
+    });
+    const messageBoxContainerr = screen.getByLabelText(
+      'messageBox-container',
+    ).parent;
+    expect(messageBoxContainerr?.props.style[0].maxWidth).toBe('80%');
   });
 });

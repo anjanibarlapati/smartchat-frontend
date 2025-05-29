@@ -206,7 +206,7 @@ const { width, height } = useWindowDimensions();
       keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
       style={styles.container}>
       <ScrollView
-        contentContainerStyle={styles.body}
+        contentContainerStyle={styles.body} accessibilityLabel="body-container"
         keyboardShouldPersistTaps="handled">
         <TouchableOpacity
           onPress={() => {

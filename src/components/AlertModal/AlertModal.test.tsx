@@ -1,8 +1,7 @@
-import {fireEvent, render} from '@testing-library/react-native';
-import {Provider} from 'react-redux';
-import {AlertModal} from './AlertModal';
-import {store} from '../../redux/store';
-
+import { fireEvent, render, screen } from '@testing-library/react-native';
+import { Provider } from 'react-redux';
+import { store } from '../../redux/store';
+import { AlertModal } from './AlertModal';
 
 const renderAlertModal = ({
   visible = true,
@@ -52,5 +51,20 @@ describe('Alert Modal', () => {
 
     fireEvent.press(getByText('Cancel'));
     expect(handleCancel).toHaveBeenCalledTimes(1);
+  });
+  it('Should apply styles based on the width of the screen', () => {
+    const {getByText} = renderAlertModal();
+    const modalContainer = getByText(
+      ' Do you really want to delete this account?',
+    ).parent?.parent;
+    expect(modalContainer?.props.style.width).toBe('50%');
+    jest
+      .spyOn(require('react-native'), 'useWindowDimensions')
+      .mockReturnValue({width: 200, height: 100});
+    renderAlertModal();
+    const smallScreenModalContainer = screen.getByText(
+      ' Do you really want to delete this account?',
+    ).parent?.parent;
+    expect(smallScreenModalContainer?.props.style.width).toBe('78%');
   });
 });

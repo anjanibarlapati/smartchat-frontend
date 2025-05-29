@@ -1,11 +1,11 @@
-import { Image, Pressable, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { getStyles } from './ContactCard.styles';
+import { Image, Pressable, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useAppTheme } from '../../hooks/appTheme';
 import { Contact } from '../../types/Contacts';
 import { ContactScreenNavigationProps } from '../../types/Navigations';
 import { sendSmsInvite } from '../../utils/sendSmsInvite';
 import { Theme } from '../../utils/themes';
+import { getStyles } from './ContactCard.styles';
 
 
 function ContactCard ({contact}: {contact: Contact}):React.JSX.Element {
@@ -30,7 +30,7 @@ function ContactCard ({contact}: {contact: Contact}):React.JSX.Element {
                 accessibilityLabel="profile-image"
                 resizeMode="cover"
             />
-            <View style={styles.contactContainer}>
+            <View style={styles.contactContainer} accessibilityLabel="contact-container">
                 <View style={styles.nameInviteContainer}>
                     <Text numberOfLines={1} ellipsizeMode="tail" style={styles.contactName}>{contact.name}</Text>
                     { !contact.doesHaveAccount && <Pressable onPress= {()=> sendSmsInvite(contact.originalNumber)}>

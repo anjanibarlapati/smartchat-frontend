@@ -1,7 +1,4 @@
-import {Alert} from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import {useNavigation} from '@react-navigation/native';
-import {Provider} from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 import {
   act,
   fireEvent,
@@ -9,8 +6,11 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import {store} from '../../redux/store';
-import {generateKeyPair, storePublicKey} from '../../utils/keyPairs';
+import { Alert } from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Provider } from 'react-redux';
+import { store } from '../../redux/store';
+import { generateKeyPair, storePublicKey } from '../../utils/keyPairs';
 import Registration from './Registration';
 import * as RegistrationHandler from './Registration.service';
 
@@ -332,5 +332,19 @@ describe('Registration Screen check', () => {
       screen.getByLabelText('cancel-icon'),
     );
     fireEvent.press(cancelIcon);
+  });
+  it('Should apply styles based on the width of the screen', () => {
+    const {getByLabelText} = renderRegistrationScreen();
+    const bodyContainer = getByLabelText('body-container').parent;
+    console.log('sd', bodyContainer?.props.contentContainerStyle);
+    expect(bodyContainer?.props.contentContainerStyle.paddingHorizontal).toBe(
+      100,
+    );
+    jest
+      .spyOn(require('react-native'), 'useWindowDimensions')
+      .mockReturnValue({width: 10, height: 100});
+    renderRegistrationScreen();
+    const body = screen.getByLabelText('body-container').parent?.parent;
+    expect(body?.props.contentContainerStyle.paddingHorizontal).toBe(2);
   });
 });

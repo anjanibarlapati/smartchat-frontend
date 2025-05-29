@@ -1,5 +1,5 @@
-import { createNativeStackNavigator, NativeStackNavigationOptions} from '@react-navigation/native-stack';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { Image, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useAppTheme } from '../../hooks/appTheme';
 import { Contact } from '../../screens/Contact/Contact';
 import '../../screens/Contact/Contact.styles';
@@ -8,14 +8,15 @@ import { Home } from '../../screens/Home/Home';
 import { getStyles as getHomeScreenStyles } from '../../screens/Home/Home.styles';
 import { IndividualChat } from '../../screens/IndividualChat/IndividualChat';
 import { Unread } from '../../screens/Unread/Unread';
-import {  ContactScreenNavigationProps,HomeStackParamList } from '../../types/Navigations';
+import { ContactScreenNavigationProps, HomeStackParamList } from '../../types/Navigations';
 import { Theme } from '../../utils/themes';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
 function GetHomeScreenOptions() {
+  const {width} = useWindowDimensions();
   const theme: Theme = useAppTheme();
-  const styles = getHomeScreenStyles(theme);
+  const styles = getHomeScreenStyles(theme, width );
   return {
     headerStyle: {
       backgroundColor: theme.primaryBackground,
@@ -32,8 +33,10 @@ function GetHomeScreenOptions() {
 function getContactScreenOptions(
   navigation: ContactScreenNavigationProps,
   theme: Theme,
+  width: number,
+  height:number,
 ): NativeStackNavigationOptions {
-  const styles = getStyles(theme);
+  const styles = getStyles(theme, width, height);
 
     const handleNavigation = () =>{
       navigation.goBack();
@@ -65,6 +68,7 @@ function getContactScreenOptions(
 }
 
 export function HomeStack({ showUnread = false }: { showUnread?: boolean }): React.JSX.Element {
+  const {width, height} = useWindowDimensions();
   const theme: Theme = useAppTheme();
   return (
     <Stack.Navigator>
@@ -76,7 +80,7 @@ export function HomeStack({ showUnread = false }: { showUnread?: boolean }): Rea
       <Stack.Screen
         name="Contact"
         component={Contact}
-        options={({navigation}) => getContactScreenOptions(navigation, theme)}
+        options={({navigation}) => getContactScreenOptions(navigation, theme, width, height)}
       />
       <Stack.Screen name="IndividualChat" component={IndividualChat} />
     </Stack.Navigator>

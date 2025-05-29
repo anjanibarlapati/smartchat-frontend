@@ -1,8 +1,8 @@
-import {Image, Text, useWindowDimensions, View} from 'react-native';
-import {useAppTheme} from '../../hooks/appTheme';
-import {MessageProps} from '../../types/MessageProps';
-import {Theme} from '../../utils/themes';
-import {getStyles} from './MessageBox.styles';
+import { Image, Text, useWindowDimensions, View } from 'react-native';
+import { useAppTheme } from '../../hooks/appTheme';
+import { MessageProps } from '../../types/MessageProps';
+import { Theme } from '../../utils/themes';
+import { getStyles } from './MessageBox.styles';
 
 export const MessageBox = ({
   message,
@@ -49,7 +49,7 @@ export const MessageBox = ({
       style={[
         styles.container,
         isSender ? styles.senderContainer : styles.receiverContainer,
-      ]}>
+      ]} accessibilityLabel="messageBox-container">
       <Text style={styles.messageText}>{message}</Text>
       <View style={styles.footer}>
         <Text style={styles.timeText}>{timestamp}</Text>

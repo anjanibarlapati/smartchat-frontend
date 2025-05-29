@@ -14,7 +14,7 @@ const { width, height } = useWindowDimensions();
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme, width, height);
   return (
-    <View style={styles.container}>
+    <View style={styles.container} >
       <Image
         style={styles.logoStyles}
         source={require('../../../assets/images/Applogo.png')}
