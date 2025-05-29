@@ -18,7 +18,7 @@ import { UploadImage } from '../../types/UploadImage';
 import { getTokens } from '../../utils/getTokens';
 import { socketDisconnect } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
-import { deleteAccount, removeProfilePic, updateProfilePic } from './Profile.services';
+import { deleteAccount, logout, removeProfilePic, updateProfilePic } from './Profile.services';
 import { getStyles } from './Profile.styles';
 
 
@@ -113,13 +113,29 @@ export const Profile = (): React.JSX.Element => {
 
   const signout = async () => {
     try {
-      await socketDisconnect();
-      await EncryptedStorage.clear();
-      await deleteDatabase();
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'WelcomeScreen'}],
-      });
+      const tokens = await getTokens(userDetails.mobileNumber);
+      if (!tokens) {
+        await EncryptedStorage.clear();
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'WelcomeScreen'}],
+        });
+        return;
+      }
+      const response = await logout(userDetails.mobileNumber, tokens.access_token);
+      if(response.ok) {
+        await socketDisconnect();
+        await EncryptedStorage.clear();
+        await deleteDatabase();
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'WelcomeScreen'}],
+        });
+      }
+      else {
+        const result = await response.json();
+        showAlert(result.message, 'warning');
+      }
     } catch (error) {
       showAlert('Something went wrong while signing out. Please try again', 'error');
     }
