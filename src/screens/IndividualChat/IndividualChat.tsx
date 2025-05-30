@@ -114,7 +114,6 @@ export const IndividualChat = () => {
 
       <InputChatBox
         receiverMobileNumber={mobileNumber}
-        onSendMessage={() => {}}
       />
     </View>
   );
