@@ -20,9 +20,9 @@ export const getDBinstance = async() => {
   return dbInstance;
 };
 
-export const closeConnection = async (db: SQLite.SQLiteDatabase) => {
+export const closeConnection = async () => {
     try{
-    return await db.close();
+    return await dbInstance.close();
   } catch(error){
     throw new Error('Failed to close database');
   }
@@ -30,6 +30,7 @@ export const closeConnection = async (db: SQLite.SQLiteDatabase) => {
 
 export const deleteDatabase = async()=> {
   try{
+      await closeConnection();
       await SQLite.deleteDatabase({ name: 'smartchat.db', location: 'default' });
   }catch(error) {
       throw new Error('Failed to delete database');
