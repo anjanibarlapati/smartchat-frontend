@@ -46,7 +46,7 @@ describe('Close DB Connection', () => {
     test('Should close the db instance', async () => {
         (mockDbInstance.close as jest.Mock).mockResolvedValue(true);
 
-        const result = await closeConnection(mockDbInstance);
+        const result = await closeConnection();
 
         expect(mockDbInstance.close).toHaveBeenCalled();
         expect(result).toBe(true);
@@ -54,11 +54,9 @@ describe('Close DB Connection', () => {
 
     test('Should throw error if closing of database fails', async () => {
         (mockDbInstance.close as jest.Mock).mockRejectedValue(new Error(''));
-        await expect(closeConnection(mockDbInstance)).rejects.toThrow('Failed to close database');
+        await expect(closeConnection()).rejects.toThrow('Failed to close database');
     });
 });
-
-
 
 describe('DB Instance', () => {
     beforeEach(() => {
@@ -74,6 +72,7 @@ describe('Delete Database', ()=> {
         jest.clearAllMocks();
     });
     test('Should delete the database', async()=> {
+        (mockDbInstance.close as jest.Mock).mockResolvedValue(true);
         (SQLite.deleteDatabase as jest.Mock).mockResolvedValue({});
         await deleteDatabase();
         expect(SQLite.deleteDatabase).toHaveBeenCalledWith({
