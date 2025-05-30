@@ -336,7 +336,6 @@ describe('Registration Screen check', () => {
   it('Should apply styles based on the width of the screen', () => {
     const {getByLabelText} = renderRegistrationScreen();
     const bodyContainer = getByLabelText('body-container').parent;
-    console.log('sd', bodyContainer?.props.contentContainerStyle);
     expect(bodyContainer?.props.contentContainerStyle.paddingHorizontal).toBe(
       100,
     );
