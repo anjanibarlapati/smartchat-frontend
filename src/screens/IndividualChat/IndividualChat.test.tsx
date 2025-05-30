@@ -4,13 +4,14 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import {configureStore} from '@reduxjs/toolkit';
-import {render, screen} from '@testing-library/react-native';
+import {render, screen, waitFor} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import messagesReducer, {
   addMessage,
 } from '../../redux/reducers/messages.reducer';
 import {themeReducer} from '../../redux/reducers/theme.reducer';
 import {IndividualChat} from './IndividualChat';
+import { getSocket } from '../../utils/socket';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -159,12 +160,27 @@ describe('IndividualChat', () => {
     const navigation = useNavigation();
     expect(navigation.setOptions).toHaveBeenCalledTimes(2);
   });
-  test('Should emit messageRead for unread received messages', () => {
-    renderWithMessage();
 
-    expect(mockEmit).toHaveBeenCalledWith('messageRead', {
-      messageId: '2',
-      chatId: '+91 93923 45627',
+  test('Should not emit messageRead if socket is not connected when sender and receiver are same', async()=>{
+      (getSocket as jest.Mock).mockResolvedValue({connected: false, emit: mockEmit});
+      render(
+        <NavigationContainer>
+          <Provider store={store}>
+            <IndividualChat />
+          </Provider>
+        </NavigationContainer>,
+      );
+      expect(mockEmit).not.toHaveBeenCalled();
+  });
+  test('Should emit messageRead for unread received messages', () => {
+    (getSocket as jest.Mock).mockResolvedValue({connected: true, emit: mockEmit});
+    renderWithMessage();
+    waitFor(()=> {
+      expect(mockEmit).toHaveBeenCalledWith('messageRead', {
+        messageId: '2',
+        chatId: '+91 93923 45627',
+      });
     });
   });
+
 });
