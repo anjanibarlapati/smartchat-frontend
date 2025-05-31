@@ -115,11 +115,11 @@ describe('Socket Utility', () => {
 
   it('Should handle newMessage and dispatch decrypted message', async () => {
     const mockMsgData = {
-      senderMobileNumber: '6303977010',
-      message: 'encrypted',
+      senderMobileNumber: '9876543210',
+      message: 'encryptedMsg',
       nonce: 'nonce123',
       sentAt: '2024-01-01T12:00:00Z',
-      receiverMobileNumber: mobileNumber,
+      status: 'delivered',
     };
 
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
@@ -150,11 +150,10 @@ describe('Socket Utility', () => {
         payload: expect.objectContaining({
           chatId: mockMsgData.senderMobileNumber,
           message: expect.objectContaining({
-            sender: mockMsgData.senderMobileNumber,
-            receiver: mockMsgData.receiverMobileNumber,
             message: 'Decrypted message',
             sentAt: mockMsgData.sentAt,
             isSender: false,
+            status: mockMsgData.status,
           }),
         }),
       }),
@@ -174,7 +173,7 @@ describe('Socket Utility', () => {
     expect(handler).toBeDefined();
 
     handler?.({
-      messageId: 'hello',
+      sentAt: '2024-01-01T12:00:00Z',
       receiverMobileNumber: mobileNumber,
       status: 'delivered',
     });
@@ -186,7 +185,7 @@ describe('Socket Utility', () => {
         type: expect.stringContaining('message'),
         payload: {
           chatId: mobileNumber,
-          id: 'hello',
+          sentAt: '2024-01-01T12:00:00Z',
           status: 'delivered',
         },
       }),
@@ -207,9 +206,9 @@ describe('Socket Utility', () => {
     expect(handler).toBeDefined();
 
     handler?.({
-      messageId: 'hi',
+      sentAt: '2024-01-01T12:00:00Z',
       chatId: '123',
-      status: 'read',
+      status: 'seen',
     });
 
     await new Promise(resolve => setTimeout(resolve, 450));
@@ -219,8 +218,8 @@ describe('Socket Utility', () => {
         type: expect.stringContaining('message'),
         payload: {
           chatId: '123',
-          id: 'hi',
-          status: 'read',
+          sentAt: '2024-01-01T12:00:00Z',
+          status: 'seen',
         },
       }),
     );
