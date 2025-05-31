@@ -2,13 +2,13 @@ import { DefaultEventsMap } from '@socket.io/component-emitter';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { io, Socket } from 'socket.io-client';
 import {
-  addMessage,
-  updateMessageStatus,
+  addMessage,  updateMessageStatus,
 } from '../redux/reducers/messages.reducer';
 import { clearSuccessMessage } from '../redux/reducers/auth.reducer';
 import { store } from '../redux/store';
 import { BASE_URL } from './constants';
 import { decryptMessage } from './decryptMessage';
+import { Message } from '../types/message';
 
 let socket: Socket<DefaultEventsMap, DefaultEventsMap> | null = null;
 
@@ -35,10 +35,7 @@ export const socketConnection = async (mobileNumber: string) => {
           data.nonce,
           tokenData.access_token,
         );
-        const structuredMsg: any = {
-          id: data.id,
-          sender: data.senderMobileNumber,
-          receiver: data.receiverMobileNumber,
+        const structuredMessage: Message = {
           message: actualMessage,
           sentAt: data.sentAt,
           isSender: false,
@@ -46,34 +43,30 @@ export const socketConnection = async (mobileNumber: string) => {
         };
 
         store.dispatch(
-          addMessage({chatId: data.senderMobileNumber, message: structuredMsg}),
+          addMessage({chatId: data.senderMobileNumber, message: structuredMessage}),
         );
       });
 
       socket.on('messageDelivered', data => {
-        const {messageId, receiverMobileNumber, status} = data;
-        setTimeout(() => {
+        const {sentAt, receiverMobileNumber, status} = data;
           store.dispatch(
             updateMessageStatus({
               chatId: receiverMobileNumber,
-              id: messageId,
+              sentAt: sentAt,
               status: status,
             }),
           );
-        }, 300);
       });
 
       socket.on('messageRead', data => {
-        const {messageId, chatId, status} = data;
-        setTimeout(() => {
+        const {sentAt, chatId, status} = data;
           store.dispatch(
             updateMessageStatus({
               chatId,
-              id: messageId,
+              sentAt: sentAt,
               status,
             }),
           );
-        }, 400);
       });
       socket.on('force-logout', () => {
         store.dispatch(clearSuccessMessage());
