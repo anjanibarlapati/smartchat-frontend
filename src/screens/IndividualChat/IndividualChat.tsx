@@ -46,12 +46,12 @@ export const IndividualChat = () => {
     for (const msg of messages) {
       if (!msg.isSender && msg.status !== 'seen') {
         socket.emit('messageRead', {
-          messageId: msg.id,
-          chatId: msg.sender,
+          sentAt: msg.sentAt,
+          chatId: mobileNumber,
         });
       }
     }
-  }, [messages]);
+  }, [messages, mobileNumber]);
 
   const renderChatHeader = useCallback(
     () => (
@@ -101,7 +101,7 @@ export const IndividualChat = () => {
     <View style={styles.container}>
       <FlatList
         data={messages}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.sentAt}
         renderItem={({item}) => (
           <MessageBox
             message={item.message}
