@@ -76,14 +76,12 @@ describe('IndividualChat', () => {
       },
     });
   });
+  const sentAt = new Date().toISOString();
   const renderWithMessage = () => {
     store.dispatch(
       addMessage({
         chatId: '+91 93923 45627',
         message: {
-          id: '1',
-          sender: '+91 93923 45627',
-          receiver: 'me',
           message: 'Hello there!',
           sentAt: new Date().toISOString(),
           isSender: true,
@@ -96,11 +94,8 @@ describe('IndividualChat', () => {
       addMessage({
         chatId: '+91 93923 45627',
         message: {
-          id: '2',
-          sender: '+91 93923 45627',
-          receiver: 'me',
           message: 'Unread message from them',
-          sentAt: new Date().toISOString(),
+          sentAt: sentAt,
           isSender: false,
           status: 'delivered',
         },
@@ -162,7 +157,7 @@ describe('IndividualChat', () => {
   });
 
   test('Should not emit messageRead if socket is not connected when sender and receiver are same', async()=>{
-      (getSocket as jest.Mock).mockResolvedValue({connected: false, emit: mockEmit});
+      (getSocket as jest.Mock).mockReturnValue({connected: false, emit: mockEmit});
       render(
         <NavigationContainer>
           <Provider store={store}>
@@ -179,10 +174,9 @@ describe('IndividualChat', () => {
     renderWithMessage();
     waitFor(()=> {
       expect(mockEmit).toHaveBeenCalledWith('messageRead', {
-        messageId: '2',
+        sentAt: sentAt,
         chatId: '+91 93923 45627',
       });
     });
   });
-
 });
