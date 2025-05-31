@@ -102,7 +102,7 @@ describe('InputChatBox', () => {
 
   });
   test('Should not emit messageRead if socket is not connected when sender and receiver are same', async()=>{
-    (getSocket as jest.Mock).mockResolvedValue({connected: false, emit: mockEmit});
+    (getSocket as jest.Mock).mockReturnValue({connected: false, emit: mockEmit});
     renderInputBox('');
 
     const input = screen.getByPlaceholderText('Type a message');
@@ -116,7 +116,7 @@ describe('InputChatBox', () => {
   });
 
   test('Should emit messageRead if socket is connected when sender and receiver are same', async()=>{
-    (getSocket as jest.Mock).mockResolvedValue({connected: true, emit: mockEmit});
+    (getSocket as jest.Mock).mockReturnValue({connected: true, emit: mockEmit});
     renderInputBox('');
 
     const input = screen.getByPlaceholderText('Type a message');

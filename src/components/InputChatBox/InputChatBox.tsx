@@ -41,7 +41,7 @@ export function InputChatBox({receiverMobileNumber}: {receiverMobileNumber: stri
         status: 'sent',
       };
       dispatch(addMessage({chatId: receiverMobileNumber, message: msg}));
-      const socket = await getSocket();
+      const socket = getSocket();
       if (!socket?.connected) {
         return;
       }

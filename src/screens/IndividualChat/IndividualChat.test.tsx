@@ -170,10 +170,12 @@ describe('IndividualChat', () => {
           </Provider>
         </NavigationContainer>,
       );
-      expect(mockEmit).not.toHaveBeenCalled();
+      waitFor(()=>{
+          expect(mockEmit).not.toHaveBeenCalled();
+      });
   });
-  test('Should emit messageRead for unread received messages', () => {
-    (getSocket as jest.Mock).mockResolvedValue({connected: true, emit: mockEmit});
+  test('Should emit messageRead for unread received messages', async () => {
+    (getSocket as jest.Mock).mockReturnValue({connected: true, emit: mockEmit});
     renderWithMessage();
     waitFor(()=> {
       expect(mockEmit).toHaveBeenCalledWith('messageRead', {
