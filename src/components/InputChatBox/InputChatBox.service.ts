@@ -3,7 +3,7 @@ import { encryptMessage } from '../../utils/encryptMessage';
 import { getTokens } from '../../utils/getTokens';
 
 
-export const sendMessage = async (senderMobileNumber: string, receiverMobileNumber: string, message: string) => {
+export const sendMessage = async (senderMobileNumber: string, receiverMobileNumber: string, message: string, sentAt: string) => {
   try {
     const tokens = await getTokens(senderMobileNumber);
 
@@ -18,11 +18,11 @@ export const sendMessage = async (senderMobileNumber: string, receiverMobileNumb
         senderMobileNumber: senderMobileNumber,
         receiverMobileNumber: receiverMobileNumber,
         message: ciphertext,
+        sentAt: sentAt,
         nonce: nonce,
       }),
     });
-    const result = await response.json();
-    return result;
+    return response;
 
   } catch (error) {
     throw new Error('Unable to send message');
