@@ -1,22 +1,9 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {createSelector} from 'reselect';
 import {storeState} from '../store';
+import { Messages, Message } from '../../types/message';
 
-export interface Message {
-  id: string;
-  sender: string;
-  receiver: string;
-  message: string;
-  sentAt: string;
-  isSender: boolean;
-  status: 'sent' | 'delivered' | 'failed' | 'seen';
-}
-
-interface MessagesState {
-  [chatId: string]: Message[];
-}
-
-const initialState: MessagesState = {};
+const initialState: Messages = {};
 
 const messagesSlice = createSlice({
   name: 'messages',
@@ -38,18 +25,18 @@ const messagesSlice = createSlice({
       state,
       action: PayloadAction<{
         chatId: string;
-        id: string;
-        status: 'sent' | 'delivered' | 'failed' | 'seen';
+        sentAt: string;
+        status: 'sent' | 'delivered' | 'seen';
       }>,
     ) {
-      const {chatId, id, status} = action.payload;
+      const {chatId, sentAt, status} = action.payload;
 
       const messages = state[chatId];
 
       if (messages) {
-        const msg = messages.find(m => m.id === id);
-        if (msg) {
-          msg.status = status;
+        const message = messages.find(messageRecord => messageRecord.sentAt === sentAt);
+        if (message) {
+          message.status = status;
         }
       }
     },
@@ -58,6 +45,12 @@ const messagesSlice = createSlice({
       if(state[chatId]){
         state[chatId] = []; }
     },
+    storeMessages(
+      state,
+      action: PayloadAction<{ chatMessages: Messages }>
+    ) {
+        return action.payload.chatMessages;
+      },
   },
 });
 
@@ -66,6 +59,5 @@ export const selectMessages = (state: storeState) => state.messages;
 export const selectMessagesByChatId = (chatId: string) =>
   createSelector([selectMessages], messages => messages[chatId] || []);
 
-export const {addMessage,clearUserMessages, updateMessageStatus} = messagesSlice.actions;
-
+export const {addMessage,clearUserMessages, updateMessageStatus, storeMessages} = messagesSlice.actions;
 export default messagesSlice.reducer;
