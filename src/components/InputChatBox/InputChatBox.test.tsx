@@ -25,14 +25,7 @@ jest.mock('react-native-libsodium', () => ({
 }));
 
 jest.mock('./InputChatBox.service', () => ({
-  sendMessage: jest.fn(() =>
-    Promise.resolve({
-      message: {
-        _id: 'mock-message-id',
-        message:'Hello',
-      },
-    }),
-  ),
+  sendMessage: jest.fn(),
 }));
 
 let mockEmit: jest.Mock = jest.fn();
@@ -102,6 +95,12 @@ describe('InputChatBox', () => {
 
   });
   test('Should not emit messageRead if socket is not connected when sender and receiver are same', async()=>{
+    (sendMessage as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        message: {},
+      }),
+    });
     (getSocket as jest.Mock).mockReturnValue({connected: false, emit: mockEmit});
     renderInputBox('');
 
@@ -116,6 +115,12 @@ describe('InputChatBox', () => {
   });
 
   test('Should emit messageRead if socket is connected when sender and receiver are same', async()=>{
+    (sendMessage as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        message: {},
+      }),
+     });
     (getSocket as jest.Mock).mockReturnValue({connected: true, emit: mockEmit});
     renderInputBox('');
 
@@ -126,9 +131,9 @@ describe('InputChatBox', () => {
     await waitFor( ()=> {
         fireEvent.press(sendButton);
     });
-    waitFor(()=> {
+    await waitFor(() => {
       expect(mockEmit).toHaveBeenCalledWith('messageRead', {
-        messageId: 'mock-message-id',
+        sentAt: expect.any(String),
         chatId: '',
       });
     });
@@ -136,16 +141,38 @@ describe('InputChatBox', () => {
 
   test('Should throw error when sendMessage fails', async () => {
     (sendMessage as jest.Mock).mockRejectedValue(new Error('encryption failed'));
-    renderInputBox('8639523822');
+    renderInputBox('');
 
     const input = screen.getByPlaceholderText('Type a message');
     fireEvent.changeText(input, 'Hello');
 
     const sendButton = screen.getByLabelText('send-icon');
+    await waitFor(async()=> {
+       fireEvent.press(sendButton);
+    });
+    await waitFor(() => {
+      expect(screen.getByText('Unable to send message')).toBeTruthy();
+    });
+  });
 
-    await expect(() => fireEvent.press(sendButton)).rejects.toThrow(
-      'Unable to encrypt message',
-    );
+  test('Should show alert when response.ok is false', async () => {
+    (sendMessage as jest.Mock).mockResolvedValue({
+      ok: false,
+      json: async () => ({
+        message: 'Server error',
+      }),
+    });
+      renderInputBox('8639523822');
+
+    const input = screen.getByPlaceholderText('Type a message');
+    fireEvent.changeText(input, 'Hello');
+
+    const sendButton = screen.getByLabelText('send-icon');
+    fireEvent.press(sendButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Server error')).toBeTruthy();
+    });
   });
 
 });
