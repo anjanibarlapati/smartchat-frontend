@@ -35,6 +35,8 @@ describe('sendMessage', () => {
     const mockTokens = { access_token: 'valid_token' };
     const mockEncryption = { ciphertext: 'encryptedText', nonce: 'nonce' };
     const mockFetchResponse = {
+      ok: true,
+      status: 200,
       json: jest.fn().mockResolvedValue({ success: true }),
     };
 
@@ -42,7 +44,9 @@ describe('sendMessage', () => {
     (encryptMessage as jest.Mock).mockResolvedValue(mockEncryption);
     (fetch as jest.Mock).mockResolvedValue(mockFetchResponse);
 
-    await sendMessage(mockSender, mockReceiver, mockMessage);
+    const sentAt = new Date().toISOString();
+
+    const response = await sendMessage(mockSender, mockReceiver, mockMessage, sentAt);
 
     expect(getTokens).toHaveBeenCalledWith(mockSender);
     expect(encryptMessage).toHaveBeenCalledWith(
@@ -62,11 +66,12 @@ describe('sendMessage', () => {
           senderMobileNumber: mockSender,
           receiverMobileNumber: mockReceiver,
           message: mockEncryption.ciphertext,
+          sentAt: sentAt,
           nonce: mockEncryption.nonce,
         }),
       },
     );
-    expect(mockFetchResponse.json).toHaveBeenCalled();
+    expect(response).toBe(mockFetchResponse);
   });
 
   it('Should throw an error if fetch fails', async () => {
@@ -78,7 +83,7 @@ describe('sendMessage', () => {
     (fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
 
     await expect(
-      sendMessage(mockSender, mockReceiver, mockMessage),
+      sendMessage(mockSender, mockReceiver, mockMessage, new Date().toISOString()),
     ).rejects.toThrow('Unable to send message');
   });
 });
