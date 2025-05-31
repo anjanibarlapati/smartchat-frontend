@@ -8,12 +8,15 @@ import {
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {useAppTheme} from '../../hooks/appTheme';
-import {addMessage, Message} from '../../redux/reducers/messages.reducer';
+import {addMessage} from '../../redux/reducers/messages.reducer';
 import {storeState} from '../../redux/store';
 import {Theme} from '../../utils/themes';
 import {sendMessage} from './InputChatBox.service';
 import {ChatInputStyles} from './InputChatBox.styles';
 import { getSocket } from '../../utils/socket';
+import { CustomAlert } from '../CustomAlert/CustomAlert';
+import { useAlertModal } from '../../hooks/useAlertModal';
+import { Message } from '../../types/message';
 
 export function InputChatBox({receiverMobileNumber}: {receiverMobileNumber: string}) {
   const theme: Theme = useAppTheme();
@@ -21,22 +24,31 @@ export function InputChatBox({receiverMobileNumber}: {receiverMobileNumber: stri
   const [message, setMessage] = useState('');
   const dispatch = useDispatch();
   const user = useSelector((state: storeState) => state.user);
+    const {
+    alertVisible, alertMessage, alertType, showAlert, hideAlert,
+  } = useAlertModal();
+
+
   const handleSend = async () => {
     if (message.trim() === '') {
       return;
     }
     try {
-      const result = await sendMessage(
+
+          const sentAt = new Date().toISOString();
+
+      const response = await sendMessage(
         user.mobileNumber,
         receiverMobileNumber,
         message.trim(),
+        sentAt,
       );
+
+      const result = await response.json();
+
       const msg: Message = {
-        id: result.message._id,
-        sender: user.mobileNumber,
-        receiver: receiverMobileNumber,
         message: message.trim(),
-        sentAt: new Date().toISOString(),
+        sentAt: sentAt,
         isSender: true,
         status: 'sent',
       };
@@ -47,17 +59,19 @@ export function InputChatBox({receiverMobileNumber}: {receiverMobileNumber: stri
       }
       if(receiverMobileNumber === user.mobileNumber) {
         socket.emit('messageRead', {
-            messageId: msg.id,
-            chatId: msg.sender,
+            sentAt: sentAt,
+            chatId: receiverMobileNumber,
           });
       }
-
+      if(!response.ok) {
+        showAlert(result.message, 'error');
+      }
     } catch (error) {
-      throw new Error('Unable to encrypt message');
+      showAlert('Unable to send message', 'error');
     } finally{
        setMessage('');
     }
-  };
+};
 
   return (
     <KeyboardAvoidingView>
@@ -81,6 +95,7 @@ export function InputChatBox({receiverMobileNumber}: {receiverMobileNumber: stri
           />
         </TouchableOpacity>
       </View>
+      <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
     </KeyboardAvoidingView>
   );
 }
