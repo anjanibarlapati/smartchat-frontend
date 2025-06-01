@@ -50,7 +50,6 @@ export const Menu = ({
         senderMobileNumber: user.mobileNumber,
         receiverMobileNumber,
       });
-      console.log(response);
       if (response.ok) {
         showAlert('User has been blocked successfully', 'info');
 

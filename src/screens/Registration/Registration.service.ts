@@ -4,7 +4,6 @@ import { BASE_URL } from '../../utils/constants';
 export const register = async(formData: FormData) => {
     const deviceId = getDeviceId();
     formData.append('deviceId', deviceId);
-    console.log(deviceId);
     const response = await fetch(`${BASE_URL}register`, {
         method: 'POST',
         headers: {
