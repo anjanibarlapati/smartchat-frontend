@@ -31,7 +31,7 @@ const mockSocket = {
 };
 
 (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
-  JSON.stringify({access_token: 'valid_token'}),
+  JSON.stringify({ access_token: 'valid_token' }),
 );
 
 describe('Socket Utility', () => {
@@ -54,7 +54,7 @@ describe('Socket Utility', () => {
   });
 
   it('Should not reconnect if already connected', async () => {
-    const mockToken = JSON.stringify({access_token: 'valid_token'});
+    const mockToken = JSON.stringify({ access_token: 'valid_token' });
 
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(mockToken);
 
@@ -72,7 +72,7 @@ describe('Socket Utility', () => {
   });
 
   it('Should disconnect socket when socketDisconnect is called', async () => {
-    const mockToken = JSON.stringify({access_token: 'valid_token'});
+    const mockToken = JSON.stringify({ access_token: 'valid_token' });
 
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(mockToken);
 
@@ -92,7 +92,7 @@ describe('Socket Utility', () => {
 
   it('Should establish socket connection and emit register', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
-      JSON.stringify({access_token: 'valid_token'}),
+      JSON.stringify({ access_token: 'valid_token' }),
     );
 
     (io as jest.Mock).mockReturnValue(mockSocket);
@@ -123,7 +123,7 @@ describe('Socket Utility', () => {
     };
 
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
-      JSON.stringify({access_token: 'valid_token'}),
+      JSON.stringify({ access_token: 'valid_token' }),
     );
 
     (io as jest.Mock).mockReturnValue(mockSocket);
@@ -161,7 +161,7 @@ describe('Socket Utility', () => {
   });
   it('Should handle messageDelivered and dispatch updateMessageStatus', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
-      JSON.stringify({access_token: 'valid_token'}),
+      JSON.stringify({ access_token: 'valid_token' }),
     );
     (io as jest.Mock).mockReturnValue(mockSocket);
 
@@ -194,7 +194,7 @@ describe('Socket Utility', () => {
 
   it('Should handle messageRead and dispatch updateMessageStatus', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
-      JSON.stringify({access_token: 'valid_token'}),
+      JSON.stringify({ access_token: 'valid_token' }),
     );
     (io as jest.Mock).mockReturnValue(mockSocket);
 
@@ -220,6 +220,7 @@ describe('Socket Utility', () => {
           chatId: '123',
           sentAt: '2024-01-01T12:00:00Z',
           status: 'seen',
+          updateAllBeforeSentAt: false
         },
       }),
     );
@@ -227,12 +228,12 @@ describe('Socket Utility', () => {
 
   it("Should register 'disconnect' event and log when disconnected", async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
-      JSON.stringify({access_token: 'valid_token'}),
+      JSON.stringify({ access_token: 'valid_token' }),
     );
 
     (io as jest.Mock).mockReturnValue(mockSocket);
 
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
 
     await socketConnection(mobileNumber);
 
@@ -259,7 +260,7 @@ describe('Socket Utility', () => {
   });
   it('Should handle force-logout and dispatch clearSuccessMessage', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
-      JSON.stringify({access_token: 'valid_token'}),
+      JSON.stringify({ access_token: 'valid_token' }),
     );
 
     (io as jest.Mock).mockReturnValue(mockSocket);
