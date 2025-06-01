@@ -9,15 +9,14 @@ export const decryptMessage = async (
   accessToken: string,
 ) => {
   try {
-    const receiverKeyPairRaw = await EncryptedStorage.getItem('privateKey');
+    const privateKeyRaw = await EncryptedStorage.getItem('privateKey');
 
-    if (!receiverKeyPairRaw) {
+    if (!privateKeyRaw) {
       throw new Error('Receiver private key not found');
     }
 
-    const receiverKeyPair = JSON.parse(receiverKeyPairRaw);
 
-    const receiverPrivateKeyBase64 = receiverKeyPair.privateKey;
+    const parsedPrivateKey = JSON.parse(privateKeyRaw);
 
     const response = await getPublicKey(senderMobileNumber, accessToken);
 
@@ -29,7 +28,7 @@ export const decryptMessage = async (
 
     const nonce = Sodium.from_base64(nonceBase64);
     const senderPublicKey = Sodium.from_base64(senderPublicKeyBase64);
-    const receiverPrivateKey = Sodium.from_base64(receiverPrivateKeyBase64);
+    const receiverPrivateKey = Sodium.from_base64(parsedPrivateKey.privateKey);
 
     const decrypted = Sodium.crypto_box_open_easy(
       ciphertext,
