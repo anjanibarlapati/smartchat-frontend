@@ -10,9 +10,10 @@ import {
 } from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import {store} from '../../redux/store';
-import {generateKeyPair, storePublicKey} from '../../utils/keyPairs';
+import {generateKeyPair} from '../../utils/keyPairs';
 import LoginScreen from './Login';
 import * as LoginService from './Login.service';
+import { decryptPrivateKey } from '../../utils/privateKey';
 
 const renderLoginScreen = () => {
   return render(
@@ -45,23 +46,21 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
 }));
 
-jest.mock('../../utils/keyPairs', () => ({
-  __esModule: true,
-  generateKeyPair: jest.fn().mockResolvedValue({
-    publicKey: 'mockPublicKey',
-    privateKey: 'mockPrivateKey',
-  }),
-  storePublicKey: jest.fn().mockResolvedValue({ok: true}),
+jest.mock('../../utils/privateKey', () => ({
+  decryptPrivateKey: jest.fn().mockResolvedValue('mockDecryptedPrivateKey'),
+}));
+
+
+jest.mock('./Login.service', () => ({
+  login: jest.fn(),
+  fetchChats: jest.fn(),
+  formatMessages: jest.fn(),
 }));
 
 describe('Login Screen check', () => {
-  let mockRegister: jest.SpyInstance;
   const mockReplace = jest.fn();
   const mockReset = jest.fn();
 
-  beforeAll(() => {
-    mockRegister = jest.spyOn(LoginService, 'login');
-  });
   beforeEach(() => {
     jest.resetAllMocks();
     (useNavigation as jest.Mock).mockReturnValue({
@@ -70,13 +69,12 @@ describe('Login Screen check', () => {
     });
     jest.spyOn(Alert, 'alert').mockImplementation(() => {});
   });
-  afterAll(() => {
-    mockRegister.mockRestore();
-  });
+
   test('Should render app logo correctly', () => {
     const {getByLabelText} = renderLoginScreen();
     expect(getByLabelText('appLogo')).toBeTruthy();
   });
+
   test('Should render input fields', () => {
     const {getByLabelText, getByPlaceholderText, getByText} =
       renderLoginScreen();
@@ -84,6 +82,7 @@ describe('Login Screen check', () => {
     expect(getByPlaceholderText('Password')).toBeTruthy();
     expect(getByText('Login')).toBeTruthy();
   });
+
   test('Should show validation errors when fileds are empty', async () => {
     const {getByText, queryByText} = renderLoginScreen();
     fireEvent.press(getByText('Login'));
@@ -105,10 +104,12 @@ describe('Login Screen check', () => {
   });
   test('Should not show errors for valid inputs', async () => {
     const {getByLabelText, getByText, getByPlaceholderText, queryByText} =
-      renderLoginScreen();
+    renderLoginScreen();
+
     fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
     fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
     fireEvent.press(getByText('Login'));
+
     await waitFor(() => {
       expect(queryByText('Mobile number is required')).toBeFalsy();
       expect(queryByText('Password is required')).toBeFalsy();
@@ -117,10 +118,19 @@ describe('Login Screen check', () => {
   it('Should successfully login upon valid credentials', async () => {
     const response = {
       ok: true,
-      json: async () => ({user: {}, access_token: '', refresh_token: ''}),
+      json: async () => ({user: {privateKey: {salt: 'salt',nonce:'noce', privateKey: 'privateKey'}}, userId:'anjani123', access_token: '', refresh_token: ''}),
     };
-    mockRegister.mockResolvedValue(response);
+    const mockChatsResponse = {
+      ok: true,
+      json: async () => ([]),
+    };
+
+    (decryptPrivateKey as jest.Mock).mockResolvedValue('mockDecryptedPrivateKey');
+    (LoginService.login as jest.Mock).mockResolvedValue(response);
+    (LoginService.fetchChats as jest.Mock).mockResolvedValue(mockChatsResponse);
+    (LoginService.formatMessages as jest.Mock).mockResolvedValue({});
     (EncryptedStorage.setItem as jest.Mock).mockResolvedValue({});
+
     const {getByLabelText, getByPlaceholderText, getByText} =
       renderLoginScreen();
     fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
@@ -134,7 +144,7 @@ describe('Login Screen check', () => {
       ok: false,
       json: async () => ({message: 'User does not exist'}),
     };
-    mockRegister.mockResolvedValue(response);
+    (LoginService.login as jest.Mock).mockResolvedValue(response);
     const {getByLabelText, getByPlaceholderText, getByText} =
       renderLoginScreen();
     fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
@@ -147,7 +157,7 @@ describe('Login Screen check', () => {
     });
   });
   it('Should give an alert with Something went wrong. Please try again message if API throws an error', async () => {
-    mockRegister.mockRejectedValue(new Error('Internal server error'));
+    (LoginService.login as jest.Mock).mockRejectedValue(new Error('Internal server error'));
     const {getByLabelText, getByPlaceholderText, getByText} =
       renderLoginScreen();
     fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
@@ -174,21 +184,22 @@ describe('Login Screen check', () => {
           lastName: 'Kumar',
           email: 'varun@gmail.com',
           mobileNumber: '1234567890',
+          privateKey: {salt: 'salt',nonce:'noce', privateKey: 'privateKey'}
         },
+        userId:'anjani123',
         access_token: 'access_token',
         refresh_token: 'refresh_token',
       }),
     };
+    const mockChatsResponse = {
+      ok: true,
+      json: async () => ([]),
+    };
+    (decryptPrivateKey as jest.Mock).mockResolvedValue('mockDecryptedPrivateKey');
 
-    mockRegister.mockResolvedValue(response);
-
-    (generateKeyPair as jest.Mock).mockResolvedValue({
-      publicKey: 'mockPublicKey',
-      privateKey: 'mockPrivateKey',
-    });
-
-    (storePublicKey as jest.Mock).mockResolvedValue({ok: true});
-
+    (LoginService.login as jest.Mock).mockResolvedValue(response);
+    (LoginService.fetchChats as jest.Mock).mockResolvedValue(mockChatsResponse);
+    (LoginService.formatMessages as jest.Mock).mockResolvedValue({});
     (EncryptedStorage.setItem as jest.Mock).mockResolvedValue(null);
 
     const {getByLabelText, getByPlaceholderText, getByText} =
@@ -202,19 +213,53 @@ describe('Login Screen check', () => {
     });
 
     await waitFor(() => {
-      expect(generateKeyPair).toHaveBeenCalled();
-      expect(storePublicKey).toHaveBeenCalledWith(
-        '1234567890',
-        'mockPublicKey',
-      );
       expect(EncryptedStorage.setItem).toHaveBeenCalledWith(
         'privateKey',
-        JSON.stringify({privateKey: 'mockPrivateKey'}),
+        JSON.stringify({privateKey: 'mockDecryptedPrivateKey'}),
       );
       expect(mockReset).toHaveBeenCalledWith({
         index: 0,
         routes: [{name: 'Tabs'}],
       });
+    });
+  });
+  it('Should display alert message if fetching chats fails', async () => {
+    const response = {
+      ok: true,
+      json: async () => ({
+        user: {
+          privateKey: {
+            salt: 'salt',
+            nonce: 'nonce',
+            privateKey: 'privateKey',
+          },
+          mobileNumber: '1234567890',
+        },
+        userId: 'anjani123',
+        access_token: '',
+        refresh_token: '',
+      }),
+    };
+
+    const mockChatsResponse = {
+      ok: false,
+      json: async () => ({ message: 'Failed to fetch chats' }),
+    };
+
+    (decryptPrivateKey as jest.Mock).mockResolvedValue('mockDecryptedPrivateKey');
+    (LoginService.login as jest.Mock).mockResolvedValue(response);
+    (LoginService.fetchChats as jest.Mock).mockResolvedValue(mockChatsResponse);
+
+    const { getByLabelText, getByPlaceholderText, getByText } = renderLoginScreen();
+
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
+    fireEvent.changeText(getByPlaceholderText('Password'), '1234');
+
+    await act(async () => {
+      fireEvent.press(getByText('Login'));
+    });
+    await waitFor(() => {
+      expect(getByText('Failed to fetch chats')).toBeTruthy();
     });
   });
   it('Should apply styles based on the width of the screen', () => {
@@ -228,4 +273,5 @@ describe('Login Screen check', () => {
     const logoStyle = screen.getByLabelText('appLogo').parent;
     expect(logoStyle?.props.style.width).toBe(250);
   });
+
 });
