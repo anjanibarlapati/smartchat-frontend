@@ -183,7 +183,7 @@ describe('Login Screen check', () => {
           lastName: 'Kumar',
           email: 'varun@gmail.com',
           mobileNumber: '1234567890',
-          privateKey: {salt: 'salt',nonce:'noce', privateKey: 'privateKey'}
+          privateKey: {salt: 'salt',nonce:'noce', privateKey: 'privateKey'},
         },
         userId:'anjani123',
         access_token: 'access_token',
