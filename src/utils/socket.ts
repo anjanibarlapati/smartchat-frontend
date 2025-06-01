@@ -22,7 +22,7 @@ export const socketConnection = async (mobileNumber: string) => {
     await socketDisconnect();
 
     if (tokenData.access_token) {
-      socket = io(BASE_URL, {transports: ['websocket']});
+      socket = io(BASE_URL, { transports: ['websocket'] });
 
       socket.on('connect', () => {
         socket?.emit('register', mobileNumber);
@@ -43,30 +43,31 @@ export const socketConnection = async (mobileNumber: string) => {
         };
 
         store.dispatch(
-          addMessage({chatId: data.chatId, message: structuredMessage}),
+          addMessage({ chatId: data.chatId, message: structuredMessage }),
         );
       });
 
       socket.on('messageDelivered', data => {
-        const {sentAt, receiverMobileNumber, status} = data;
-          store.dispatch(
-            updateMessageStatus({
-              chatId: receiverMobileNumber,
-              sentAt: sentAt,
-              status: status,
-            }),
-          );
+        const { sentAt, receiverMobileNumber, status } = data;
+        store.dispatch(
+          updateMessageStatus({
+            chatId: receiverMobileNumber,
+            sentAt: sentAt,
+            status: status,
+          }),
+        );
       });
 
       socket.on('messageRead', data => {
-        const {sentAt, chatId, status} = data;
-          store.dispatch(
-            updateMessageStatus({
-              chatId,
-              sentAt: sentAt,
-              status,
-            }),
-          );
+        const { sentAt, chatId, status, updatedCount } = data;
+        store.dispatch(
+          updateMessageStatus({
+            chatId,
+            sentAt: sentAt,
+            status,
+            updateAllBeforeSentAt: updatedCount > 1,
+          }),
+        );
       });
       socket.on('force-logout', () => {
         store.dispatch(clearSuccessMessage());
