@@ -34,9 +34,7 @@ export function InputChatBox({receiverMobileNumber}: {receiverMobileNumber: stri
       return;
     }
     try {
-
-          const sentAt = new Date().toISOString();
-
+      const sentAt = new Date().toISOString();
       const response = await sendMessage(
         user.mobileNumber,
         receiverMobileNumber,
