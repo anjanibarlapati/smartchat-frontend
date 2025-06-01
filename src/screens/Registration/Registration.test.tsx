@@ -10,9 +10,10 @@ import { Alert } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Provider } from 'react-redux';
 import { store } from '../../redux/store';
-import { generateKeyPair, storePublicKey } from '../../utils/keyPairs';
+import { generateKeyPair, storeKeys } from '../../utils/keyPairs';
 import Registration from './Registration';
 import * as RegistrationHandler from './Registration.service';
+import { decryptPrivateKey, encryptPrivateKey } from '../../utils/privateKey';
 
 jest.mock('../../utils/openCamera', () => ({
   openCamera: jest.fn(),
@@ -51,7 +52,16 @@ jest.mock('../../utils/keyPairs', () => ({
     publicKey: 'mockPublicKey',
     privateKey: 'mockPrivateKey',
   }),
-  storePublicKey: jest.fn().mockResolvedValue({ok: true}),
+  storeKeys: jest.fn().mockResolvedValue({ok: true}),
+}));
+
+jest.mock('../../utils/privateKey', () => ({
+  encryptPrivateKey: jest.fn().mockResolvedValue({
+    salt: 'mockSalt',
+    nonce: 'mockNonce',
+    privateKey: 'mockEncryptedPrivateKey',
+  }),
+  decryptPrivateKey: jest.fn().mockResolvedValue('mockDecryptedPrivateKey'),
 }));
 
 const renderRegistrationScreen = () => {
@@ -184,12 +194,24 @@ describe('Registration Screen check', () => {
   it('Should give an alert on successful registration with message', async () => {
     const response = {
       ok: true,
-      json: async () => ({user: {}, access_token: '', refresh_token: ''}),
+      json: async () => ({user: {}, userId: 'anjani123', access_token: 'access_token', refresh_token: 'refresh_token'}),
     };
+    (generateKeyPair as jest.Mock).mockResolvedValue({
+      publicKey: 'mockPublicKey',
+      privateKey: 'mockPrivateKey',
+    });
+
+    (storeKeys as jest.Mock).mockResolvedValue({ok: true});
+    (encryptPrivateKey as jest.Mock).mockResolvedValue({
+      salt: 'mockSalt',
+      nonce: 'mockNonce',
+      privateKey: 'mockEncryptedPrivateKey',
+    });
+    (decryptPrivateKey as jest.Mock).mockResolvedValue('mockDecryptedPrivateKey');
     mockRegister.mockResolvedValue(response);
     (EncryptedStorage.setItem as jest.Mock).mockReturnValue(() => {});
     const {getByLabelText, getByPlaceholderText, getByText} =
-      renderRegistrationScreen();
+    renderRegistrationScreen();
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
@@ -214,7 +236,7 @@ describe('Registration Screen check', () => {
     mockRegister.mockResolvedValue(response);
 
     const {getByLabelText, getByPlaceholderText, getByText} =
-      renderRegistrationScreen();
+    renderRegistrationScreen();
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
@@ -234,7 +256,7 @@ describe('Registration Screen check', () => {
     mockRegister.mockRejectedValue(new Error('Internal server error'));
 
     const {getByLabelText, getByPlaceholderText, getByText} =
-      renderRegistrationScreen();
+    renderRegistrationScreen();
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
     fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
@@ -266,6 +288,7 @@ describe('Registration Screen check', () => {
           email: 'varun@gmail.com',
           mobileNumber: '1234567890',
         },
+        userId: 'anjani123',
         access_token: 'access_token',
         refresh_token: 'refresh_token',
       }),
@@ -276,8 +299,14 @@ describe('Registration Screen check', () => {
       privateKey: 'mockPrivateKey',
     });
 
-    (storePublicKey as jest.Mock).mockResolvedValue({ok: true});
+    (storeKeys as jest.Mock).mockResolvedValue({ok: true});
     (EncryptedStorage.setItem as jest.Mock).mockResolvedValue(null);
+    (encryptPrivateKey as jest.Mock).mockResolvedValue({
+      salt: 'mockSalt',
+      nonce: 'mockNonce',
+      privateKey: 'mockEncryptedPrivateKey',
+    });
+    (decryptPrivateKey as jest.Mock).mockResolvedValue('mockDecryptedPrivateKey');
 
     (mockRegister as jest.Mock).mockResolvedValue(response);
 
@@ -298,14 +327,16 @@ describe('Registration Screen check', () => {
     await waitFor(() => {
       expect(generateKeyPair).toHaveBeenCalled();
 
-      expect(storePublicKey).toHaveBeenCalledWith(
+      expect(storeKeys).toHaveBeenCalledWith(
         '1234567890',
         'mockPublicKey',
+        { salt: 'mockSalt', nonce: 'mockNonce', privateKey: 'mockEncryptedPrivateKey'},
+        'access_token'
       );
 
       expect(EncryptedStorage.setItem).toHaveBeenCalledWith(
         'privateKey',
-        JSON.stringify({privateKey: 'mockPrivateKey'}),
+        JSON.stringify({privateKey: 'mockDecryptedPrivateKey'}),
       );
 
       expect(mockReset).toHaveBeenCalledWith({
