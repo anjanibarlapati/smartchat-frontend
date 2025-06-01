@@ -1,6 +1,5 @@
 import Sodium from 'react-native-libsodium';
 import {BASE_URL} from './constants';
-import {getTokens} from './getTokens';
 
 export const generateKeyPair = async () => {
   const keyPair = await Sodium.crypto_box_keypair();
@@ -11,18 +10,29 @@ export const generateKeyPair = async () => {
   return {publicKey: base64PublicKey, privateKey: base64PrivateKey};
 };
 
-export const storePublicKey = async (mobileNumber: string, publicKey: string) => {
-  const tokens = await getTokens(mobileNumber);
+export const storeKeys = async (
+  mobileNumber: string,
+  publicKey: string,
+  encryptedPrivateKey:{
+    salt: string;
+    nonce: string;
+    privateKey: string;
+  },
+  accessToken: string
+) => {
 
-  const response = await fetch(`${BASE_URL}publicKey`, {
+  const response = await fetch(`${BASE_URL}user/keys`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'smart-chat-token-header-key': `Bearer ${tokens.access_token}`,
+      'smart-chat-token-header-key': `Bearer ${accessToken}`,
     },
     body: JSON.stringify({
       mobileNumber: mobileNumber,
       publicKey: publicKey,
+      privateKey: encryptedPrivateKey.privateKey,
+      nonce: encryptedPrivateKey.nonce,
+      salt: encryptedPrivateKey.salt,
     }),
   });
   return response;
