@@ -1,7 +1,7 @@
 import Sodium from 'react-native-libsodium';
 import { BASE_URL } from './constants';
-import {getTokens} from './getTokens';
-import {generateKeyPair, getPublicKey, storePublicKey} from './keyPairs';
+// import {getTokens} from './getTokens';
+import {generateKeyPair, getPublicKey, storeKeys} from './keyPairs';
 
 
 global.fetch = jest.fn();
@@ -51,16 +51,13 @@ describe('Check for public key and private key generation', () => {
 describe('Check for storePublicKey API ', () => {
   it('Should send a POST request with the correct token and payload', async () => {
 
-    const mockToken = {access_token: 'valid_token'};
     const mockResponse = {status: 200};
 
-    (getTokens as jest.Mock).mockResolvedValue(mockToken);
     (fetch as jest.Mock).mockResolvedValue(mockResponse);
 
-    const result = await storePublicKey('6303974949', 'base64PublicKey');
+    const result = await storeKeys('6303974949', 'base64PublicKey', { salt: 'Salt', nonce:'Nonce', privateKey: 'privateKey'}, 'valid_token');
 
-    expect(getTokens).toHaveBeenCalledWith('6303974949');
-    expect(fetch).toHaveBeenCalledWith(`${BASE_URL}publicKey`, {
+    expect(fetch).toHaveBeenCalledWith(`${BASE_URL}user/keys`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -69,6 +66,9 @@ describe('Check for storePublicKey API ', () => {
       body: JSON.stringify({
         mobileNumber: '6303974949',
         publicKey: 'base64PublicKey',
+          privateKey: 'privateKey',
+          nonce: 'Nonce',
+          salt: 'Salt',
       }),
     });
     expect(result).toBe(mockResponse);
