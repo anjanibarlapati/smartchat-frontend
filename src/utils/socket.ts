@@ -30,7 +30,7 @@ export const socketConnection = async (mobileNumber: string) => {
 
       socket.on('newMessage', async data => {
         const actualMessage = await decryptMessage(
-          data.senderMobileNumber,
+          data.chatId,
           data.message,
           data.nonce,
           tokenData.access_token,
@@ -43,7 +43,7 @@ export const socketConnection = async (mobileNumber: string) => {
         };
 
         store.dispatch(
-          addMessage({chatId: data.senderMobileNumber, message: structuredMessage}),
+          addMessage({chatId: data.chatId, message: structuredMessage}),
         );
       });
 
