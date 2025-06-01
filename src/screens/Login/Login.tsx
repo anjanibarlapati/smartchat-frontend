@@ -16,13 +16,13 @@ import { setSuccessMessage } from '../../redux/reducers/auth.reducer';
 import { setUserDetails } from '../../redux/reducers/user.reducer';
 import { Credentials } from '../../types/Credentials';
 import { RegistrationScreenNavigationProps } from '../../types/Navigations';
-import { generateKeyPair, storePublicKey } from '../../utils/keyPairs';
 import { socketConnection } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
-import { login } from './Login.service';
+import { fetchChats, formatMessages, login } from './Login.service';
 import { getStyles } from './Login.styles';
-
-
+import { storeMessages } from '../../redux/reducers/messages.reducer';
+import { Chat } from '../../types/message';
+import { decryptPrivateKey } from '../../utils/privateKey';
 
 const LoginScreen = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();
@@ -106,8 +106,24 @@ const { width } = useWindowDimensions();
       const result = await response.json();
       if(response.ok) {
         clearFields();
-        dispatch(setUserDetails(result.user));
-        dispatch(setSuccessMessage('You\'ve successfully logged in to SmartChat!'));
+        const encryptedPrivateKey = result.user.privateKey;
+        const privateKey = await decryptPrivateKey(encryptedPrivateKey.salt, encryptedPrivateKey.nonce, encryptedPrivateKey.privateKey, result.userId);
+        await EncryptedStorage.setItem(
+          'privateKey',
+          JSON.stringify({
+            privateKey: privateKey,
+          }),
+        );
+        await socketConnection(result.user.mobileNumber);
+        const chats = await fetchChats(result.user.mobileNumber, result.access_token);
+        const userChats = await chats.json();
+        if(chats.ok) {
+          const formattedMessages = await formatMessages(userChats as Chat[], result.access_token);
+          dispatch(storeMessages({chatMessages:formattedMessages}));
+        } else{
+          showAlert(userChats.message, 'error');
+          return;
+        }
         await EncryptedStorage.setItem(
           result.user.mobileNumber,
           JSON.stringify({
@@ -115,24 +131,13 @@ const { width } = useWindowDimensions();
             refresh_token: result.refresh_token,
           }),
         );
+        dispatch(setUserDetails(result.user));
         await EncryptedStorage.setItem(
           'User Data',
           JSON.stringify(result.user),
         );
-        const keyPair: any = await generateKeyPair();
-        const keys = await storePublicKey(
-          result.user.mobileNumber,
-          keyPair.publicKey,
-        );
-        if (keys.ok) {
-          await EncryptedStorage.setItem(
-            'privateKey',
-            JSON.stringify({
-              privateKey: keyPair.privateKey,
-            }),
-          );
-        }
-        await socketConnection(result.user.mobileNumber);
+        dispatch(setSuccessMessage('You\'ve successfully logged in to SmartChat!'));
+
         navigation.reset({
           index: 0,
           routes: [{name: 'Tabs'}],
