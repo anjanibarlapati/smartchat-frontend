@@ -115,7 +115,7 @@ describe('Socket Utility', () => {
 
   it('Should handle newMessage and dispatch decrypted message', async () => {
     const mockMsgData = {
-      senderMobileNumber: '9876543210',
+      chatId: '9876543210',
       message: 'encryptedMsg',
       nonce: 'nonce123',
       sentAt: '2024-01-01T12:00:00Z',
@@ -138,7 +138,7 @@ describe('Socket Utility', () => {
     await newMessageHandler(mockMsgData);
 
     expect(decryptMessage).toHaveBeenCalledWith(
-      mockMsgData.senderMobileNumber,
+      mockMsgData.chatId,
       mockMsgData.message,
       mockMsgData.nonce,
       'valid_token',
@@ -148,7 +148,7 @@ describe('Socket Utility', () => {
       expect.objectContaining({
         type: expect.stringContaining('message'),
         payload: expect.objectContaining({
-          chatId: mockMsgData.senderMobileNumber,
+          chatId: mockMsgData.chatId,
           message: expect.objectContaining({
             message: 'Decrypted message',
             sentAt: mockMsgData.sentAt,
@@ -256,5 +256,24 @@ describe('Socket Utility', () => {
     await expect(socketConnection(mobileNumber)).rejects.toThrow(
       'Unable to establish socket connection',
     );
+  });
+  it('Should handle force-logout and dispatch clearSuccessMessage', async () => {
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      JSON.stringify({access_token: 'valid_token'}),
+    );
+
+    (io as jest.Mock).mockReturnValue(mockSocket);
+
+    await socketConnection(mobileNumber);
+
+    const forceLogoutHandler = mockOn.mock.calls.find(
+      call => call[0] === 'force-logout',
+    )?.[1];
+
+    expect(forceLogoutHandler).toBeDefined();
+
+    forceLogoutHandler?.();
+
+    expect(store.dispatch).toHaveBeenCalled();
   });
 });
