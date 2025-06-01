@@ -1,6 +1,6 @@
 import Sodium from 'react-native-libsodium';
 import { BASE_URL } from './constants';
-import {generateKeyPair, getPublicKey, storeKeys} from './keyPairs';
+import { generateKeyPair, getPublicKey, storeKeys } from './keyPairs';
 
 
 global.fetch = jest.fn();

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -6,17 +6,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {useAppTheme} from '../../hooks/appTheme';
-import {addMessage} from '../../redux/reducers/messages.reducer';
-import {storeState} from '../../redux/store';
-import {Theme} from '../../utils/themes';
-import {sendMessage} from './InputChatBox.service';
-import {ChatInputStyles} from './InputChatBox.styles';
-import { getSocket } from '../../utils/socket';
-import { CustomAlert } from '../CustomAlert/CustomAlert';
+import { useDispatch, useSelector } from 'react-redux';
+import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal';
+import { addMessage } from '../../redux/reducers/messages.reducer';
+import { storeState } from '../../redux/store';
 import { Message } from '../../types/message';
+import { getSocket } from '../../utils/socket';
+import { Theme } from '../../utils/themes';
+import { CustomAlert } from '../CustomAlert/CustomAlert';
+import { sendMessage } from './InputChatBox.service';
+import { ChatInputStyles } from './InputChatBox.styles';
 
 export function InputChatBox({receiverMobileNumber}: {receiverMobileNumber: string}) {
   const theme: Theme = useAppTheme();

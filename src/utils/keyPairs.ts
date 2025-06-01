@@ -1,5 +1,5 @@
 import Sodium from 'react-native-libsodium';
-import {BASE_URL} from './constants';
+import { BASE_URL } from './constants';
 
 export const generateKeyPair = async () => {
   const keyPair = await Sodium.crypto_box_keypair();

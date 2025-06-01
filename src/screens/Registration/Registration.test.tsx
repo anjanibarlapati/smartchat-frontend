@@ -11,9 +11,9 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import { Provider } from 'react-redux';
 import { store } from '../../redux/store';
 import { generateKeyPair, storeKeys } from '../../utils/keyPairs';
+import { decryptPrivateKey, encryptPrivateKey } from '../../utils/privateKey';
 import Registration from './Registration';
 import * as RegistrationHandler from './Registration.service';
-import { decryptPrivateKey, encryptPrivateKey } from '../../utils/privateKey';
 
 jest.mock('../../utils/openCamera', () => ({
   openCamera: jest.fn(),

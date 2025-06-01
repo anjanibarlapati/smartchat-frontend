@@ -1,10 +1,10 @@
-import {fireEvent, render, screen, waitFor} from '@testing-library/react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import React from 'react';
-import {Provider} from 'react-redux';
-import {store} from '../../redux/store';
-import {InputChatBox} from './InputChatBox';
-import {sendMessage} from './InputChatBox.service';
+import { Provider } from 'react-redux';
+import { store } from '../../redux/store';
 import { getSocket } from '../../utils/socket';
+import { InputChatBox } from './InputChatBox';
+import { sendMessage } from './InputChatBox.service';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),

@@ -1,14 +1,14 @@
 import { DefaultEventsMap } from '@socket.io/component-emitter';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { io, Socket } from 'socket.io-client';
-import {
-  addMessage,  updateMessageStatus,
-} from '../redux/reducers/messages.reducer';
 import { clearSuccessMessage } from '../redux/reducers/auth.reducer';
+import {
+  addMessage, updateMessageStatus,
+} from '../redux/reducers/messages.reducer';
 import { store } from '../redux/store';
+import { Message } from '../types/message';
 import { BASE_URL } from './constants';
 import { decryptMessage } from './decryptMessage';
-import { Message } from '../types/message';
 
 let socket: Socket<DefaultEventsMap, DefaultEventsMap> | null = null;
 

@@ -1,6 +1,6 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
 import Sodium from 'react-native-libsodium';
-import {getPublicKey} from './keyPairs';
+import { getPublicKey } from './keyPairs';
 
 export const decryptMessage = async (
   senderMobileNumber: string,

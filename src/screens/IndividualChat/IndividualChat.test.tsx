@@ -3,15 +3,15 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import {configureStore} from '@reduxjs/toolkit';
-import {render, screen, waitFor} from '@testing-library/react-native';
-import {Provider} from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { render, screen, waitFor } from '@testing-library/react-native';
+import { Provider } from 'react-redux';
 import messagesReducer, {
   addMessage,
 } from '../../redux/reducers/messages.reducer';
-import {themeReducer} from '../../redux/reducers/theme.reducer';
-import {IndividualChat} from './IndividualChat';
+import { themeReducer } from '../../redux/reducers/theme.reducer';
 import { getSocket } from '../../utils/socket';
+import { IndividualChat } from './IndividualChat';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),

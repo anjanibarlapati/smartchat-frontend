@@ -1,19 +1,18 @@
-import React, {act} from 'react';
-import {Alert} from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import {
   fireEvent,
   render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import {Provider} from 'react-redux';
-import {store} from '../../redux/store';
-import {generateKeyPair} from '../../utils/keyPairs';
+import React, { act } from 'react';
+import { Alert } from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Provider } from 'react-redux';
+import { store } from '../../redux/store';
+import { decryptPrivateKey } from '../../utils/privateKey';
 import LoginScreen from './Login';
 import * as LoginService from './Login.service';
-import { decryptPrivateKey } from '../../utils/privateKey';
 
 const renderLoginScreen = () => {
   return render(

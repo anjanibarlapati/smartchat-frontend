@@ -19,11 +19,11 @@ import { InputUser } from '../../types/InputUser';
 import { RegistrationScreenNavigationProps } from '../../types/Navigations';
 import { UploadImage } from '../../types/UploadImage';
 import { generateKeyPair, storeKeys } from '../../utils/keyPairs';
+import { decryptPrivateKey, encryptPrivateKey } from '../../utils/privateKey';
 import { socketConnection } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { register } from './Registration.service';
 import { getStyles } from './Registration.styles';
-import { decryptPrivateKey, encryptPrivateKey } from '../../utils/privateKey';
 
 
 const Registration = () => {

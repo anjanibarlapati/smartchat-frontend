@@ -1,16 +1,16 @@
-import {Image, TouchableOpacity, View} from 'react-native';
-import {styles} from './Menu.styles';
-import {ChatOptionsModal} from '../ChatOptionsModal/ChatOptionsModal';
-import {useState} from 'react';
-import {clearUserChat} from '../ChatOptionsModal/clearChat.service';
-import {useDispatch, useSelector} from 'react-redux';
-import {storeState} from '../../redux/store';
-import {clearUserMessages} from '../../redux/reducers/messages.reducer';
-import {useAlertModal} from '../../hooks/useAlertModal';
-import { CustomAlert } from '../CustomAlert/CustomAlert';
 import { useNavigation } from '@react-navigation/native';
+import { useState } from 'react';
+import { Image, TouchableOpacity, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { useAlertModal } from '../../hooks/useAlertModal';
+import { clearUserMessages } from '../../redux/reducers/messages.reducer';
+import { storeState } from '../../redux/store';
 import { HomeScreenNavigationProps } from '../../types/Navigations';
 import { blockUserChat } from '../ChatOptionsModal/blockChat.service';
+import { ChatOptionsModal } from '../ChatOptionsModal/ChatOptionsModal';
+import { clearUserChat } from '../ChatOptionsModal/clearChat.service';
+import { CustomAlert } from '../CustomAlert/CustomAlert';
+import { styles } from './Menu.styles';
 
 export const Menu = ({
   receiverMobileNumber,

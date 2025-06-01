@@ -1,8 +1,8 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {io} from 'socket.io-client';
-import {store} from '../redux/store';
-import {decryptMessage} from './decryptMessage';
-import {socketConnection, socketDisconnect} from './socket';
+import { io } from 'socket.io-client';
+import { store } from '../redux/store';
+import { decryptMessage } from './decryptMessage';
+import { socketConnection, socketDisconnect } from './socket';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),

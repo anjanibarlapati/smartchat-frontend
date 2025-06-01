@@ -13,16 +13,16 @@ import LoadingIndicator from '../../components/Loading/Loading';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal';
 import { setSuccessMessage } from '../../redux/reducers/auth.reducer';
+import { storeMessages } from '../../redux/reducers/messages.reducer';
 import { setUserDetails } from '../../redux/reducers/user.reducer';
 import { Credentials } from '../../types/Credentials';
+import { Chat } from '../../types/message';
 import { RegistrationScreenNavigationProps } from '../../types/Navigations';
+import { decryptPrivateKey } from '../../utils/privateKey';
 import { socketConnection } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { fetchChats, formatMessages, login } from './Login.service';
 import { getStyles } from './Login.styles';
-import { storeMessages } from '../../redux/reducers/messages.reducer';
-import { Chat } from '../../types/message';
-import { decryptPrivateKey } from '../../utils/privateKey';
 
 const LoginScreen = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();

@@ -1,7 +1,7 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {createSelector} from 'reselect';
-import {storeState} from '../store';
-import { Messages, Message } from '../../types/message';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector } from 'reselect';
+import { Message, Messages } from '../../types/message';
+import { storeState } from '../store';
 
 const initialState: Messages = {};
 
