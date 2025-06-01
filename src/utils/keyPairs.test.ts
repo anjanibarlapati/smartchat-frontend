@@ -1,6 +1,5 @@
 import Sodium from 'react-native-libsodium';
 import { BASE_URL } from './constants';
-// import {getTokens} from './getTokens';
 import {generateKeyPair, getPublicKey, storeKeys} from './keyPairs';
 
 
