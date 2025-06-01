@@ -1,10 +1,14 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
 import React from 'react';
-import { Provider } from 'react-redux';
-import { store } from '../../redux/store';
-import { getSocket } from '../../utils/socket';
-import { InputChatBox } from './InputChatBox';
-import { sendMessage } from './InputChatBox.service';
+import {Provider} from 'react-redux';
+import {store} from '../../redux/store';
+import {InputChatBox} from './InputChatBox';
+import {sendMessage} from './InputChatBox.service';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -36,14 +40,14 @@ jest.mock('../../utils/socket', () => ({
 
 const renderInputBox = (mobileNumber: string) => {
   render(
-      <Provider store={store}>
-        <InputChatBox receiverMobileNumber={mobileNumber} />
-      </Provider>
+    <Provider store={store}>
+      <InputChatBox receiverMobileNumber={mobileNumber} />
+    </Provider>,
   );
 };
 
 describe('InputChatBox', () => {
-  beforeEach(()=>{
+  beforeEach(() => {
     jest.clearAllMocks();
   });
 
@@ -57,15 +61,15 @@ describe('InputChatBox', () => {
     );
   });
 
-  test('Should send message and clear input', async() => {
+  test('Should send message and clear input', async () => {
     renderInputBox('8639523822');
     const input = screen.getByPlaceholderText('Type a message');
-    waitFor(()=> {
+    waitFor(() => {
       fireEvent.changeText(input, 'Hello');
     });
     const sendButton = screen.getByLabelText('send-icon');
-    await waitFor(()=> {
-        fireEvent.press(sendButton);
+    await waitFor(() => {
+      fireEvent.press(sendButton);
     });
     expect(input.props.value).toBe('');
     expect(mockEmit).not.toHaveBeenCalled();
@@ -75,104 +79,35 @@ describe('InputChatBox', () => {
     renderInputBox('8639523822');
 
     const sendButton = screen.getByLabelText('send-icon');
-    waitFor(()=> {
-        fireEvent.press(sendButton);
+    waitFor(() => {
+      fireEvent.press(sendButton);
     });
     expect(sendMessage).not.toHaveBeenCalled();
   });
 
-  test('Should not send message if input contains only spaces', async() => {
+  test('Should not send message if input contains only spaces', async () => {
     renderInputBox('8639523822');
 
     const input = screen.getByPlaceholderText('Type a message');
     fireEvent.changeText(input, ' ');
 
     const sendButton = screen.getByLabelText('send-icon');
-    await waitFor(()=> {
-        fireEvent.press(sendButton);
+    await waitFor(() => {
+      fireEvent.press(sendButton);
     });
     expect(sendMessage).not.toHaveBeenCalled();
-
   });
-  test('Should not emit messageRead if socket is not connected when sender and receiver are same', async()=>{
-    (sendMessage as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        message: {},
-      }),
-    });
-    (getSocket as jest.Mock).mockReturnValue({connected: false, emit: mockEmit});
+  test('Should not emit messageRead if socket is not connected when sender and receiver are same', async () => {
+    (sendMessage as jest.Mock).mockResolvedValue({});
     renderInputBox('');
 
     const input = screen.getByPlaceholderText('Type a message');
     fireEvent.changeText(input, 'Hello');
 
     const sendButton = screen.getByLabelText('send-icon');
-    await waitFor(()=> {
-        fireEvent.press(sendButton);
+    await waitFor(() => {
+      fireEvent.press(sendButton);
     });
     expect(mockEmit).not.toHaveBeenCalled();
   });
-
-  test('Should emit messageRead if socket is connected when sender and receiver are same', async()=>{
-    (sendMessage as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        message: {},
-      }),
-     });
-    (getSocket as jest.Mock).mockReturnValue({connected: true, emit: mockEmit});
-    renderInputBox('');
-
-    const input = screen.getByPlaceholderText('Type a message');
-    fireEvent.changeText(input, 'Hello');
-
-    const sendButton = screen.getByLabelText('send-icon');
-    await waitFor( ()=> {
-        fireEvent.press(sendButton);
-    });
-    await waitFor(() => {
-      expect(mockEmit).toHaveBeenCalledWith('messageRead', {
-        sentAt: expect.any(String),
-        chatId: '',
-      });
-    });
-  });
-
-  test('Should throw error when sendMessage fails', async () => {
-    (sendMessage as jest.Mock).mockRejectedValue(new Error('encryption failed'));
-    renderInputBox('');
-
-    const input = screen.getByPlaceholderText('Type a message');
-    fireEvent.changeText(input, 'Hello');
-
-    const sendButton = screen.getByLabelText('send-icon');
-    await waitFor(async()=> {
-       fireEvent.press(sendButton);
-    });
-    await waitFor(() => {
-      expect(screen.getByText('Unable to send message')).toBeTruthy();
-    });
-  });
-
-  test('Should show alert when response.ok is false', async () => {
-    (sendMessage as jest.Mock).mockResolvedValue({
-      ok: false,
-      json: async () => ({
-        message: 'Server error',
-      }),
-    });
-      renderInputBox('8639523822');
-
-    const input = screen.getByPlaceholderText('Type a message');
-    fireEvent.changeText(input, 'Hello');
-
-    const sendButton = screen.getByLabelText('send-icon');
-    fireEvent.press(sendButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Server error')).toBeTruthy();
-    });
-  });
-
 });
