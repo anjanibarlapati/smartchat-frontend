@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -6,28 +6,29 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { useAppTheme } from '../../hooks/appTheme';
-import { useAlertModal } from '../../hooks/useAlertModal';
-import { addMessage } from '../../redux/reducers/messages.reducer';
-import { storeState } from '../../redux/store';
-import { Message } from '../../types/message';
-import { getSocket } from '../../utils/socket';
-import { Theme } from '../../utils/themes';
-import { CustomAlert } from '../CustomAlert/CustomAlert';
-import { sendMessage } from './InputChatBox.service';
-import { ChatInputStyles } from './InputChatBox.styles';
+import {useDispatch, useSelector} from 'react-redux';
+import {useAppTheme} from '../../hooks/appTheme';
+import {useAlertModal} from '../../hooks/useAlertModal';
+import {addMessage} from '../../redux/reducers/messages.reducer';
+import {storeState} from '../../redux/store';
+import {Message} from '../../types/message';
+import {Theme} from '../../utils/themes';
+import {CustomAlert} from '../CustomAlert/CustomAlert';
+import {sendMessage} from './InputChatBox.service';
+import {ChatInputStyles} from './InputChatBox.styles';
 
-export function InputChatBox({receiverMobileNumber}: {receiverMobileNumber: string}) {
+export function InputChatBox({
+  receiverMobileNumber,
+}: {
+  receiverMobileNumber: string;
+}) {
   const theme: Theme = useAppTheme();
   const styles = ChatInputStyles(theme);
   const [message, setMessage] = useState('');
   const dispatch = useDispatch();
   const user = useSelector((state: storeState) => state.user);
-    const {
-    alertVisible, alertMessage, alertType, showAlert, hideAlert,
-  } = useAlertModal();
-
+  const {alertVisible, alertMessage, alertType, showAlert, hideAlert} =
+    useAlertModal();
 
   const handleSend = async () => {
     if (message.trim() === '') {
@@ -35,41 +36,29 @@ export function InputChatBox({receiverMobileNumber}: {receiverMobileNumber: stri
     }
     try {
       const sentAt = new Date().toISOString();
-      const response = await sendMessage(
+      sendMessage(
         user.mobileNumber,
         receiverMobileNumber,
         message.trim(),
         sentAt,
       );
 
-      const result = await response.json();
-
-      const msg: Message = {
+      let newMessage: Message = {
         message: message.trim(),
         sentAt: sentAt,
         isSender: true,
         status: 'sent',
       };
-      dispatch(addMessage({chatId: receiverMobileNumber, message: msg}));
-      const socket = getSocket();
-      if (!socket?.connected) {
-        return;
+      if (receiverMobileNumber === user.mobileNumber) {
+        newMessage.status = 'seen';
       }
-      if(receiverMobileNumber === user.mobileNumber) {
-        socket.emit('messageRead', {
-            sentAt: sentAt,
-            chatId: receiverMobileNumber,
-          });
-      }
-      if(!response.ok) {
-        showAlert(result.message, 'error');
-      }
+      dispatch(addMessage({chatId: receiverMobileNumber, message: newMessage}));
     } catch (error) {
       showAlert('Unable to send message', 'error');
-    } finally{
-       setMessage('');
+    } finally {
+      setMessage('');
     }
-};
+  };
 
   return (
     <KeyboardAvoidingView>
@@ -93,7 +82,12 @@ export function InputChatBox({receiverMobileNumber}: {receiverMobileNumber: stri
           />
         </TouchableOpacity>
       </View>
-      <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+      <CustomAlert
+        visible={alertVisible}
+        message={alertMessage}
+        type={alertType}
+        onClose={hideAlert}
+      />
     </KeyboardAvoidingView>
   );
 }
