@@ -138,7 +138,6 @@ describe('Format messages of a user', ()=> {
                 {
                     message: 'AnjaniEncrypted',
                     nonce: 'nonce',
-                    chatId: 'chatid',
                     sentAt: '2023-01-01T00:00:00Z',
                     isSender: true,
                     status: 'sent',
