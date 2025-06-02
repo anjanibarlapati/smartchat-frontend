@@ -6,7 +6,6 @@ export interface Message {
 }
 export type DBMessage = Message & {
   nonce: string,
-  chatId: string;
 }
 
 export interface Messages {
@@ -16,4 +15,11 @@ export interface Messages {
 export type Chat = {
   chatId: string,
   messages: DBMessage[]
+}
+
+export enum MessageStatus {
+  SENT = 'sent',
+  DELIVERED = 'delivered',
+  SEEN = 'seen',
+  NOTSENT = 'not sent'
 }
