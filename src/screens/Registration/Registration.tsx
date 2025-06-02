@@ -172,7 +172,6 @@ const { width, height } = useWindowDimensions();
             }),
           );
         }
-        await socketConnection(result.user.mobileNumber);
         await EncryptedStorage.setItem(
           result.user.mobileNumber,
           JSON.stringify({
@@ -186,6 +185,7 @@ const { width, height } = useWindowDimensions();
           'User Data',
           JSON.stringify(result.user),
         );
+        await socketConnection(result.user.mobileNumber);
         navigation.reset({
           index: 0,
           routes: [{name: 'Tabs'}],

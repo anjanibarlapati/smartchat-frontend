@@ -116,7 +116,6 @@ const LoginScreen = () => {
             privateKey: privateKey,
           }),
         );
-        await socketConnection(result.user.mobileNumber);
         const chats = await fetchChats(result.user.mobileNumber, result.access_token);
         const userChats = await chats.json();
         if(chats.ok) {
@@ -139,7 +138,7 @@ const LoginScreen = () => {
           JSON.stringify(result.user),
         );
         dispatch(setSuccessMessage('You\'ve successfully logged in to SmartChat!'));
-
+        await socketConnection(result.user.mobileNumber);
         navigation.reset({
           index: 0,
           routes: [{name: 'Tabs'}],
