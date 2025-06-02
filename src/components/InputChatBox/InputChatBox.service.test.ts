@@ -34,7 +34,6 @@ describe('sendMessage', () => {
   const mockReceiver = '+91 97021 47010';
   const mockMessage = 'Hello';
   const mockSentAt = new Date().toISOString();
-  const mockStatus = 'sent';
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -51,7 +50,7 @@ describe('sendMessage', () => {
       emit: emitMock,
     });
 
-    const result = await sendMessage(mockSender, mockReceiver, mockMessage, mockSentAt, mockStatus);
+    const result = await sendMessage(mockSender, mockReceiver, mockMessage, mockSentAt);
 
     expect(getTokens).toHaveBeenCalledWith(mockSender);
     expect(encryptMessage).toHaveBeenCalledWith(
@@ -67,7 +66,6 @@ describe('sendMessage', () => {
       message: mockEncryption.ciphertext,
       nonce: mockEncryption.nonce,
       sentAt: mockSentAt,
-      status: mockStatus,
     });
     expect(result).toBeUndefined();
   });
@@ -76,7 +74,7 @@ describe('sendMessage', () => {
     (getTokens as jest.Mock).mockResolvedValue({ access_token: 'valid_token' });
     (encryptMessage as jest.Mock).mockResolvedValue({ ciphertext: 'encryptedText', nonce: 'nonce' });
     (getSocket as jest.Mock).mockReturnValue(null);
-    const result = await sendMessage(mockSender, mockReceiver, mockMessage, mockSentAt, mockStatus);
+    const result = await sendMessage(mockSender, mockReceiver, mockMessage, mockSentAt);
     expect(result).toBe(false);
   });
 
@@ -85,7 +83,7 @@ describe('sendMessage', () => {
     (getSocket as jest.Mock).mockReturnValue({
       emit: jest.fn(),
     });
-    await expect(sendMessage(mockSender, mockReceiver, mockMessage, mockSentAt, mockStatus)).rejects.toThrow(
+    await expect(sendMessage(mockSender, mockReceiver, mockMessage, mockSentAt)).rejects.toThrow(
       'Unable to emit message to server'
     );
   });
