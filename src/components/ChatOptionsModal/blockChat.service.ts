@@ -1,5 +1,5 @@
-import {BASE_URL} from '../../utils/constants';
-import {getTokens} from '../../utils/getTokens';
+import { BASE_URL } from '../../utils/constants';
+import { getTokens } from '../../utils/getTokens';
 
 type BlockChatProps = {
   senderMobileNumber: string;

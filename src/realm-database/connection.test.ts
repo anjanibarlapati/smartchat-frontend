@@ -1,5 +1,5 @@
-import { setRealmInstance, getRealmInstance, closeRealm } from './connection';
 import Realm from 'realm';
+import { closeRealm, getRealmInstance, setRealmInstance } from './connection';
 
 jest.mock('realm', () => ({
   BSON: {
