@@ -1,9 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import { Image, TouchableOpacity, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useAlertModal } from '../../hooks/useAlertModal';
-import { clearUserMessages } from '../../redux/reducers/messages.reducer';
 import { storeState } from '../../redux/store';
 import { HomeScreenNavigationProps } from '../../types/Navigations';
 import { blockUserChat } from '../ChatOptionsModal/blockChat.service';
@@ -11,6 +10,8 @@ import { ChatOptionsModal } from '../ChatOptionsModal/ChatOptionsModal';
 import { clearUserChat } from '../ChatOptionsModal/clearChat.service';
 import { CustomAlert } from '../CustomAlert/CustomAlert';
 import { styles } from './Menu.styles';
+import { clearChatInRealm } from '../../realm-database/operations/clearChat';
+import { useRealm } from '../../contexts/RealmContext';
 
 export const Menu = ({
   receiverMobileNumber,
@@ -18,12 +19,12 @@ export const Menu = ({
   receiverMobileNumber: string;
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const dispatch = useDispatch();
    const navigateToHomeScreen = useNavigation<HomeScreenNavigationProps>();
     const {
       alertVisible, alertMessage, alertType, showAlert, hideAlert,
     } = useAlertModal();
   const user = useSelector((state: storeState) => state.user);
+  const realm = useRealm();
   const handleClearChat = async () => {
     try {
       const response = await clearUserChat(
@@ -31,7 +32,7 @@ export const Menu = ({
         receiverMobileNumber,
       );
       if (response.ok) {
-        dispatch(clearUserMessages({chatId: receiverMobileNumber}));
+        clearChatInRealm(realm, receiverMobileNumber);
         setTimeout(()=> {
            navigateToHomeScreen.replace('Home');
         },1000);
