@@ -1,15 +1,33 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
 import Sodium from 'react-native-libsodium';
 import {decryptMessage} from './decryptMessage';
-import {getPublicKey} from './keyPairs';
+import { getRealmInstance } from '../realm-database/connection';
+import { getUserPublicKey } from './getUserPrivateKey';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
 }));
 
-jest.mock('./keyPairs', () => ({
-  getPublicKey: jest.fn(),
+
+jest.mock('realm', () => ({
+  BSON: {
+    ObjectId: jest.fn(() => 'mocked-object-id'),
+  },
 }));
+
+jest.mock('./getUserPrivateKey', ()=>({
+  getUserPublicKey: jest.fn(),
+}));
+
+jest.mock('../realm-database/connection', ()=>({
+  getRealmInstance: jest.fn(),
+}));
+
+
+const mockRealmInstance = {
+  write: jest.fn((fn) => fn()),
+  create: jest.fn(),
+};
 
 jest.mock('react-native-libsodium', () => ({
   from_base64: jest.fn(),
@@ -25,6 +43,7 @@ describe('Check for decryption of messages', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    (getRealmInstance as jest.Mock).mockReturnValue(mockRealmInstance);
   });
 
   it('Should decrypt a message and return the message', async () => {
@@ -38,9 +57,7 @@ describe('Check for decryption of messages', () => {
       JSON.stringify({privateKey: mockPrivateKey}),
     );
 
-    (getPublicKey as jest.Mock).mockResolvedValue({
-      json: jest.fn().mockResolvedValue({publicKey: mockPublicKey}),
-    });
+    (getUserPublicKey as jest.Mock).mockResolvedValue(mockPublicKey);
 
     (Sodium.from_base64 as jest.Mock).mockImplementation(
       input => `raw_${input}`,
@@ -55,7 +72,8 @@ describe('Check for decryption of messages', () => {
       mockAccessToken,
     );
     expect(EncryptedStorage.getItem).toHaveBeenCalledWith('privateKey');
-    expect(getPublicKey).toHaveBeenCalledWith(
+    expect(getUserPublicKey).toHaveBeenCalledWith(
+      mockRealmInstance,
       mockSenderNumber,
       mockAccessToken,
     );
