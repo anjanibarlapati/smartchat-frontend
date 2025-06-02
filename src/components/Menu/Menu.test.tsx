@@ -66,7 +66,7 @@ const renderMenu = () => {
 
 describe('Should render Menu component', () => {
   beforeAll(() => {
-    (require('../../hooks/useAlertModal').useAlertModal as jest.Mock).mockReturnValue({showAlert: mockShowAlert,});
+    (require('../../hooks/useAlertModal').useAlertModal as jest.Mock).mockReturnValue({showAlert: mockShowAlert});
     (useRealm as jest.Mock).mockReturnValue(mockRealmInstance);
   });
   const mockReplace = jest.fn();
