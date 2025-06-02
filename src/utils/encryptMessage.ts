@@ -1,6 +1,7 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
 import Sodium from 'react-native-libsodium';
-import {getPublicKey} from './keyPairs';
+import { getRealmInstance } from '../realm-database/connection';
+import { getUserPublicKey } from './getUserPrivateKey';
 
 export const encryptMessage = async (
   receiverMobileNumber: string,
@@ -8,10 +9,9 @@ export const encryptMessage = async (
   access_token: string,
 ) => {
   try {
-    const response = await getPublicKey(receiverMobileNumber, access_token);
-    const result = await response.json();
-
-    const receiverPublicKeyBase64 = result.publicKey;
+    const realm = getRealmInstance();
+    const publicKey = await getUserPublicKey(realm, receiverMobileNumber, access_token);
+    const receiverPublicKeyBase64 = publicKey;
 
     const senderKeyPairRaw = await EncryptedStorage.getItem('privateKey');
 
