@@ -6,16 +6,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import { useSelector} from 'react-redux';
 import {useAppTheme} from '../../hooks/appTheme';
 import {useAlertModal} from '../../hooks/useAlertModal';
-import {addMessage} from '../../redux/reducers/messages.reducer';
 import {storeState} from '../../redux/store';
 import {Message} from '../../types/message';
 import {Theme} from '../../utils/themes';
 import {CustomAlert} from '../CustomAlert/CustomAlert';
 import {sendMessage} from './InputChatBox.service';
 import {ChatInputStyles} from './InputChatBox.styles';
+import { addNewMessageInRealm } from '../../realm-database/operations/addNewMessage';
+import { useRealm } from '../../contexts/RealmContext';
 
 export function InputChatBox({
   receiverMobileNumber,
@@ -25,10 +26,10 @@ export function InputChatBox({
   const theme: Theme = useAppTheme();
   const styles = ChatInputStyles(theme);
   const [message, setMessage] = useState('');
-  const dispatch = useDispatch();
   const user = useSelector((state: storeState) => state.user);
   const {alertVisible, alertMessage, alertType, showAlert, hideAlert} =
     useAlertModal();
+  const realm = useRealm();
 
   const handleSend = async () => {
     if (message.trim() === '') {
@@ -36,12 +37,6 @@ export function InputChatBox({
     }
     try {
       const sentAt = new Date().toISOString();
-      sendMessage(
-        user.mobileNumber,
-        receiverMobileNumber,
-        message.trim(),
-        sentAt,
-      );
 
       let newMessage: Message = {
         message: message.trim(),
@@ -52,7 +47,14 @@ export function InputChatBox({
       if (receiverMobileNumber === user.mobileNumber) {
         newMessage.status = 'seen';
       }
-      dispatch(addMessage({chatId: receiverMobileNumber, message: newMessage}));
+      addNewMessageInRealm(realm, receiverMobileNumber, newMessage);
+      sendMessage(
+        user.mobileNumber,
+        receiverMobileNumber,
+        message.trim(),
+        sentAt,
+        newMessage.status,
+      );
     } catch (error) {
       showAlert('Unable to send message', 'error');
     } finally {
