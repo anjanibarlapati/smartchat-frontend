@@ -123,7 +123,6 @@ describe('InputChatBox', () => {
   test('Should send status as "seen" when sender and receiver are same', async () => {
     (sendMessage as jest.Mock).mockResolvedValue({});
     (addNewMessageInRealm as jest.Mock).mockResolvedValue({});
-
     renderInputBox('');
 
     const input = screen.getByPlaceholderText('Type a message');
@@ -133,12 +132,10 @@ describe('InputChatBox', () => {
     await waitFor(() => {
       fireEvent.press(sendButton);
     });
-    expect(sendMessage).toHaveBeenCalledWith(
+    expect(addNewMessageInRealm).toHaveBeenCalledWith(
+      mockRealmInstance,
       '',
-      '',
-      'Hello',
-      expect.any(String),
-      'seen'
+      expect.objectContaining({status:'seen'})
     );
 
   });
