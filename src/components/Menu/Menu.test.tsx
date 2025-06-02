@@ -9,6 +9,8 @@ import {store} from '../../redux/store';
 import {Menu} from './Menu';
 import {clearUserChat} from '../ChatOptionsModal/clearChat.service';
 import { useNavigation } from '@react-navigation/native';
+import { useRealm } from '../../contexts/RealmContext';
+import { clearChatInRealm } from '../../realm-database/operations/clearChat';
 
 const receiverMobileNumber = '9812345098';
 
@@ -34,6 +36,26 @@ jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
   clear: jest.fn(),
 }));
+
+jest.mock('realm', () => ({
+  BSON: {
+    ObjectId: jest.fn(() => 'mocked-object-id'),
+  },
+}));
+
+jest.mock('../../contexts/RealmContext', () => ({
+  useRealm: jest.fn(),
+}));
+
+const mockRealmInstance = {
+  write: jest.fn((fn) => fn()),
+  create: jest.fn(),
+};
+
+jest.mock('../../realm-database/operations/clearChat', () => ({
+  clearChatInRealm: jest.fn(),
+}));
+
 const renderMenu = () => {
   return render(
     <Provider store={store}>
@@ -44,11 +66,8 @@ const renderMenu = () => {
 
 describe('Should render Menu component', () => {
   beforeAll(() => {
-    (
-      require('../../hooks/useAlertModal').useAlertModal as jest.Mock
-    ).mockReturnValue({
-      showAlert: mockShowAlert,
-    });
+    (require('../../hooks/useAlertModal').useAlertModal as jest.Mock).mockReturnValue({showAlert: mockShowAlert,});
+    (useRealm as jest.Mock).mockReturnValue(mockRealmInstance);
   });
   const mockReplace = jest.fn();
 
@@ -92,6 +111,7 @@ beforeEach(() => {
       ok: true,
       json: jest.fn().mockResolvedValue({message: 'Cleared chat successfully'}),
     });
+    (clearChatInRealm as jest.Mock).mockReturnValue({});
 
     const {getByLabelText, getByText} = renderMenu();
 
@@ -114,6 +134,8 @@ it('should navigate Homes screen when the chat is cleared', async () => {
     json: jest.fn().mockResolvedValue({message: 'Cleared chat successfully'}),
   });
 
+  (clearChatInRealm as jest.Mock).mockReturnValue({});
+
   const {getByLabelText, getByText} = renderMenu();
 
   fireEvent.press(getByLabelText('Menu-Image'));
@@ -124,6 +146,24 @@ it('should navigate Homes screen when the chat is cleared', async () => {
     expect(mockReplace).toHaveBeenCalledWith('Home');
   }, { timeout: 1500 });
 });
+
+  it('should show an alert when clearUserChat sevice response is not ok', async () => {
+    (clearUserChat as jest.Mock).mockResolvedValue({
+      ok: false,
+      json: ({message: 'Cleared chat successfully'}),
+    });
+    const {getByLabelText, getByText} = renderMenu();
+
+    fireEvent.press(getByLabelText('Menu-Image'));
+    fireEvent.press(getByText('Clear Chat'));
+    fireEvent.press(getByText('Yes'));
+
+    await waitFor(() => {
+      expect(clearUserChat).toHaveBeenCalled();
+
+      expect(mockReplace).not.toHaveBeenCalled();
+    });
+  });
 
   it('should show an alert when clearUserChat sevice throws error', async () => {
     (clearUserChat as jest.Mock).mockRejectedValue(new Error('API failure'));
