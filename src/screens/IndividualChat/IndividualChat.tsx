@@ -1,18 +1,18 @@
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {format} from 'date-fns';
-import React, {useCallback, useEffect, useMemo} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {FlatList, View} from 'react-native';
-import {useSelector} from 'react-redux';
 import {ChatHeader} from '../../components/ChatHeader/ChatHeader';
 import {InputChatBox} from '../../components/InputChatBox/InputChatBox';
 import {Menu} from '../../components/Menu/Menu';
 import {MessageBox} from '../../components/MessageBox/MessageBox';
 import {useAppTheme} from '../../hooks/appTheme';
-import {selectMessagesByChatId} from '../../redux/reducers/messages.reducer';
 import {HomeStackParamList} from '../../types/Navigations';
 import {getSocket} from '../../utils/socket';
 import {Theme} from '../../utils/themes';
 import {getStyles} from './IndividualChat.styles';
+import { useQuery } from '../../contexts/RealmContext';
+import { Message } from '../../realm-database/schemas/Message';
 
 export type IndividualChatRouteProp = RouteProp<
   HomeStackParamList,
@@ -26,12 +26,7 @@ export const IndividualChat = () => {
   const route = useRoute<IndividualChatRouteProp>();
 
   const {name, originalNumber, mobileNumber, profilePic} = route.params;
-
-  const selectMessages = useMemo(
-    () => selectMessagesByChatId(mobileNumber),
-    [mobileNumber],
-  );
-  const messages = useSelector(selectMessages);
+  const messages = useQuery<Message>('Message').filtered('chat.chatId == $0', mobileNumber);
 
   useEffect(() => {
     if (!messages.length) {
@@ -107,7 +102,7 @@ export const IndividualChat = () => {
     <View style={styles.container}>
       <FlatList
         data={messages}
-        keyExtractor={item => item.sentAt}
+        keyExtractor={item => item._id.toString()}
         renderItem={({item}) => (
           <MessageBox
             message={item.message}
