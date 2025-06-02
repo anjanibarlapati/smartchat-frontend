@@ -53,7 +53,6 @@ export function InputChatBox({
         receiverMobileNumber,
         message.trim(),
         sentAt,
-        newMessage.status,
       );
     } catch (error) {
       showAlert('Unable to send message', 'error');
