@@ -2,14 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>SmartChat needs access to your photo library</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>SmartChat needs access to save images to your photo library</string>
-	<key>NSCameraUsageDescription</key>
-	<string>SmartChat needs access your camera</string>
-	<key>NSContactsUsageDescription</key>
-	<string>SmartChat needs access your contacts</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -39,13 +31,25 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>SmartChat needs access your camera</string>
+	<key>NSContactsUsageDescription</key>
+	<string>SmartChat needs access your contacts</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string></string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>SmartChat needs access to save images to your photo library</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>SmartChat needs access to your photo library</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Nunito-Bold.ttf</string>
 		<string>Nunito-Regular.ttf</string>
 		<string>Nunito-SemiBold.ttf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

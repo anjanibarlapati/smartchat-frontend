@@ -1,5 +1,5 @@
-import {Platform} from 'react-native';
-import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
+import {PermissionsAndroid, Platform} from 'react-native';
+import {check, checkNotifications, PERMISSIONS, request, requestNotifications, RESULTS} from 'react-native-permissions';
 
 const requestPermission = async (permissionType: string) => {
   try {
@@ -48,6 +48,29 @@ const requestPermission = async (permissionType: string) => {
     return false;
   } catch (error) {
     throw new Error('Something went wrong!');
+  }
+};
+
+export const requestNotificationPermissions = async() => {
+  try{
+    if(Platform.OS === 'android') {
+      const isPermisssinGranted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+      console.log('permission status: ', isPermisssinGranted);
+      if(!isPermisssinGranted) {
+        const status = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+        return status === 'granted' ? true : false;
+      }
+      return true;
+    } else if(Platform.OS === 'ios') {
+      const { status: currentStatus } = await checkNotifications();
+      if (currentStatus === 'granted') {
+        return true;
+      }
+      const { status: newStatus } = await requestNotifications(['alert', 'sound', 'badge']);
+      return newStatus === 'granted' ? true : false;
+    }
+  } catch(error) {
+    throw new Error('Unable to ask permissions');
   }
 };
 
