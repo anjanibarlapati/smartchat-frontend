@@ -6,12 +6,10 @@ import {
 import { configureStore } from '@reduxjs/toolkit';
 import { render, screen, waitFor } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
-import messagesReducer, {
-  addMessage,
-} from '../../redux/reducers/messages.reducer';
 import { themeReducer } from '../../redux/reducers/theme.reducer';
-import { getSocket } from '../../utils/socket';
 import { IndividualChat } from './IndividualChat';
+import { getSocket } from '../../utils/socket';
+import { useQuery } from '../../contexts/RealmContext';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -27,32 +25,72 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
   useRoute: jest.fn(),
 }));
-jest.mock('react-native-libsodium', () => ({
-  from_base64: jest.fn(),
-  randombytes_buf: jest.fn(),
-  crypto_box_easy: jest.fn(),
-  to_base64: jest.fn(),
+
+jest.mock('../../contexts/RealmContext', () => ({
+  useQuery: jest.fn(),
+  useRealm: jest.fn(),
 }));
 
 let mockEmit: jest.Mock = jest.fn();
 jest.mock('../../utils/socket', () => ({
-  mockEmit: jest.fn(),
   getSocket: jest.fn(() => ({
     connected: true,
     emit: mockEmit,
   })),
 }));
 
+jest.mock('realm', () => ({
+  BSON: {
+    ObjectId: jest.fn(() => 'mocked-object-id'),
+  },
+}));
+
+jest.mock('react-native-libsodium', () => ({
+  crypto_box_keypair: jest.fn(),
+  to_base64: jest.fn(),
+}));
+
+
 describe('IndividualChat', () => {
   let store: ReturnType<typeof configureStore>;
+  const sentAt = new Date().toISOString();
+
+  const unseenMessage = {
+    _id: '1',
+    message: 'Unread message',
+    sentAt,
+    isSender: false,
+    status: 'delivered',
+    chat: {
+      chatId: '+91 86395 23822',
+    },
+  };
+
+  const seenMessage = {
+    _id: '2',
+    message: 'Hello Anjani',
+    sentAt,
+    isSender: true,
+    status: 'seen',
+    chat: {
+      chatId: '+91 86395 23833',
+    },
+  };
+
+  const renderComponent = () =>
+    render(
+      <NavigationContainer>
+        <Provider store={store}>
+          <IndividualChat />
+        </Provider>
+      </NavigationContainer>
+    );
 
   beforeEach(() => {
     jest.clearAllMocks();
-    const setOptionsMock = jest.fn();
 
-    const getParentMock = jest.fn().mockReturnValue({
-      setOptions: setOptionsMock,
-    });
+    const setOptionsMock = jest.fn();
+    const getParentMock = jest.fn().mockReturnValue({ setOptions: setOptionsMock });
 
     (useNavigation as jest.Mock).mockReturnValue({
       goBack: jest.fn(),
@@ -63,119 +101,102 @@ describe('IndividualChat', () => {
     (useRoute as jest.Mock).mockReturnValue({
       params: {
         name: 'Shailu',
-        originalNumber: '9392345627',
-        mobileNumber: '+91 93923 45627',
+        originalNumber: '8639523922',
+        mobileNumber: '+91 86395 23822',
         profilePic: 'pic-url',
       },
     });
 
     store = configureStore({
       reducer: {
-        messages: messagesReducer,
         theme: themeReducer,
       },
     });
   });
-  const sentAt = new Date().toISOString();
-  const renderWithMessage = () => {
-    store.dispatch(
-      addMessage({
-        chatId: '+91 93923 45627',
-        message: {
-          message: 'Hello there!',
-          sentAt: new Date().toISOString(),
-          isSender: true,
-          status: 'sent',
-        },
-      }),
-    );
 
-    store.dispatch(
-      addMessage({
-        chatId: '+91 93923 45627',
-        message: {
-          message: 'Unread message from them',
-          sentAt: sentAt,
-          isSender: false,
-          status: 'delivered',
-        },
-      }),
-    );
+  test('renders messages from the FlatList', () => {
+    (useQuery as jest.Mock).mockReturnValue({
+      filtered: jest.fn().mockReturnValue([seenMessage, unseenMessage]),
+    });
+    renderComponent();
 
-    render(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat />
-        </Provider>
-      </NavigationContainer>,
-    );
-  };
+    expect(screen.getByText('Hello Anjani')).toBeTruthy();
+    expect(screen.getByText('Unread message')).toBeTruthy();
+  });
+  test('does not render messages when there are no messages', () => {
+    (useQuery as jest.Mock).mockReturnValue({
+      filtered: jest.fn().mockReturnValue([]),
+    });
+    const { queryByText } = renderComponent();
 
-  test('Should render message from the FlatList', () => {
-    renderWithMessage();
-    expect(screen.getByText('Hello there!')).toBeTruthy();
-    expect(screen.getByText('Unread message from them')).toBeTruthy();
+    expect(queryByText('Hello Anjani')).toBeNull();
   });
 
-  test('should render the InputChatBox', () => {
-    render(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat />
-        </Provider>
-      </NavigationContainer>,
-    );
 
-    const inputChatBox = screen.getByPlaceholderText('Type a message');
-    expect(inputChatBox).toBeTruthy();
+  test('renders the InputChatBox', () => {
+    (useQuery as jest.Mock).mockReturnValue({
+      filtered: jest.fn().mockReturnValue([seenMessage]),
+    });
+
+    renderComponent();
+
+    const input = screen.getByPlaceholderText('Type a message');
+    expect(input).toBeTruthy();
   });
 
-  test('should render the menu icon', () => {
-    render(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat />
-        </Provider>
-      </NavigationContainer>,
-    );
+  test('renders the menu icon (send icon)', () => {
+  (useQuery as jest.Mock).mockReturnValue({
+    filtered: jest.fn().mockReturnValue([seenMessage]),
+   });
 
-    const menuIcon = screen.getByLabelText('send-icon');
-    expect(menuIcon).toBeTruthy();
+    renderComponent();
+
+    const icon = screen.getByLabelText('send-icon');
+    expect(icon).toBeTruthy();
   });
 
-  test('should call setOptions on navigation', () => {
-    render(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat />
-        </Provider>
-      </NavigationContainer>,
-    );
+  test('calls navigation.setOptions twice (header + tabBar)', () => {
+  (useQuery as jest.Mock).mockReturnValue({
+    filtered: jest.fn().mockReturnValue([seenMessage]),
+   });
+
+    renderComponent();
 
     const navigation = useNavigation();
     expect(navigation.setOptions).toHaveBeenCalledTimes(2);
   });
 
-  test('Should not emit messageRead if socket is not connected when sender and receiver are same', async()=>{
-      (getSocket as jest.Mock).mockReturnValue({connected: false, emit: mockEmit});
-      render(
-        <NavigationContainer>
-          <Provider store={store}>
-            <IndividualChat />
-          </Provider>
-        </NavigationContainer>,
-      );
-      waitFor(()=>{
-          expect(mockEmit).not.toHaveBeenCalled();
-      });
+  test('should not emit messageRead if socket is not connected', async () => {
+    (getSocket as jest.Mock).mockReturnValue({
+      connected: false,
+      emit: mockEmit,
+    });
+    (useQuery as jest.Mock).mockReturnValue({
+      filtered: jest.fn().mockReturnValue([unseenMessage]),
+    });
+
+    renderComponent();
+
+    await waitFor(() => {
+      expect(mockEmit).not.toHaveBeenCalled();
+    });
   });
-  test('Should emit messageRead for unread received messages', async () => {
-    (getSocket as jest.Mock).mockReturnValue({connected: true, emit: mockEmit});
-    renderWithMessage();
-    waitFor(()=> {
+
+  test('should emit messageRead for unread received messages', async () => {
+    (getSocket as jest.Mock).mockReturnValue({
+      connected: true,
+      emit: mockEmit,
+    });
+  (useQuery as jest.Mock).mockReturnValue({
+    filtered: jest.fn().mockReturnValue([unseenMessage, seenMessage]),
+   });
+
+    renderComponent();
+
+    await waitFor(() => {
       expect(mockEmit).toHaveBeenCalledWith('messageRead', {
-        sentAt: sentAt,
-        chatId: '+91 93923 45627',
+        sentAt,
+        chatId: '+91 86395 23822',
       });
     });
   });
