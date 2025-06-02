@@ -2,13 +2,13 @@ import { DefaultEventsMap } from '@socket.io/component-emitter';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { io, Socket } from 'socket.io-client';
 import { clearSuccessMessage } from '../redux/reducers/auth.reducer';
-import {
-  addMessage, updateMessageStatus,
-} from '../redux/reducers/messages.reducer';
 import { store } from '../redux/store';
 import { Message } from '../types/message';
 import { BASE_URL } from './constants';
 import { decryptMessage } from './decryptMessage';
+import { addNewMessageInRealm } from '../realm-database/operations/addNewMessage';
+import { updateMessageStatusInRealm } from '../realm-database/operations/updateMessageStatus';
+import { getRealmInstance } from '../realm-database/connection';
 
 let socket: Socket<DefaultEventsMap, DefaultEventsMap> | null = null;
 
@@ -29,45 +29,35 @@ export const socketConnection = async (mobileNumber: string) => {
       });
 
       socket.on('newMessage', async data => {
-        const actualMessage = await decryptMessage(
-          data.chatId,
-          data.message,
-          data.nonce,
-          tokenData.access_token,
-        );
-        const structuredMessage: Message = {
-          message: actualMessage,
-          sentAt: data.sentAt,
-          isSender: false,
-          status: data.status,
-        };
+        try{
 
-        store.dispatch(
-          addMessage({ chatId: data.chatId, message: structuredMessage }),
-        );
+          const actualMessage = await decryptMessage(
+            data.chatId,
+            data.message,
+            data.nonce,
+            tokenData.access_token
+          );
+          const structuredMessage: Message = {
+            message: actualMessage,
+            sentAt: data.sentAt,
+            isSender: false,
+            status: data.status,
+          };
+          const realm = getRealmInstance();
+          addNewMessageInRealm(realm, data.chatId, structuredMessage);
+        } catch (error) {
+          console.error('Error in newMessage handler:', error);
+        }
       });
 
-      socket.on('messageDelivered', data => {
+      socket.on('messageDelivered', async data => {
         const { sentAt, receiverMobileNumber, status } = data;
-        store.dispatch(
-          updateMessageStatus({
-            chatId: receiverMobileNumber,
-            sentAt: sentAt,
-            status: status,
-          }),
-        );
+        updateMessageStatusInRealm( {chatId: receiverMobileNumber, sentAt: sentAt, status: status});
       });
 
       socket.on('messageRead', data => {
         const { sentAt, chatId, status, updatedCount } = data;
-        store.dispatch(
-          updateMessageStatus({
-            chatId,
-            sentAt: sentAt,
-            status,
-            updateAllBeforeSentAt: updatedCount > 1,
-          }),
-        );
+        updateMessageStatusInRealm( {chatId: chatId, sentAt: sentAt, status: status, updateAllBeforeSentAt: updatedCount > 1});
       });
       socket.on('force-logout', () => {
         store.dispatch(clearSuccessMessage());
