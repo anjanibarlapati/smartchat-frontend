@@ -13,6 +13,9 @@ import { store } from '../../redux/store';
 import { decryptPrivateKey } from '../../utils/privateKey';
 import LoginScreen from './Login';
 import * as LoginService from './Login.service';
+import { storeChats } from '../../realm-database/operations/storeChats';
+import { useRealm } from '../../contexts/RealmContext';
+
 
 const renderLoginScreen = () => {
   return render(
@@ -21,6 +24,25 @@ const renderLoginScreen = () => {
     </Provider>,
   );
 };
+
+jest.mock('realm', () => ({
+  BSON: {
+    ObjectId: jest.fn(() => 'mocked-object-id'),
+  },
+}));
+
+jest.mock('../../contexts/RealmContext', () => ({
+  useRealm: jest.fn(),
+}));
+
+const mockRealmInstance = {
+  write: jest.fn((fn) => fn()),
+  create: jest.fn(),
+};
+
+jest.mock('../../realm-database/operations/storeChats', () => ({
+  storeChats: jest.fn(),
+}));
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
@@ -62,6 +84,7 @@ describe('Login Screen check', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    (useRealm as jest.Mock).mockReturnValue(mockRealmInstance);
     (useNavigation as jest.Mock).mockReturnValue({
       replace: mockReplace,
       reset: mockReset,
@@ -128,6 +151,7 @@ describe('Login Screen check', () => {
     (LoginService.login as jest.Mock).mockResolvedValue(response);
     (LoginService.fetchChats as jest.Mock).mockResolvedValue(mockChatsResponse);
     (LoginService.formatMessages as jest.Mock).mockResolvedValue({});
+    (storeChats as jest.Mock).mockReturnValue({});
     (EncryptedStorage.setItem as jest.Mock).mockResolvedValue({});
 
     const {getByLabelText, getByPlaceholderText, getByText} =
@@ -199,6 +223,7 @@ describe('Login Screen check', () => {
     (LoginService.login as jest.Mock).mockResolvedValue(response);
     (LoginService.fetchChats as jest.Mock).mockResolvedValue(mockChatsResponse);
     (LoginService.formatMessages as jest.Mock).mockResolvedValue({});
+    (storeChats as jest.Mock).mockReturnValue({});
     (EncryptedStorage.setItem as jest.Mock).mockResolvedValue(null);
 
     const {getByLabelText, getByPlaceholderText, getByText} =
