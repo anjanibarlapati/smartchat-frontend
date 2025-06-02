@@ -13,7 +13,6 @@ import LoadingIndicator from '../../components/Loading/Loading';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal';
 import { setSuccessMessage } from '../../redux/reducers/auth.reducer';
-import { storeMessages } from '../../redux/reducers/messages.reducer';
 import { setUserDetails } from '../../redux/reducers/user.reducer';
 import { Credentials } from '../../types/Credentials';
 import { Chat } from '../../types/message';
@@ -23,12 +22,15 @@ import { socketConnection } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { fetchChats, formatMessages, login } from './Login.service';
 import { getStyles } from './Login.styles';
+import { useRealm } from '../../contexts/RealmContext';
+import { storeChats } from '../../realm-database/operations/storeChats';
 
 const LoginScreen = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();
-const { width } = useWindowDimensions();
+  const { width } = useWindowDimensions();
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme, width);
+  const realm = useRealm();
 
   const [credentials, setCredentials] = useState<Credentials>({
     mobileNumber: '',
@@ -119,7 +121,7 @@ const { width } = useWindowDimensions();
         const userChats = await chats.json();
         if(chats.ok) {
           const formattedMessages = await formatMessages(userChats as Chat[], result.access_token);
-          dispatch(storeMessages({chatMessages:formattedMessages}));
+          storeChats(realm, formattedMessages);
         } else{
           showAlert(userChats.message, 'error');
           return;
