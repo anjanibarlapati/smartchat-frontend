@@ -9,6 +9,8 @@ import {Provider} from 'react-redux';
 import {store} from '../../redux/store';
 import {InputChatBox} from './InputChatBox';
 import {sendMessage} from './InputChatBox.service';
+import { addNewMessageInRealm } from '../../realm-database/operations/addNewMessage';
+import { useRealm } from '../../contexts/RealmContext';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -38,6 +40,24 @@ jest.mock('../../utils/socket', () => ({
   getSocket: jest.fn(),
 }));
 
+jest.mock('../../realm-database/operations/addNewMessage', () => ({
+  addNewMessageInRealm: jest.fn(),
+}));
+
+jest.mock('realm', () => ({
+  BSON: {
+    ObjectId: jest.fn(() => 'mocked-object-id'),
+  },
+}));
+
+jest.mock('../../contexts/RealmContext', () => ({
+  useRealm: jest.fn(),
+}));
+
+const mockRealmInstance = {
+  write: jest.fn((fn) => fn()),
+  create: jest.fn(),
+};
 const renderInputBox = (mobileNumber: string) => {
   render(
     <Provider store={store}>
@@ -49,6 +69,7 @@ const renderInputBox = (mobileNumber: string) => {
 describe('InputChatBox', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (useRealm as jest.Mock).mockReturnValue(mockRealmInstance);
   });
 
   test('Should render the input placeholder', () => {
@@ -62,6 +83,8 @@ describe('InputChatBox', () => {
   });
 
   test('Should send message and clear input', async () => {
+    (sendMessage as jest.Mock).mockResolvedValue({});
+    (addNewMessageInRealm as jest.Mock).mockResolvedValue({});
     renderInputBox('8639523822');
     const input = screen.getByPlaceholderText('Type a message');
     waitFor(() => {
@@ -97,8 +120,10 @@ describe('InputChatBox', () => {
     });
     expect(sendMessage).not.toHaveBeenCalled();
   });
-  test('Should not emit messageRead if socket is not connected when sender and receiver are same', async () => {
+  test('Should send status as "seen" when sender and receiver are same', async () => {
     (sendMessage as jest.Mock).mockResolvedValue({});
+    (addNewMessageInRealm as jest.Mock).mockResolvedValue({});
+
     renderInputBox('');
 
     const input = screen.getByPlaceholderText('Type a message');
@@ -108,6 +133,13 @@ describe('InputChatBox', () => {
     await waitFor(() => {
       fireEvent.press(sendButton);
     });
-    expect(mockEmit).not.toHaveBeenCalled();
+    expect(sendMessage).toHaveBeenCalledWith(
+      '',
+      '',
+      'Hello',
+      expect.any(String),
+      'seen'
+    );
+
   });
 });
