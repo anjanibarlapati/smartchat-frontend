@@ -220,7 +220,7 @@ describe('Socket Utility', () => {
           chatId: '123',
           sentAt: '2024-01-01T12:00:00Z',
           status: 'seen',
-          updateAllBeforeSentAt: false
+          updateAllBeforeSentAt: false,
         },
       }),
     );
