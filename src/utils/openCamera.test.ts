@@ -1,6 +1,6 @@
-import {openCamera} from './openCamera';
-import {requestPermission} from '../permissions/permissions';
 import ImagePicker from 'react-native-image-crop-picker';
+import { requestPermission } from '../permissions/permissions';
+import { openCamera } from './openCamera';
 
 jest.mock('../permissions/permissions', () => ({
   requestPermission: jest.fn(),

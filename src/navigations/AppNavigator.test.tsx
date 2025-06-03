@@ -1,16 +1,16 @@
 import NetInfo from '@react-native-community/netinfo';
-import {RealmProvider} from '@realm/react';
-import {fireEvent, render, waitFor} from '@testing-library/react-native';
+import { RealmProvider } from '@realm/react';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import SplashScreen from 'react-native-splash-screen';
 import { Provider } from 'react-redux';
+import { getDBConnection, getDBinstance } from '../database/connection';
+import { createContactsTable } from '../database/tables/contacts';
 import { useAlertModal } from '../hooks/useAlertModal';
 import { store } from '../redux/store';
 import { checkAccessToken } from '../utils/checkToken';
-import { AppNavigator } from './AppNavigator';
-import { getDBConnection, getDBinstance } from '../database/connection';
 import { socketConnection } from '../utils/socket.ts';
-import { createContactsTable } from '../database/tables/contacts';
+import { AppNavigator } from './AppNavigator';
 
 jest.mock('../database/connection', ()=>({
   getDBConnection: jest.fn(),
