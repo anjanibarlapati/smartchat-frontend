@@ -1,6 +1,6 @@
 import NetInfo from '@react-native-community/netinfo';
-import { RealmProvider } from '@realm/react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import {RealmProvider} from '@realm/react';
+import {fireEvent, render, waitFor} from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import SplashScreen from 'react-native-splash-screen';
 import { Provider } from 'react-redux';
