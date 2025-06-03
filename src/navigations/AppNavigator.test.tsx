@@ -1,17 +1,22 @@
-import {RealmProvider} from '@realm/react';
-import {fireEvent, render, waitFor} from '@testing-library/react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import {Provider} from 'react-redux';
-import {useAlertModal} from '../hooks/useAlertModal';
-import {store} from '../redux/store';
-import {checkAccessToken} from '../utils/checkToken';
-import {AppNavigator} from './AppNavigator';
 import NetInfo from '@react-native-community/netinfo';
+import { RealmProvider } from '@realm/react';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import SplashScreen from 'react-native-splash-screen';
-import {requestPermission} from '../permissions/permissions';
-import {socketConnection} from '../utils/socket';
-import {resetUser, setUserDetails} from '../redux/reducers/user.reducer.ts';
-import {setSuccessMessage} from '../redux/reducers/auth.reducer.ts';
+import { Provider } from 'react-redux';
+import { useAlertModal } from '../hooks/useAlertModal';
+import { requestPermission } from '../permissions/permissions';
+import { setSuccessMessage } from '../redux/reducers/auth.reducer.ts';
+import { resetUser, setUserDetails } from '../redux/reducers/user.reducer.ts';
+import { store } from '../redux/store';
+import { checkAccessToken } from '../utils/checkToken';
+import { socketConnection } from '../utils/socket';
+import { AppNavigator } from './AppNavigator';
+
+
+
+
+
 
 jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn(),
