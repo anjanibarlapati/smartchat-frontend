@@ -31,6 +31,18 @@ const renderTabs = () =>
   );
 
 describe('Should test the tab navigator', () => {
+  beforeAll(() => {
+    jest.spyOn(console, 'error').mockImplementation(message => {
+      if (
+        typeof message === 'string' &&
+        message.includes("The action 'RESET' with payload")
+      ) {
+        return;
+      }
+      console.error(message);
+    });
+  });
+
   it('Should render All Chats tab', () => {
     const {getAllByText} = renderTabs();
     expect(getAllByText(/All Chats/i).length).toBeGreaterThan(0);
