@@ -53,6 +53,7 @@ function getContactScreenOptions(
                 <Image
                     style={styles.backIcon}
                     source={require('../../../assets/images/chevron.png')}
+                    accessibilityLabel="chevronIcon"
                 />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Select contact</Text>
