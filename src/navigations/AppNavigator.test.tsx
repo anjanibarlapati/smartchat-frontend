@@ -225,7 +225,7 @@ describe('render AppNavigator', () => {
     });
     await waitFor(()=> {
       expect(getByText('SmartChat')).toBeTruthy();
-    })
+    });
   });
   test('should reset user and clear storage if not authenticated', async () => {
     (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: true});
