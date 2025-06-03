@@ -15,7 +15,9 @@ import { AppNavigator } from './AppNavigator';
 
 
 
-
+const resetUserMock = jest.fn();
+const setUserDetailsMock = jest.fn();
+const setSuccessMessageMock = jest.fn();
 
 
 jest.mock('@react-native-community/netinfo', () => ({
@@ -245,6 +247,20 @@ describe('render AppNavigator', () => {
     waitFor(() => {
       expect(setUserDetails).toHaveBeenCalledWith({mobileNumber: '9908154694'});
       expect(setSuccessMessage).toHaveBeenCalledWith('loggedIn');
+    });
+  });
+   test('should dispatch resetUser and return when not authenticated', async () => {
+    (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: true});
+    (checkAccessToken as jest.Mock).mockResolvedValue(false);
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
+
+    renderAppNavigator();
+
+    waitFor(() => {
+      expect(resetUserMock).toHaveBeenCalled();
+      expect(EncryptedStorage.clear).toHaveBeenCalled();
+      expect(setUserDetailsMock).not.toHaveBeenCalled();
+      expect(setSuccessMessageMock).not.toHaveBeenCalled();
     });
   });
 });
