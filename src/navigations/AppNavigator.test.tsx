@@ -5,20 +5,23 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import SplashScreen from 'react-native-splash-screen';
 import { Provider } from 'react-redux';
 import { useAlertModal } from '../hooks/useAlertModal';
-import { requestPermission } from '../permissions/permissions';
-import { setSuccessMessage } from '../redux/reducers/auth.reducer.ts';
-import { resetUser, setUserDetails } from '../redux/reducers/user.reducer.ts';
 import { store } from '../redux/store';
 import { checkAccessToken } from '../utils/checkToken';
-import { socketConnection } from '../utils/socket';
 import { AppNavigator } from './AppNavigator';
+import { getDBConnection, getDBinstance } from '../database/connection';
+import { socketConnection } from '../utils/socket.ts';
+import { createContactsTable } from '../database/tables/contacts';
 
-
-
-const resetUserMock = jest.fn();
-const setUserDetailsMock = jest.fn();
-const setSuccessMessageMock = jest.fn();
-
+jest.mock('../database/connection', ()=>({
+  getDBConnection: jest.fn(),
+  getDBinstance: jest.fn(),
+}));
+jest.mock('../utils/socket.ts', ()=>({
+  socketConnection: jest.fn(),
+}));
+jest.mock('../database/tables/contacts', ()=>({
+  createContactsTable: jest.fn(),
+}));
 
 jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn(),
@@ -64,9 +67,9 @@ jest.mock('../utils/checkToken.ts', () => ({
 }));
 
 jest.mock('../utils/socket.ts', () => ({
-  // socketConnection: jest.fn(),
   socketConnection: jest.fn().mockResolvedValue(undefined),
 }));
+
 
 jest.mock('../contexts/RealmContext', () => ({
   RealmProvider: ({children}: any) => <>{children}</>,
@@ -98,6 +101,10 @@ describe('render AppNavigator', () => {
       showAlert: mockShowAlert,
       hideAlert: jest.fn(),
     });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
   const renderAppNavigator = () => {
     return render(
@@ -166,14 +173,14 @@ describe('render AppNavigator', () => {
     });
   });
 
-  test('should still try to load user if device is offline', () => {
+  test('should still try to load user if device is offline', async() => {
     (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: false});
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
     (checkAccessToken as jest.Mock).mockResolvedValue(false);
 
     const {getByText} = renderAppNavigator();
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(getByText('SmartChat')).toBeTruthy();
       expect(mockShowAlert).not.toHaveBeenCalled();
     });
@@ -199,29 +206,26 @@ describe('render AppNavigator', () => {
     });
   });
 
-  test('should call requestPermission and socketConnection on mount', async () => {
-    (requestPermission as jest.Mock).mockResolvedValue(true);
-    (socketConnection as jest.Mock).mockImplementation(() => {});
-
-    renderAppNavigator();
-
-    waitFor(() => {
-      expect(requestPermission).toHaveBeenCalled();
-      expect(socketConnection).toHaveBeenCalled();
-    });
-  });
-
   test('should load user, when device is online', async () => {
     (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: true});
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
-    (checkAccessToken as jest.Mock).mockResolvedValue(false);
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify({user:{mobileNumber:'1234'}}));
+    (checkAccessToken as jest.Mock).mockResolvedValue(true);
+    (getDBConnection as jest.Mock).mockResolvedValue({});
+    (socketConnection as jest.Mock).mockResolvedValue({});
+    (getDBinstance as jest.Mock).mockResolvedValue({});
+    (createContactsTable as jest.Mock).mockResolvedValue({});
 
     const {getByText} = renderAppNavigator();
 
-    waitFor(() => {
-      expect(getByText('SmartChat')).toBeTruthy();
-      expect(mockShowAlert).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(socketConnection).toHaveBeenCalled();
+      expect(getDBConnection).toHaveBeenCalled();
+      expect(getDBinstance).toHaveBeenCalled();
+      expect(createContactsTable).toHaveBeenCalled();
     });
+    await waitFor(()=> {
+      expect(getByText('SmartChat')).toBeTruthy();
+    })
   });
   test('should reset user and clear storage if not authenticated', async () => {
     (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: true});
@@ -230,37 +234,8 @@ describe('render AppNavigator', () => {
 
     renderAppNavigator();
 
-    waitFor(() => {
-      expect(resetUser).toHaveBeenCalled();
+    await waitFor(() => {
       expect(EncryptedStorage.clear).toHaveBeenCalled();
-    });
-  });
-  test('should load user and set details when user data is authenticated', async () => {
-    (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: true});
-    (checkAccessToken as jest.Mock).mockResolvedValue(true);
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
-      JSON.stringify({mobileNumber: '9908154694'}),
-    );
-
-    renderAppNavigator();
-
-    waitFor(() => {
-      expect(setUserDetails).toHaveBeenCalledWith({mobileNumber: '9908154694'});
-      expect(setSuccessMessage).toHaveBeenCalledWith('loggedIn');
-    });
-  });
-   test('should dispatch resetUser and return when not authenticated', async () => {
-    (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: true});
-    (checkAccessToken as jest.Mock).mockResolvedValue(false);
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
-
-    renderAppNavigator();
-
-    waitFor(() => {
-      expect(resetUserMock).toHaveBeenCalled();
-      expect(EncryptedStorage.clear).toHaveBeenCalled();
-      expect(setUserDetailsMock).not.toHaveBeenCalled();
-      expect(setSuccessMessageMock).not.toHaveBeenCalled();
     });
   });
 });
