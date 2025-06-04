@@ -4,24 +4,11 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import SplashScreen from 'react-native-splash-screen';
 import { Provider } from 'react-redux';
-import { getDBConnection, getDBinstance } from '../database/connection';
-import { createContactsTable } from '../database/tables/contacts';
 import { useAlertModal } from '../hooks/useAlertModal';
 import { store } from '../redux/store';
 import { checkAccessToken } from '../utils/checkToken';
 import { socketConnection } from '../utils/socket.ts';
 import { AppNavigator } from './AppNavigator';
-
-jest.mock('../database/connection', ()=>({
-  getDBConnection: jest.fn(),
-  getDBinstance: jest.fn(),
-}));
-jest.mock('../utils/socket.ts', ()=>({
-  socketConnection: jest.fn(),
-}));
-jest.mock('../database/tables/contacts', ()=>({
-  createContactsTable: jest.fn(),
-}));
 
 jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn(),
@@ -32,8 +19,16 @@ jest.mock('react-native-encrypted-storage', () => ({
   clear: jest.fn(),
 }));
 
+
 jest.mock('react-native-device-info', () => ({
   getDeviceId: jest.fn(),
+}));
+
+
+jest.mock('react-native-libsodium', () => ({
+  crypto_box_seal: jest.fn().mockReturnValue('mockEncryptedMessage'),
+  crypto_secretbox_easy: jest.fn().mockReturnValue('mockEncryptedMessage'),
+  randombytes_buf: jest.fn().mockReturnValue('mockNonce'),
 }));
 
 jest.mock('react-native-image-crop-picker', () => ({
@@ -51,15 +46,6 @@ const mockShowAlert = jest.fn();
 
 jest.mock('react-native-splash-screen', () => ({
   hide: jest.fn(),
-}));
-
-jest.mock('../database/connection', () => ({
-  getDBConnection: jest.fn().mockResolvedValue(true),
-  getDBinstance: jest.fn().mockResolvedValue({}),
-}));
-
-jest.mock('../database/tables/contacts', () => ({
-  createContactsTable: jest.fn().mockResolvedValue(true),
 }));
 
 jest.mock('../utils/checkToken.ts', () => ({
@@ -210,18 +196,12 @@ describe('render AppNavigator', () => {
     (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: true});
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify({user:{mobileNumber:'1234'}}));
     (checkAccessToken as jest.Mock).mockResolvedValue(true);
-    (getDBConnection as jest.Mock).mockResolvedValue({});
     (socketConnection as jest.Mock).mockResolvedValue({});
-    (getDBinstance as jest.Mock).mockResolvedValue({});
-    (createContactsTable as jest.Mock).mockResolvedValue({});
 
     const {getByText} = renderAppNavigator();
 
     await waitFor(() => {
       expect(socketConnection).toHaveBeenCalled();
-      expect(getDBConnection).toHaveBeenCalled();
-      expect(getDBinstance).toHaveBeenCalled();
-      expect(createContactsTable).toHaveBeenCalled();
     });
     await waitFor(()=> {
       expect(getByText('SmartChat')).toBeTruthy();
