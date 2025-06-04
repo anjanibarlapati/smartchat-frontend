@@ -36,8 +36,9 @@ jest.mock('react-native-device-info', () => ({
 }));
 
 jest.mock('react-native-libsodium', () => ({
-  crypto_box_keypair: jest.fn(),
-  to_base64: jest.fn(),
+  crypto_box_seal: jest.fn().mockReturnValue('mockEncryptedMessage'),
+  crypto_secretbox_easy: jest.fn().mockReturnValue('mockEncryptedMessage'),
+  randombytes_buf: jest.fn().mockReturnValue('mockNonce'),
 }));
 
 jest.mock('@react-navigation/native', () => ({
