@@ -17,12 +17,6 @@ jest.mock('react-native-localize', () => ({
   getCountry: jest.fn(() => 'IN'),
 }));
 
-jest.mock('realm', () => ({
-  BSON: {
-    ObjectId: jest.fn(() => 'mocked-object-id'),
-  },
-}));
-
 jest.mock('react-native-libsodium', () => ({
   crypto_box_seal: jest.fn().mockReturnValue('mockEncryptedMessage'),
   crypto_secretbox_easy: jest.fn().mockReturnValue('mockEncryptedMessage'),
