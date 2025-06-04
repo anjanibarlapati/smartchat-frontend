@@ -7,13 +7,24 @@ import {
 } from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Provider } from 'react-redux';
-import { deleteDatabase } from '../../database/connection';
+import { deleteAllRealmData } from '../../realm-database/connection';
 import { store } from '../../redux/store';
 import { User } from '../../types/User';
 import * as tokenUtil from '../../utils/getTokens';
 import { openPhotoLibrary } from '../../utils/openPhotoLibrary';
 import { Profile } from './Profile';
 import * as ProfileServices from './Profile.services';
+
+
+jest.mock('realm', () => ({
+  BSON: {
+    ObjectId: jest.fn(() => 'mocked-object-id'),
+  },
+}));
+
+jest.mock('../../realm-database/connection', ()=>({
+  deleteAllRealmData: jest.fn(),
+}));
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
@@ -26,8 +37,9 @@ jest.mock('@react-navigation/native', () => ({
 }));
 
 jest.mock('react-native-libsodium', () => ({
-  crypto_box_keypair: jest.fn(),
-  to_base64: jest.fn(),
+  crypto_box_seal: jest.fn().mockReturnValue('mockEncryptedMessage'),
+  crypto_secretbox_easy: jest.fn().mockReturnValue('mockEncryptedMessage'),
+  randombytes_buf: jest.fn().mockReturnValue('mockNonce'),
 }));
 
 jest.mock('../../utils/getTokens', () => ({
@@ -64,9 +76,6 @@ jest.mock('react-redux', () => ({
   useDispatch: () => mockDispatch,
 }));
 
-jest.mock('../../database/connection.ts', () => ({
-  deleteDatabase: jest.fn(),
-}));
 
 describe('Tests related to the Profile Screen', () => {
   const RenderProfileScreen = () => {
@@ -147,7 +156,7 @@ describe('Tests related to the Profile Screen', () => {
       access_token: 'RGUKT BASAR',
     });
     (ProfileServices.deleteAccount as jest.Mock).mockResolvedValue({ok: true});
-    (deleteDatabase as jest.Mock).mockResolvedValue({});
+    (deleteAllRealmData as jest.Mock).mockResolvedValue({});
 
     RenderProfileScreen();
     const editTextIcon = await screen.findAllByLabelText('edit-text');
@@ -160,7 +169,7 @@ describe('Tests related to the Profile Screen', () => {
     });
     await waitFor(() => {
       expect(EncryptedStorage.clear).toHaveBeenCalled();
-      expect(deleteDatabase).toHaveBeenCalled();
+      expect(deleteAllRealmData).toHaveBeenCalled();
       expect(mockReset).toHaveBeenCalledWith({
         index: 0,
         routes: [{name: 'WelcomeScreen'}],
@@ -263,7 +272,7 @@ describe('Tests related to the Profile Screen', () => {
   });
 
   it('Should clear encrypted storage and stack and navigate to welcome screen upon clicking on sign out', async () => {
-    (deleteDatabase as jest.Mock).mockResolvedValue({});
+    (deleteAllRealmData as jest.Mock).mockResolvedValue({});
     (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
     (ProfileServices.logout as jest.Mock).mockResolvedValue({ok: true});
     RenderProfileScreen();
@@ -275,7 +284,7 @@ describe('Tests related to the Profile Screen', () => {
     });
     await waitFor(() => {
       expect(EncryptedStorage.clear).toHaveBeenCalled();
-      expect(deleteDatabase).toHaveBeenCalled();
+      expect(deleteAllRealmData).toHaveBeenCalled();
       expect(mockReset).toHaveBeenCalledWith({
         index: 0,
         routes: [{name: 'WelcomeScreen'}],
@@ -302,7 +311,7 @@ describe('Tests related to the Profile Screen', () => {
     });
 
     it('Should give an alert if response is not ok during logout', async() => {
-        (deleteDatabase as jest.Mock).mockResolvedValue({});
+        (deleteAllRealmData as jest.Mock).mockResolvedValue({});
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
         (ProfileServices.logout as jest.Mock).mockResolvedValue({ok: false, json: async () => ({ message: 'Something went wrong' })});
         RenderProfileScreen();
