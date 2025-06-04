@@ -9,36 +9,31 @@ import {
 import Contacts from 'react-native-contacts';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Provider } from 'react-redux';
-import { getDBinstance } from '../../database/connection.ts';
-import { clearContacts } from '../../database/queries/contacts/clearContacts.ts';
-import { deleteContacts } from '../../database/queries/contacts/deleteContacts.ts';
-import { getContacts } from '../../database/queries/contacts/getContacts.ts';
-import { insertOrReplaceContacts } from '../../database/queries/contacts/insertOrReplaceContacts.ts';
 import { requestPermission } from '../../permissions/permissions';
 import { store } from '../../redux/store';
 import { Contact as ContactType } from '../../types/Contacts.ts';
 import { getContactsDetails } from '../../utils/getContactsDetails';
 import { getTokens } from '../../utils/getTokens.ts';
 import { Contact } from './Contact';
+import { clearAllContactsInRealm } from '../../realm-database/operations/clearContacts.ts';
+import { getRealmInstance } from '../../realm-database/connection.ts';
+import { getContactsFromRealm } from '../../realm-database/operations/getContacts.ts';
+import { insertContactsInRealm } from '../../realm-database/operations/insertContacts.ts';
 
-jest.mock('../../database/connection.ts', () => ({
-  getDBinstance: jest.fn(),
+jest.mock('../../realm-database/connection.ts', () => ({
+  getRealmInstance: jest.fn(),
 }));
 
-jest.mock('../../database/queries/contacts/clearContacts.ts', () => ({
-  clearContacts: jest.fn(),
+jest.mock('../../realm-database/operations/clearContacts.ts', () => ({
+  clearAllContactsInRealm: jest.fn(),
 }));
 
-jest.mock('../../database/queries/contacts/getContacts.ts', () => ({
-  getContacts: jest.fn(),
+jest.mock('../../realm-database/operations/getContacts.ts', () => ({
+  getContactsFromRealm: jest.fn(),
 }));
 
-jest.mock('../../database/queries/contacts/deleteContacts.ts', () => ({
-  deleteContacts: jest.fn(),
-}));
-
-jest.mock('../../database/queries/contacts/insertOrReplaceContacts.ts', () => ({
-  insertOrReplaceContacts: jest.fn(),
+jest.mock('../../realm-database/operations/insertContacts.ts', () => ({
+  insertContactsInRealm: jest.fn(),
 }));
 
 jest.mock('react-native-contacts', () => ({
@@ -68,13 +63,6 @@ jest.mock('react-native-encrypted-storage', () => ({
   clear: jest.fn(),
 }));
 
-jest.mock('react-native-sqlite-storage', () => {
-  return {
-    enablePromise: jest.fn(),
-    DEBUG: jest.fn(),
-    openDatabase: jest.fn(),
-  };
-});
 
 jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn(),
@@ -108,10 +96,9 @@ const renderContactScreen = () => {
 const mockFunctions = (netStatus: boolean, contacts: ContactType[]) => {
   (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: netStatus});
   (Contacts.getAll as jest.Mock).mockResolvedValue(contacts);
-  (getContactsDetails as jest.Mock).mockResolvedValue(contacts);
-  (getDBinstance as jest.Mock).mockResolvedValue({});
-  (deleteContacts as jest.Mock).mockResolvedValue({});
-  (insertOrReplaceContacts as jest.Mock).mockResolvedValue({});
+  (getContactsDetails as jest.Mock).mockReturnValue(contacts);
+  (getRealmInstance as jest.Mock).mockReturnValue({});
+  (insertContactsInRealm as jest.Mock).mockReturnValue({});
 };
 
 describe('Contacts Screen', () => {
@@ -175,8 +162,8 @@ describe('Contacts Screen', () => {
     (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: false});
     (requestPermission as jest.Mock).mockResolvedValue(true);
     (getTokens as jest.Mock).mockResolvedValue({access_token: 'access_token'});
-    (getDBinstance as jest.Mock).mockResolvedValue({});
-    (getContacts as jest.Mock).mockResolvedValue(mockContacts);
+    (getRealmInstance as jest.Mock).mockReturnValue({});
+    (getContactsFromRealm as jest.Mock).mockReturnValue(mockContacts);
 
     await waitFor(() => {
       renderContactScreen();
@@ -225,7 +212,7 @@ describe('Contacts Screen', () => {
     (getTokens as jest.Mock).mockResolvedValue(
       JSON.stringify({access_token: 'access_token'}),
     );
-    (clearContacts as jest.Mock).mockResolvedValue({});
+    (clearAllContactsInRealm as jest.Mock).mockReturnValue({});
     mockFunctions(true, []);
     await waitFor(() => {
       renderContactScreen();
