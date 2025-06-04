@@ -1,6 +1,6 @@
-import {groupMessagesByDate} from './groupMessagesByDate';
-import {Message} from '../../types/message';
-import {Message as MessageSchema} from '../schemas/Message';
+import { Message } from '../../types/message';
+import { Message as MessageSchema } from '../schemas/Message';
+import { groupMessagesByDate } from './groupMessagesByDate';
 
 describe('groupMessagesByDate', () => {
   const staticMessages: Message[] = [
@@ -39,14 +39,16 @@ describe('groupMessagesByDate', () => {
     expect(grouped['2025-06-03T10:15:00.000Z']).toHaveLength(1);
     expect(grouped['2025-06-02T09:30:00.000Z']).toHaveLength(1);
   });
-    it('should correctly groups the messages content', () => {
+  it('should correctly groups the messages content', () => {
     const grouped = groupMessagesByDate(
       staticMessages as unknown as Realm.Results<MessageSchema>,
     );
     expect(grouped['2025-06-04T08:00:00.000Z'][0].message).toBe('Hello!');
     expect(grouped['2025-06-04T08:00:00.000Z'][1].message).toBe('Hi there!');
     expect(grouped['2025-06-03T10:15:00.000Z'][0].message).toBe('Good morning');
-    expect(grouped['2025-06-02T09:30:00.000Z'][0].message).toBe('Check this out');
+    expect(grouped['2025-06-02T09:30:00.000Z'][0].message).toBe(
+      'Check this out',
+    );
   });
   it('should return an empty object when passed an empty array', () => {
     const grouped = groupMessagesByDate(

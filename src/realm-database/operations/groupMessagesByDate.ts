@@ -1,5 +1,5 @@
-import { Message } from '../../types/message';
-import { Message as MessageSchema } from '../schemas/Message';
+import {Message} from '../../types/message';
+import {Message as MessageSchema} from '../schemas/Message';
 
 export const groupMessagesByDate = (messages: Realm.Results<MessageSchema>) => {
   const groupedMessages: {[date: string]: Message[]} = {};
