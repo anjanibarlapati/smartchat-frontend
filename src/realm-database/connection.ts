@@ -1,9 +1,10 @@
 import { Realm } from 'realm';
+import { realmConfig } from '../contexts/RealmContext';
 
 let realmInstance: Realm;
 
 export const setRealmInstance = (realm: Realm) => {
-  realmInstance = realm;
+      realmInstance = realm;
 };
 
 export const getRealmInstance = (): Realm => {
@@ -18,3 +19,10 @@ export const closeRealm = () => {
     realmInstance.close();
   }
 };
+
+export async function deleteAllRealmData() {
+    if (!realmInstance.isClosed) {
+      realmInstance.close();
+    }
+    Realm.deleteFile(realmConfig);
+}
