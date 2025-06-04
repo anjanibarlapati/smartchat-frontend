@@ -1,18 +1,31 @@
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import {format} from 'date-fns';
-import React, {useCallback, useEffect} from 'react';
-import {FlatList, View} from 'react-native';
-import {ChatHeader} from '../../components/ChatHeader/ChatHeader';
-import {InputChatBox} from '../../components/InputChatBox/InputChatBox';
-import {Menu} from '../../components/Menu/Menu';
-import {MessageBox} from '../../components/MessageBox/MessageBox';
-import {useAppTheme} from '../../hooks/appTheme';
-import {HomeStackParamList} from '../../types/Navigations';
-import {getSocket} from '../../utils/socket';
-import {Theme} from '../../utils/themes';
-import {getStyles} from './IndividualChat.styles';
-import { useQuery } from '../../contexts/RealmContext';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { format } from 'date-fns';
+import React, { useCallback, useEffect, useState } from 'react';
+import { FlatList, Text, View } from 'react-native';
+import { useSelector } from 'react-redux';
+import { AlertModal } from '../../components/AlertModal/AlertModal';
+import { ChatHeader } from '../../components/ChatHeader/ChatHeader';
+import { blockUserChat } from '../../components/ChatOptionsModal/blockChat.service';
+import { ChatOptionsModal } from '../../components/ChatOptionsModal/ChatOptionsModal';
+import { clearUserChat } from '../../components/ChatOptionsModal/clearChat.service';
+import { unblockUserChat } from '../../components/ChatOptionsModal/unblockChat.service';
+import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
+import { InputChatBox } from '../../components/InputChatBox/InputChatBox';
+import { Menu } from '../../components/Menu/Menu';
+import { MessageBox } from '../../components/MessageBox/MessageBox';
+import { useQuery, useRealm } from '../../contexts/RealmContext';
+import { useAppTheme } from '../../hooks/appTheme';
+import { useAlertModal } from '../../hooks/useAlertModal';
+import { blockContactInRealm } from '../../realm-database/operations/blockContact';
+import { clearChatInRealm } from '../../realm-database/operations/clearChat';
+import { unblockContactInRealm } from '../../realm-database/operations/unblockContact';
+import { Chat } from '../../realm-database/schemas/Chat';
 import { Message } from '../../realm-database/schemas/Message';
+import { storeState } from '../../redux/store';
+import { HomeScreenNavigationProps, HomeStackParamList } from '../../types/Navigations';
+import { getSocket } from '../../utils/socket';
+import { Theme } from '../../utils/themes';
+import { getStyles } from './IndividualChat.styles';
 
 export type IndividualChatRouteProp = RouteProp<
   HomeStackParamList,
@@ -24,9 +37,32 @@ export const IndividualChat = () => {
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme);
   const route = useRoute<IndividualChatRouteProp>();
+  const navigateToHomeScreen = useNavigation<HomeScreenNavigationProps>();
+  const {
+        alertVisible, alertMessage, alertType, showAlert, hideAlert,
+      } = useAlertModal();
+  const [optionsModalVisible, setOptionsModalVisible] = useState(false);
+  const [showClearChatAlert, setShowClearChatAlert] = useState(false);
+  const [showBlockUnblockAlert, setShowBlockUnblockAlert] = useState(false);
 
   const {name, originalNumber, mobileNumber, profilePic} = route.params;
+  const user = useSelector((state: storeState) => state.user);
   const messages = useQuery<Message>('Message').filtered('chat.chatId == $0', mobileNumber);
+  const realm = useRealm();
+  const chat = realm.objectForPrimaryKey<Chat>('Chat', mobileNumber);
+
+
+  useEffect(() => {
+    if(!chat) {
+      realm.write(() => {
+        realm.create<Chat>('Chat', {
+          chatId: mobileNumber,
+          isBlocked: false,
+          publicKey: null,
+        });
+      });
+    }
+  }, [chat, mobileNumber, realm]);
 
   useEffect(() => {
     if (!messages.length) {
@@ -53,18 +89,16 @@ export const IndividualChat = () => {
 
   const renderChatHeader = useCallback(
     () => (
+      <>
       <ChatHeader
         name={name}
         originalNumber={originalNumber}
         profilePic={profilePic}
       />
+      <Menu onClick={() => setOptionsModalVisible(true)}/>
+      </>
     ),
     [name, originalNumber, profilePic],
-  );
-
-  const renderMenu = useCallback(
-    () => <Menu receiverMobileNumber={mobileNumber} />,
-    [mobileNumber],
   );
 
   useEffect(() => {
@@ -92,28 +126,112 @@ export const IndividualChat = () => {
   useEffect(() => {
     navigation.setOptions({
       headerTitle: '',
-      headerLeft: renderChatHeader,
+      headerLeft: () => renderChatHeader(),
       headerStyle: styles.headerStyle,
-      headerRight: renderMenu,
     });
-  }, [navigation, renderChatHeader, renderMenu, styles.headerStyle]);
+  }, [navigation, renderChatHeader, styles.headerStyle]);
+
+  const handleClearChat = async () => {
+    try {
+      const response = await clearUserChat(
+        user.mobileNumber,
+        mobileNumber,
+      );
+      if (response.ok) {
+        clearChatInRealm(realm, mobileNumber);
+        setTimeout(()=> {
+           navigateToHomeScreen.replace('Home');
+        }, 1000);
+      }
+    } catch (error) {
+      showAlert('Unable to Clear Chat', 'error');
+    }
+  };
+
+  const handleBlockAndUnblock = async () => {
+    const isAlreadyBlocked = chat?.isBlocked;
+    try{
+      if(!isAlreadyBlocked) {
+        blockContactInRealm(realm, mobileNumber);
+        const response = await blockUserChat({
+          senderMobileNumber: user.mobileNumber,
+          receiverMobileNumber: mobileNumber,
+        });
+        if(!response.ok) {
+          unblockContactInRealm(realm, mobileNumber);
+          const result = await response.json();
+          showAlert(result.message, 'warning');
+        }
+      } else{
+        unblockContactInRealm(realm, mobileNumber);
+        const response = await unblockUserChat(user.mobileNumber, mobileNumber);
+        if(!response.ok) {
+          blockContactInRealm(realm, mobileNumber);
+          const result = await response.json();
+          showAlert(result.message, 'warning');
+        }
+      }
+    } catch(error) {
+      isAlreadyBlocked ? blockContactInRealm(realm, mobileNumber) : unblockContactInRealm(realm, mobileNumber);
+      showAlert('Something went wrong please try agian', 'error');
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={messages}
-        keyExtractor={item => item._id.toString()}
-        renderItem={({item}) => (
-          <MessageBox
-            message={item.message}
-            timestamp={format(new Date(item.sentAt), 'hh:mm a')}
-            isSender={item.isSender}
-            status={item.status}
-          />
-        )}
-      />
+    <>
+      <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+      <View style={styles.container}>
+        <FlatList
+          data={messages}
+          keyExtractor={item => item._id.toString()}
+          renderItem={({item}) => (
+            <MessageBox
+              message={item.message}
+              timestamp={format(new Date(item.sentAt), 'hh:mm a')}
+              isSender={item.isSender}
+              status={item.status}
+            />
+          )}
+        />
 
-      <InputChatBox receiverMobileNumber={mobileNumber} />
-    </View>
+        {!chat?.isBlocked ? <InputChatBox receiverMobileNumber={mobileNumber} /> :
+        <View style={styles.box}>
+          <Text style={styles.blockedText}>
+            You have blocked this contact. Unblock to send or receive messages.
+          </Text>
+        </View>}
+        <ChatOptionsModal
+          visible={optionsModalVisible}
+          onClearChat={() => {setOptionsModalVisible(false); setShowClearChatAlert(true);}}
+          onBlockAndUnblock={() => {setOptionsModalVisible(false); setShowBlockUnblockAlert(true);}}
+          onClose={() => setOptionsModalVisible(false)}
+          receiverMobileNumber={mobileNumber}
+        />
+        <AlertModal
+          message="Do you really want to clear this chat?"
+          visible={showClearChatAlert}
+          confirmText="Yes"
+          cancelText="Cancel"
+          onConfirm={() => {
+            setShowClearChatAlert(false);
+            handleClearChat();
+          }}
+          onCancel={() => setShowClearChatAlert(false)}
+        />
+        <AlertModal
+          message={chat?.isBlocked
+            ? 'Are you sure you want to unblock this chat?'
+            : 'Are you sure you want to block this chat?'}
+          visible={showBlockUnblockAlert}
+          confirmText="Yes"
+          cancelText="Cancel"
+          onConfirm={() => {
+            setShowBlockUnblockAlert(false);
+            handleBlockAndUnblock();
+          }}
+          onCancel={() => setShowBlockUnblockAlert(false)}
+        />
+      </View>
+    </>
   );
 };

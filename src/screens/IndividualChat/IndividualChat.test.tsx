@@ -6,10 +6,11 @@ import {
 import { configureStore } from '@reduxjs/toolkit';
 import { render, screen, waitFor } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
+import { useQuery, useRealm } from '../../contexts/RealmContext';
 import { themeReducer } from '../../redux/reducers/theme.reducer';
-import { IndividualChat } from './IndividualChat';
+import { userReducer } from '../../redux/reducers/user.reducer';
 import { getSocket } from '../../utils/socket';
-import { useQuery } from '../../contexts/RealmContext';
+import { IndividualChat } from './IndividualChat';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -50,6 +51,16 @@ jest.mock('react-native-libsodium', () => ({
   to_base64: jest.fn(),
 }));
 
+const mockRealm = {
+  write: jest.fn((fn) => fn()),
+  objectForPrimaryKey: jest.fn().mockReturnValue({
+    chatId: '+91 86395 23822',
+    isBlocked: false,
+    publicKey: null,
+  }),
+  create: jest.fn(),
+};
+
 
 describe('IndividualChat', () => {
   let store: ReturnType<typeof configureStore>;
@@ -88,7 +99,7 @@ describe('IndividualChat', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-
+    (useRealm as jest.Mock).mockReturnValue(mockRealm);
     const setOptionsMock = jest.fn();
     const getParentMock = jest.fn().mockReturnValue({ setOptions: setOptionsMock });
 
@@ -110,6 +121,7 @@ describe('IndividualChat', () => {
     store = configureStore({
       reducer: {
         theme: themeReducer,
+        user: userReducer,
       },
     });
   });
@@ -198,6 +210,17 @@ describe('IndividualChat', () => {
         sentAt,
         chatId: '+91 86395 23822',
       });
+    });
+  });
+
+  test('Should creates a new Chat if chat does not exist in Realm', () => {
+    mockRealm.objectForPrimaryKey.mockReturnValue(undefined);
+    renderComponent();
+    expect(mockRealm.write).toHaveBeenCalled();
+    expect(mockRealm.create).toHaveBeenCalledWith('Chat', {
+      chatId: '+91 86395 23822',
+      isBlocked: false,
+      publicKey: null,
     });
   });
 });

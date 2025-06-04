@@ -5,4 +5,9 @@ export const styles = StyleSheet.create({
         height: 25,
         width: 25,
     },
+    menuBox: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });

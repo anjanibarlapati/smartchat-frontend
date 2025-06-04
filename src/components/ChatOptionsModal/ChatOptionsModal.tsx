@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   Modal,
   Platform,
@@ -7,29 +7,34 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import {useAppTheme} from '../../hooks/appTheme';
-import {Theme} from '../../utils/themes';
-import {AlertModal} from '../AlertModal/AlertModal';
-import {getStyles} from './ChatOptionsModal.styles';
+import { useSelector } from 'react-redux';
+import { useRealm } from '../../contexts/RealmContext';
+import { useAppTheme } from '../../hooks/appTheme';
+import { Chat } from '../../realm-database/schemas/Chat';
+import { storeState } from '../../redux/store';
+import { Theme } from '../../utils/themes';
+import { getStyles } from './ChatOptionsModal.styles';
 
 type ChatBlockModalProps = {
   visible: boolean;
   onClearChat: () => void;
-  onBlock: () => void;
+  onBlockAndUnblock: () => void;
   onClose: () => void;
+  receiverMobileNumber: string
 };
 
 export const ChatOptionsModal = ({
   visible,
   onClearChat,
-  onBlock,
+  onBlockAndUnblock,
   onClose,
+  receiverMobileNumber,
 }: ChatBlockModalProps) => {
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme);
-
-  const [showClearAlert, setShowClearAlert] = useState(false);
-  const [showBlockAlert, setShowBlockAlert] = useState(false);
+  const realm = useRealm();
+  const chat = realm.objectForPrimaryKey<Chat>('Chat', receiverMobileNumber);
+  const user = useSelector((state: storeState) => state.user);
 
   return (
     <>
@@ -47,37 +52,18 @@ export const ChatOptionsModal = ({
             }
             accessibilityLabel="overlay">
             <View style={styles.modalContainer}>
-              <TouchableOpacity onPress={() => setShowClearAlert(true)}>
+              <TouchableOpacity onPress={() => {onClearChat();}}>
                 <Text style={styles.text}>Clear Chat</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setShowBlockAlert(true)}>
-                <Text style={styles.text}>Block</Text>
-              </TouchableOpacity>
+              {user.mobileNumber !== receiverMobileNumber && <TouchableOpacity onPress={() => {onBlockAndUnblock();}}>
+                  <Text style={styles.text}>
+                    {chat?.isBlocked ? 'Unblock' : 'Block'}
+                  </Text>
+                </TouchableOpacity>
+              }
             </View>
           </View>
         </TouchableWithoutFeedback>
-        <AlertModal
-          message={'Do you really want to clear this chat?'}
-          visible={showClearAlert}
-          confirmText={'Yes'}
-          cancelText={'Cancel'}
-          onConfirm={() => {
-            setShowClearAlert(false);
-            onClearChat();
-          }}
-          onCancel={() => setShowClearAlert(false)}
-        />
-        <AlertModal
-          message={'Are you sure you want to block this chat?'}
-          visible={showBlockAlert}
-          confirmText={'Yes'}
-          cancelText={'Cancel'}
-          onConfirm={() => {
-            setShowBlockAlert(false);
-            onBlock();
-          }}
-          onCancel={() => setShowBlockAlert(false)}
-        />
       </Modal>
     </>
   );

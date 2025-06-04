@@ -3,14 +3,15 @@ import React, { useEffect } from 'react';
 import { Alert, Image, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
-import { useAppTheme } from '../../hooks/appTheme';
 import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
-import {getStyles} from './Home.styles';
+import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal';
+import { setSuccessMessage } from '../../redux/reducers/auth.reducer';
 import { resetUser } from '../../redux/reducers/user.reducer';
 import { storeState } from '../../redux/store';
 import { HomeScreenNavigationProps, WelcomeScreenNavigationProps } from '../../types/Navigations';
 import { Theme } from '../../utils/themes';
+import { getStyles } from './Home.styles';
 
 export function Home(): React.JSX.Element {
   const { width } = useWindowDimensions();
@@ -25,6 +26,7 @@ export function Home(): React.JSX.Element {
   useEffect(() => {
     if (successMessage === 'You\'ve successfully logged in to SmartChat!') {
       showAlert(successMessage, 'success');
+      dispatch(setSuccessMessage('loggedIn'));
     }
   }, [dispatch, showAlert, successMessage]);
 

@@ -9,7 +9,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
         width: '100%',
         gap: 10,
         backgroundColor: theme.primaryBackground,
-        paddingLeft: 10,
+        paddingLeft: 20,
     },
     profielDetailsContainer: {
         display: 'flex',
