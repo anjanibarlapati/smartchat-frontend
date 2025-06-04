@@ -18,4 +18,12 @@ describe('groupMessagesByDate', () => {
     expect(grouped.Today[0]._id).toBeInstanceOf(ObjectId);
   });
 
+  test('should group messages sent Yesterday', () => {
+    const yesterday = subDays(new Date(), 1);
+    const messages = [createMockMessage(3, yesterday)];
+
+    const grouped = groupMessagesByDate(messages as unknown as Realm.Results<Message>);
+
+    expect(grouped.Yesterday.length).toBe(1);
+  });
 });
