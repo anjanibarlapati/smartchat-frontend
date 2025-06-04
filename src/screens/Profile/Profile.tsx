@@ -10,6 +10,7 @@ import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTil
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal';
+import { deleteAllRealmData } from '../../realm-database/connection';
 import { setUserProperty } from '../../redux/reducers/user.reducer';
 import { storeState } from '../../redux/store';
 import { RootStackParamList } from '../../types/Navigations';
@@ -19,7 +20,6 @@ import { socketDisconnect } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { deleteAccount, logout, removeProfilePic, updateProfilePic } from './Profile.services';
 import { getStyles } from './Profile.styles';
-import { deleteAllRealmData } from '../../realm-database/connection';
 
 
 export const Profile = (): React.JSX.Element => {
