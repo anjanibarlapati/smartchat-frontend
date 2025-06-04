@@ -10,13 +10,18 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
 }));
 
-jest.mock('../../database/connection.ts', () => ({
-  getDBConnection: jest.fn(),
-  getDBinstance: jest.fn(),
+jest.mock('realm', () => ({
+  BSON: {
+    ObjectId: jest.fn(() => 'mocked-object-id'),
+  },
 }));
 
-jest.mock('../../database/tables/contacts.ts', () => ({
-  createContactsTable: jest.fn(),
+jest.mock('../../contexts/RealmContext', () => ({
+  useRealm: jest.fn(),
+}));
+
+jest.mock('../../realm-database/connection', ()=>({
+  setRealmInstance: jest.fn(),
 }));
 
 const renderWelcomeScreen = () => {
