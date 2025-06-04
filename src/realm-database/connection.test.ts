@@ -1,24 +1,18 @@
 import Realm from 'realm';
-import { closeRealm, getRealmInstance, setRealmInstance } from './connection';
-
-jest.mock('realm', () => ({
-  BSON: {
-    ObjectId: jest.fn(() => 'mocked-object-id'),
-  },
-}));
+import {  closeRealm, deleteAllRealmData, getRealmInstance, setRealmInstance } from './connection';
 
 describe('Set realm instance', () => {
   let mockRealm: Partial<Realm>;
    beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetModules();
     mockRealm = {
       close: jest.fn(),
       isClosed: false,
     };
   });
-
   afterEach(() => {
     jest.clearAllMocks();
+    jest.resetModules();
   });
 
   it('should set the realmInstance variable', () => {
@@ -32,9 +26,9 @@ describe('Get realm instance', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockRealm = {
-        close: jest.fn(),
-        isClosed: false,
-    };
+          close: jest.fn(),
+          isClosed: false,
+        };
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -74,9 +68,45 @@ describe('Close Realm', () => {
     const mockClose = jest.fn();
     mockRealm = { close: mockClose, isClosed: true };
     setRealmInstance(mockRealm as Realm);
-
     closeRealm();
-
     expect(mockClose).not.toHaveBeenCalled();
+  });
+});
+
+
+describe('Delete all realm data', () => {
+  let mockRealm: Partial<Realm>;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockRealm = {
+      close: jest.fn(),
+      isClosed: false,
+    };
+    setRealmInstance(mockRealm as Realm);
+    jest.spyOn(Realm, 'deleteFile').mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+  });
+
+  it('should close the realm instance if not already closed and delete realm file', () => {
+    deleteAllRealmData();
+
+    expect(mockRealm.close).toHaveBeenCalled();
+    expect(Realm.deleteFile).toHaveBeenCalled();
+  });
+
+  it('should not call close if realm instance is already closed but still delete realm file', () => {
+     const mockClose = jest.fn();
+    mockRealm = { close: mockClose, isClosed: true };
+    setRealmInstance(mockRealm as Realm);
+
+    deleteAllRealmData();
+
+    expect(mockRealm.close).not.toHaveBeenCalled();
+    expect(Realm.deleteFile).toHaveBeenCalled();
   });
 });
