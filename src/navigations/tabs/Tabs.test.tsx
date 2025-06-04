@@ -21,6 +21,11 @@ jest.mock('react-native-image-crop-picker', () => ({
   openCamera: jest.fn(),
   clean: jest.fn(),
 }));
+jest.mock('react-native-libsodium', () => ({
+  crypto_box_seal: jest.fn().mockReturnValue('mockEncryptedMessage'),
+  crypto_secretbox_easy: jest.fn().mockReturnValue('mockEncryptedMessage'),
+  randombytes_buf: jest.fn().mockReturnValue('mockNonce'),
+}));
 const renderTabs = () =>
   render(
     <Provider store={store}>

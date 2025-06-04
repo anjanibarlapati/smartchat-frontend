@@ -13,8 +13,11 @@ jest.mock('react-native-encrypted-storage', () => ({
 }));
 
 jest.mock('../../utils/decryptMessage');
-jest.mock('react-native-libsodium');
-
+jest.mock('react-native-libsodium', () => ({
+  crypto_box_seal: jest.fn().mockReturnValue('mockEncryptedMessage'),
+  crypto_secretbox_easy: jest.fn().mockReturnValue('mockEncryptedMessage'),
+  randombytes_buf: jest.fn().mockReturnValue('mockNonce'),
+}));
 global.fetch = jest.fn();
 
 const mockResponse = {

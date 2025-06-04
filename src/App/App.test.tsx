@@ -44,23 +44,11 @@ jest.mock('react-native-device-info', ()=>({
   getDeviceId:jest.fn(),
 }));
 
-jest.mock('react-native-sqlite-storage', () => {
-  const mockExecuteSql = jest.fn(async () => []);
-  const mockDbInstance = {
-    executeSql: mockExecuteSql,
-    close: jest.fn(),
-    transaction: jest.fn(),
-    readTransaction: jest.fn(),
-    attach: jest.fn(),
-    detach: jest.fn(),
-  };
-  return {
-    enablePromise: jest.fn(),
-    DEBUG: jest.fn(),
-    openDatabase: jest.fn(() => Promise.resolve(mockDbInstance)),
-    deleteDatabase: jest.fn(),
-  };
-});
+jest.mock('react-native-libsodium', () => ({
+  crypto_box_seal: jest.fn().mockReturnValue('mockEncryptedMessage'),
+  crypto_secretbox_easy: jest.fn().mockReturnValue('mockEncryptedMessage'),
+  randombytes_buf: jest.fn().mockReturnValue('mockNonce'),
+}));
 
 
 
