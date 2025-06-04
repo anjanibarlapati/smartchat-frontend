@@ -39,4 +39,14 @@ describe('groupMessagesByDate', () => {
     expect(grouped['2025-06-03T10:15:00.000Z']).toHaveLength(1);
     expect(grouped['2025-06-02T09:30:00.000Z']).toHaveLength(1);
   });
+    it('should correctly groups the messages content', () => {
+    const grouped = groupMessagesByDate(
+      staticMessages as unknown as Realm.Results<MessageSchema>,
+    );
+
+    expect(grouped['2025-06-04T08:00:00.000Z'][0].message).toBe('Hello!');
+    expect(grouped['2025-06-04T08:00:00.000Z'][1].message).toBe('Hi there!');
+    expect(grouped['2025-06-03T10:15:00.000Z'][0].message).toBe('Good morning');
+    expect(grouped['2025-06-02T09:30:00.000Z'][0].message).toBe('Check this out');
+  });
 });
