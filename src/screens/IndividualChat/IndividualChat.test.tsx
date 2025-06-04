@@ -4,13 +4,15 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import { configureStore } from '@reduxjs/toolkit';
-import { render, screen, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
 import { useQuery, useRealm } from '../../contexts/RealmContext';
 import { themeReducer } from '../../redux/reducers/theme.reducer';
 import { userReducer } from '../../redux/reducers/user.reducer';
 import { getSocket } from '../../utils/socket';
 import { IndividualChat } from './IndividualChat';
+import { blockContactInRealm } from '../../realm-database/operations/blockContact';
+import { blockUserChat } from '../../components/ChatOptionsModal/blockChat.service';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -49,6 +51,14 @@ jest.mock('realm', () => ({
 jest.mock('react-native-libsodium', () => ({
   crypto_box_keypair: jest.fn(),
   to_base64: jest.fn(),
+}));
+
+jest.mock('../../components/ChatOptionsModal/blockChat.service', () => ({
+  blockUserChat: jest.fn(() => Promise.resolve({ ok: true })),
+}));
+
+jest.mock('../../realm-database/operations/blockContact', () => ({
+  blockContactInRealm: jest.fn(),
 }));
 
 const mockRealm = {
@@ -223,4 +233,20 @@ describe('IndividualChat', () => {
       publicKey: null,
     });
   });
+  test('renders blocked message box when chat is blocked', () => {
+    mockRealm.objectForPrimaryKey.mockReturnValue({
+      chatId: '+91 86395 23822',
+      isBlocked: true,
+      publicKey: null,
+    });
+
+    (useQuery as jest.Mock).mockReturnValue({
+      filtered: jest.fn().mockReturnValue([]),
+    });
+
+    const { getByText } = renderComponent();
+
+    expect(getByText(/You have blocked this contact/i)).toBeTruthy();
+  });
+
 });
