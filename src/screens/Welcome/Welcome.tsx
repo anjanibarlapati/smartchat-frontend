@@ -1,12 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { Image, Pressable, Text, useWindowDimensions, View } from 'react-native';
+import { useRealm } from '../../contexts/RealmContext';
 import { useAppTheme } from '../../hooks/appTheme';
+import { setRealmInstance } from '../../realm-database/connection';
 import { WelcomeScreenNavigationProps } from '../../types/Navigations';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './Welcome.styles';
-import { useRealm } from '../../contexts/RealmContext';
-import { setRealmInstance } from '../../realm-database/connection';
 
 const WelcomeScreen = ():React.JSX.Element => {
 
