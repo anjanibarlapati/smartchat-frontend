@@ -1,7 +1,7 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { format } from 'date-fns';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Text, View } from 'react-native';
+import { format } from 'date-fns';
 import { useSelector } from 'react-redux';
 import { AlertModal } from '../../components/AlertModal/AlertModal';
 import { ChatHeader } from '../../components/ChatHeader/ChatHeader';
