@@ -5,22 +5,19 @@ import { useAppTheme } from '../../hooks/appTheme';
 import { WelcomeScreenNavigationProps } from '../../types/Navigations';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './Welcome.styles';
-import { getDBConnection, getDBinstance } from '../../database/connection';
-import { createContactsTable } from '../../database/tables/contacts';
+import { useRealm } from '../../contexts/RealmContext';
+import { setRealmInstance } from '../../realm-database/connection';
 
 const WelcomeScreen = ():React.JSX.Element => {
 
   const navigation = useNavigation<WelcomeScreenNavigationProps>();
-const { width, height } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
+  const realm = useRealm();
 
-  useEffect(()=> {
-    const setupDBConnection = async() => {
-      await getDBConnection();
-      const dbInstance = await getDBinstance();
-      await createContactsTable(dbInstance);
-    };
-    setupDBConnection();
-  },[]);
+  useEffect(() => {
+      setRealmInstance(realm);
+  }, [realm]);
+
 
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme, width, height);
