@@ -34,7 +34,7 @@ describe('groupMessagesByDate', () => {
     const grouped = groupMessagesByDate(
       staticMessages as unknown as Realm.Results<MessageSchema>,
     );
-
+    expect(Object.keys(grouped)).toHaveLength(3);
     expect(grouped['2025-06-04T08:00:00.000Z']).toHaveLength(2);
     expect(grouped['2025-06-03T10:15:00.000Z']).toHaveLength(1);
     expect(grouped['2025-06-02T09:30:00.000Z']).toHaveLength(1);
