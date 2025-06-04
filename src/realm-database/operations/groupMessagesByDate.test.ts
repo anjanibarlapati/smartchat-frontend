@@ -9,3 +9,13 @@ const createMockMessage = (id: number, sentAt: Date): Message => ({
   sentAt,
 }as Message);
 
+describe('groupMessagesByDate', () => {
+  test('should groups messages sent today', () => {
+    const today = new Date();
+    const messages = [createMockMessage(1, today), createMockMessage(2, today)];
+    const grouped = groupMessagesByDate(messages as unknown as Realm.Results<Message>);
+    expect(grouped.Today.length).toBe(2);
+    expect(grouped.Today[0]._id).toBeInstanceOf(ObjectId);
+  });
+
+});
