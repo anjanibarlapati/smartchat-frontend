@@ -8,7 +8,6 @@ import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
 import LoadingIndicator from '../../components/Loading/Loading';
 import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTile';
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
-import { deleteDatabase } from '../../database/connection';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal';
 import { setUserProperty } from '../../redux/reducers/user.reducer';
@@ -20,6 +19,7 @@ import { socketDisconnect } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { deleteAccount, logout, removeProfilePic, updateProfilePic } from './Profile.services';
 import { getStyles } from './Profile.styles';
+import { deleteAllRealmData } from '../../realm-database/connection';
 
 
 export const Profile = (): React.JSX.Element => {
@@ -126,7 +126,7 @@ export const Profile = (): React.JSX.Element => {
       if(response.ok) {
         await socketDisconnect();
         await EncryptedStorage.clear();
-        await deleteDatabase();
+        deleteAllRealmData();
         navigation.reset({
           index: 0,
           routes: [{name: 'WelcomeScreen'}],
@@ -192,7 +192,7 @@ export const Profile = (): React.JSX.Element => {
       );
       if (response.ok) {
         await EncryptedStorage.clear();
-        await deleteDatabase();
+        deleteAllRealmData();
         navigation.reset({
           index: 0,
           routes: [{name: 'WelcomeScreen'}],
