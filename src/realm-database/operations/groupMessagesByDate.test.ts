@@ -1,5 +1,5 @@
 import { Message } from '../../types/message';
-import { Message as MessageSchema } from '../schemas/Message';
+// import { Message as MessageSchema } from '../schemas/Message';
 import { groupMessagesByDate } from './groupMessagesByDate';
 
 describe('groupMessagesByDate', () => {
@@ -32,7 +32,7 @@ describe('groupMessagesByDate', () => {
 
   it('should groups messages by their sentAt property', () => {
     const grouped = groupMessagesByDate(
-      staticMessages as unknown as Realm.Results<MessageSchema>,
+      staticMessages ,
     );
     expect(Object.keys(grouped)).toHaveLength(3);
     expect(grouped['2025-06-04T08:00:00.000Z']).toHaveLength(2);
@@ -41,7 +41,7 @@ describe('groupMessagesByDate', () => {
   });
   it('should correctly groups the messages content', () => {
     const grouped = groupMessagesByDate(
-      staticMessages as unknown as Realm.Results<MessageSchema>,
+      staticMessages ,
     );
     expect(grouped['2025-06-04T08:00:00.000Z'][0].message).toBe('Hello!');
     expect(grouped['2025-06-04T08:00:00.000Z'][1].message).toBe('Hi there!');
@@ -52,7 +52,7 @@ describe('groupMessagesByDate', () => {
   });
   it('should return an empty object when passed an empty array', () => {
     const grouped = groupMessagesByDate(
-      [] as unknown as Realm.Results<MessageSchema>,
+      []
     );
     expect(grouped).toEqual({});
   });
