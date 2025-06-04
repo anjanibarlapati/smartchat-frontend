@@ -1,5 +1,4 @@
 import { Message } from '../../types/message';
-// import { Message as MessageSchema } from '../schemas/Message';
 import { groupMessagesByDate } from './groupMessagesByDate';
 
 describe('groupMessagesByDate', () => {
