@@ -8,11 +8,6 @@ import { useSelector } from 'react-redux';
 import { ContactCard } from '../../components/ContactCard/ContactCard.tsx';
 import { CustomAlert } from '../../components/CustomAlert/CustomAlert.tsx';
 import LoadingIndicator from '../../components/Loading/Loading.tsx';
-import { getDBinstance } from '../../database/connection.ts';
-import { clearContacts } from '../../database/queries/contacts/clearContacts.ts';
-import { deleteContacts } from '../../database/queries/contacts/deleteContacts.ts';
-import { getContacts } from '../../database/queries/contacts/getContacts.ts';
-import { insertOrReplaceContacts } from '../../database/queries/contacts/insertOrReplaceContacts.ts';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal.ts';
 import { requestPermission } from '../../permissions/permissions.ts';
@@ -23,6 +18,10 @@ import { getContactsDetails } from '../../utils/getContactsDetails.ts';
 import { getTokens } from '../../utils/getTokens.ts';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './Contact.styles';
+import { getRealmInstance } from '../../realm-database/connection.ts';
+import { getContactsFromRealm } from '../../realm-database/operations/getContacts.ts';
+import { clearAllContactsInRealm } from '../../realm-database/operations/clearContacts.ts';
+import { insertContactsInRealm } from '../../realm-database/operations/insertContacts.ts';
 
 
 export function Contact(): React.JSX.Element {
@@ -41,7 +40,7 @@ export function Contact(): React.JSX.Element {
 
   useEffect(() => {
     const loadContacts = async () => {
-      const db = await getDBinstance();
+      const db =  getRealmInstance();
       try {
         setIsLoading(true);
         const hasPermission = await requestPermission('contacts');
@@ -62,22 +61,20 @@ export function Contact(): React.JSX.Element {
         const netState = await NetInfo.fetch();
         const isOnline = netState.isConnected;
         if (!isOnline) {
-          const dbContacts = await getContacts(db);
+          const dbContacts = getContactsFromRealm(db);
           setContacts(dbContacts);
           return;
         }
 
         const deviceContacts = await Contacts.getAll();
         if (!deviceContacts || deviceContacts.length === 0) {
-          await clearContacts(db);
+          clearAllContactsInRealm(db);
           setContacts([]);
           return;
         }
         const resultantContacts = await getContactsDetails(deviceContacts, tokens.access_token);
-        const currentNumbers = resultantContacts.map(contact => contact.mobileNumber);
-        await deleteContacts(db, currentNumbers);
-        await insertOrReplaceContacts(db, resultantContacts);
-
+        clearAllContactsInRealm(db);
+        insertContactsInRealm(db, resultantContacts);
         setContacts(resultantContacts);
       } catch (error) {
           showAlert('Something went wrong while fetching contacts details. Please try again', 'error');
