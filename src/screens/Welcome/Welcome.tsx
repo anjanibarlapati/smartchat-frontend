@@ -1,6 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { Image, Pressable, Text, useWindowDimensions, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useRealm } from '../../contexts/RealmContext';
 import { useAppTheme } from '../../hooks/appTheme';
 import { setRealmInstance } from '../../realm-database/connection';
