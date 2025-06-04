@@ -195,11 +195,14 @@ export const IndividualChat = () => {
         />
 
         {!chat?.isBlocked ? <InputChatBox receiverMobileNumber={mobileNumber} /> :
-        <View style={styles.box}>
-          <Text style={styles.blockedText}>
-            You have blocked this contact. Unblock to send or receive messages.
-          </Text>
-        </View>}
+        <View style={styles.blockedMessageContainer}>
+          <View style={styles.box}>
+            <Text style={styles.blockedText}>
+              You have blocked this contact. Unblock to send or receive messages.
+            </Text>
+          </View>
+        </View>
+        }
         <ChatOptionsModal
           visible={optionsModalVisible}
           onClearChat={() => {setOptionsModalVisible(false); setShowClearChatAlert(true);}}
