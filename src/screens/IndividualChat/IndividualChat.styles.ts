@@ -13,9 +13,6 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
     },
     box: {
       padding: 16,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: theme.secondaryBackground,
     },
     blockedText: {
       color: theme.secondaryTextColor,
@@ -29,6 +26,14 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+    },
+    blockedMessageContainer: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: theme.secondaryBackground,
+      paddingVertical: 18,
     },
 
 });
