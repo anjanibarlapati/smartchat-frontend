@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react';
 import { Provider } from 'react-redux';
+import { Tabs } from './Tabs';
+import { store } from '../../redux/store';
 import { NavigationContainer } from '@react-navigation/native';
 import { RealmProvider } from '@realm/react';
 import { fireEvent, render } from '@testing-library/react-native';
-import { store } from '../../redux/store';
-import { Tabs } from './Tabs';
 
 jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn(),
