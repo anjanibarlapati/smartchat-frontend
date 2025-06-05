@@ -1,10 +1,10 @@
-import { storeMessages } from './storeMessages';
+import Realm from 'realm';
+import { storeChats } from '../realm-database/operations/storeChats';
+import { formatMessages } from '../screens/Login/Login.service';
+import { Chat, Messages, MessageStatus, UserChatData } from '../types/message';
 import { getTokens } from './getTokens';
 import { getUserMessages } from './getUserMessages';
-import { formatMessages } from '../screens/Login/Login.service';
-import { storeChats } from '../realm-database/operations/storeChats';
-import { Chat, Messages, MessageStatus, UserChatData } from '../types/message';
-import Realm from 'realm';
+import { storeMessages } from './storeMessages';
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),

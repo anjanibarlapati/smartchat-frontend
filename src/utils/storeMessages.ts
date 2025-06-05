@@ -1,9 +1,9 @@
+import Realm from 'realm';
 import { storeChats } from '../realm-database/operations/storeChats';
 import { formatMessages } from '../screens/Login/Login.service';
 import { Chat, UserChatData } from '../types/message';
-import { getUserMessages } from './getUserMessages';
 import { getTokens } from './getTokens';
-import Realm from 'realm';
+import { getUserMessages } from './getUserMessages';
 
 export const storeMessages = async (mobileNumber: string, realm: Realm) => {
   try {
