@@ -1,5 +1,5 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Text, View } from 'react-native';
 import { format } from 'date-fns';
 import { useSelector } from 'react-redux';
@@ -26,6 +26,7 @@ import { HomeScreenNavigationProps, HomeStackParamList } from '../../types/Navig
 import { getSocket } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './IndividualChat.styles';
+import { updateMessageStatusInRealm } from '../../realm-database/operations/updateMessageStatus';
 
 export type IndividualChatRouteProp = RouteProp<
   HomeStackParamList,
@@ -50,6 +51,7 @@ export const IndividualChat = () => {
   const messages = useQuery<Message>('Message').filtered('chat.chatId == $0', mobileNumber);
   const realm = useRealm();
   const chat = realm.objectForPrimaryKey<Chat>('Chat', mobileNumber);
+  const flatListRef = useRef<FlatList>(null);
 
 
   useEffect(() => {
@@ -84,6 +86,7 @@ export const IndividualChat = () => {
         sentAt: latestUnseen.sentAt,
         chatId: mobileNumber,
       });
+      updateMessageStatusInRealm( {chatId: mobileNumber, sentAt: latestUnseen.sentAt, status: 'seen', updateAllBeforeSentAt: true});
     }
   }, [messages, mobileNumber]);
 
@@ -181,8 +184,10 @@ export const IndividualChat = () => {
     <>
       <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
       <View style={styles.container}>
+        <View style={styles.messageContainer}>
         <FlatList
           data={messages}
+          ref={flatListRef}
           keyExtractor={item => item._id.toString()}
           renderItem={({item}) => (
             <MessageBox
@@ -192,9 +197,18 @@ export const IndividualChat = () => {
               status={item.status}
             />
           )}
+          onContentSizeChange={() => {
+            flatListRef.current?.scrollToEnd({ animated: false });
+          }}
+          onLayout={() => {
+            flatListRef.current?.scrollToEnd({ animated: false });
+          }}
         />
+        </View>
 
-        {!chat?.isBlocked ? <InputChatBox receiverMobileNumber={mobileNumber} /> :
+        {!chat?.isBlocked ? <View style={styles.inputContainer}>
+          <InputChatBox receiverMobileNumber={mobileNumber} />
+          </View> :
         <View style={styles.blockedMessageContainer}>
           <View style={styles.box}>
             <Text style={styles.blockedText}>
