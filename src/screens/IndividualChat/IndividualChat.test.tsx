@@ -31,6 +31,7 @@ jest.mock('../../contexts/RealmContext', () => ({
   useQuery: jest.fn(),
   useRealm: jest.fn(),
 }));
+
 let mockEmit: jest.Mock = jest.fn();
 jest.mock('../../utils/socket', () => ({
   getSocket: jest.fn(() => ({
@@ -244,9 +245,10 @@ describe('IndividualChat', () => {
       isAccountDeleted: true,
       publicKey: null,
     });
-
     (useQuery as jest.Mock).mockReturnValue({
-      filtered: jest.fn().mockReturnValue([]),
+       filtered: jest.fn().mockReturnValue({
+      sorted: jest.fn().mockReturnValue([]),
+    }),
     });
 
     const { getByText } = renderComponent();
@@ -263,7 +265,9 @@ describe('IndividualChat', () => {
     });
 
     (useQuery as jest.Mock).mockReturnValue({
-      filtered: jest.fn().mockReturnValue([]),
+       filtered: jest.fn().mockReturnValue({
+      sorted: jest.fn().mockReturnValue([]),
+    }),
     });
 
     const { getByText } = renderComponent();
