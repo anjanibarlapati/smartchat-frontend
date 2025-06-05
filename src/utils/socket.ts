@@ -51,13 +51,13 @@ export const socketConnection = async (mobileNumber: string) => {
       });
 
       socket.on('messageDelivered', async data => {
-        const { sentAt, receiverMobileNumber, status } = data;
-        updateMessageStatusInRealm( {chatId: receiverMobileNumber, sentAt: sentAt, status: status});
+        const { sentAt, receiverMobileNumber, status, messageIds, messagesCountToupdate } = data;
+        updateMessageStatusInRealm( {chatId: receiverMobileNumber, sentAt: sentAt, status: status, updateAllBeforeSentAt: messagesCountToupdate, messageIds: messageIds});
       });
 
       socket.on('messageRead', data => {
-        const { sentAt, chatId, status, updatedCount } = data;
-        updateMessageStatusInRealm( {chatId: chatId, sentAt: sentAt, status: status, updateAllBeforeSentAt: updatedCount > 1});
+        const { sentAt, chatId, status, updatedCount, messageIds } = data;
+        updateMessageStatusInRealm( {chatId: chatId, sentAt: sentAt, messageIds: messageIds, status: status, updateAllBeforeSentAt: updatedCount > 1});
       });
       socket.on('force-logout', () => {
         store.dispatch(clearSuccessMessage());
