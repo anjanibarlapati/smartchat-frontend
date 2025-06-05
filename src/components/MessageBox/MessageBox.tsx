@@ -12,6 +12,8 @@ import { getStyles } from './MessageBox.styles';
         return require('../../../assets/images/doubleTick.png');
       case 'seen':
         return require('../../../assets/images/readTick.png');
+      case 'pending':
+        return require('../../../assets/images/pending.png');
     }
   };
 

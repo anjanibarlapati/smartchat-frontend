@@ -1,5 +1,5 @@
-import { Provider } from 'react-redux';
 import { render, screen } from '@testing-library/react-native';
+import { Provider } from 'react-redux';
 import { store } from '../../redux/store';
 import { MessageProps } from '../../types/MessageProps';
 import { MessageBox } from './MessageBox';
@@ -46,6 +46,7 @@ describe('MessageBox Component Check', () => {
     expect(screen.queryByLabelText('sent-tick-icon')).toBeNull();
     expect(screen.queryByLabelText('delivered-tick-icon')).toBeNull();
     expect(screen.queryByLabelText('read-tick-icon')).toBeNull();
+    expect(screen.queryByLabelText('pending-tick-icon')).toBeNull();
   });
 
   it('Should render single tick icon when status is "sent"', () => {
@@ -84,6 +85,18 @@ describe('MessageBox Component Check', () => {
 
     expect(screen.getByLabelText('tick-icon').props.source).toEqual(
       require('../../../assets/images/readTick.png'),
+    );
+  });
+  it('Should render pending icon when status is "pending"', () => {
+    renderMessageBox({
+      message: 'Test pending',
+      timestamp: '1:03 PM',
+      status: 'pending',
+      isSender: true,
+    });
+
+    expect(screen.getByLabelText('tick-icon').props.source).toEqual(
+      require('../../../assets/images/pending.png'),
     );
   });
   it('Should apply styles based on the width of the screen', async () => {
