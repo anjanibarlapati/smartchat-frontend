@@ -56,7 +56,7 @@ describe('updateMessageStatusInRealm', () => {
     expect(mockWrite).toHaveBeenCalled();
     expect(message.status).toBe(status);
 
-    expect(mockFiltered).toHaveBeenCalledWith('chat.chatId == $0 AND isSender == true', chatId);
+    expect(mockFiltered).toHaveBeenCalledWith('chat.chatId == $0', chatId);
     expect(mockSorted).toHaveBeenCalledWith('sentAt');
     expect(filteredForSentAt).toHaveBeenCalledWith('sentAt == $0', sentAt);
   });
@@ -72,17 +72,17 @@ describe('updateMessageStatusInRealm', () => {
     expect(getRealmInstance).toHaveBeenCalled();
     expect(mockWrite).toHaveBeenCalled();
 
-    expect(mockFiltered).toHaveBeenCalledWith('chat.chatId == $0 AND isSender == true', chatId);
+    expect(mockFiltered).toHaveBeenCalledWith('chat.chatId == $0', chatId);
     expect(mockSorted).toHaveBeenCalledWith('sentAt');
     expect(filteredForSentAt).toHaveBeenCalledWith('sentAt == $0', sentAt);
   });
 
-  it('should update all messages before sentAt if updateAllBeforeSentAt is true', async () => {
+  it('should update messages sent in socket payload before sentAt if updateAllBeforeSentAt is true for sender', async () => {
     const message1 = { sentAt: '2025-05-30T00:00:00Z', status: 'sent' };
     const message2 = { sentAt: '2025-06-01T00:00:00Z', status: 'delivered' };
     const newer = { sentAt: '2025-06-02T00:00:00Z', status: 'sent' };
 
-    const messageIds= [message1.sentAt, message2.sentAt, newer.sentAt];
+    const messageIds = [message1.sentAt, message2.sentAt, newer.sentAt];
 
     mockMessages.push(message1, message2, newer);
 
@@ -91,6 +91,32 @@ describe('updateMessageStatusInRealm', () => {
     expect(message1.status).toBe(status);
     expect(message2.status).toBe(status);
     expect(newer.status).toBe('seen');
+  });
+
+    it('should not update any message sent in socket payload before sentAt if updateAllBeforeSentAt is true for sender', async () => {
+    const message1 = { sentAt: '2025-05-30T00:00:00Z', status: 'sent' };
+    const message2 = { sentAt: '2025-06-01T00:00:00Z', status: 'delivered' };
+    const newer = { sentAt: '2025-06-02T00:00:00Z', status: 'sent' };
+
+    const messageIds = [message1.sentAt, message2.sentAt, newer.sentAt];
+
+    mockMessages.push(message1, message2, newer);
+
+    await updateMessageStatusInRealm({ chatId, sentAt, status, updateAllBeforeSentAt: true, messageIds: messageIds });
+
+    expect(message1.status).toBe(status);
+    expect(message2.status).toBe(status);
+    expect(newer.status).toBe('seen');
+  });
+
+  it('should update all messages if all messages are seen already', async () => {
+    const message1 = { sentAt: '2025-05-30T00:00:00Z', status: 'seen', isSender: false };
+    const message2 = { sentAt: '2025-06-01T00:00:00Z', status: 'seen', isSender: false };
+    const newer = { sentAt: '2025-06-02T00:00:00Z', status: 'seen', isSender: false };
+    mockMessages.push(message1, message2, newer);
+    await updateMessageStatusInRealm({ chatId, sentAt, status, updateAllBeforeSentAt: true });
+    expect(message1.status).toBe(status);
+
   });
   it('should catch and log errors thrown during realm.write', async () => {
     const error = new Error('Write failed');
