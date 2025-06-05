@@ -23,7 +23,7 @@ export const ChatCard = ({
       <Image
             style={styles.profileImage}
             source={
-              contact.profilePicture || require('../../../assets/images/profileImage.png')
+              contact.profilePicture ? {uri: contact.profilePicture} : require('../../../assets/images/profileImage.png')
             }
             accessibilityLabel="profile-image"
       />

@@ -48,9 +48,9 @@ describe('ChatCard Component', () => {
 
     expect(getByText(chatDetails.contact.name)).toBeTruthy();
     expect(getByText(chatDetails.message.message)).toBeTruthy();
-    expect(getByLabelText('profile-image').props.source).toEqual(
-      chatDetails.contact.profilePicture
-    );
+    expect(getByLabelText('profile-image').props.source).toEqual({
+      uri: chatDetails.contact.profilePicture,
+    });
   });
 
   test('Should show unread badge when unreadCount is greater than 0', () => {
