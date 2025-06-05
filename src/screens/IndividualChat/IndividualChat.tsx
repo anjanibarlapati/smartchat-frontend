@@ -1,36 +1,36 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Text, View, FlatList} from 'react-native';
-import {useSelector} from 'react-redux';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import {format} from 'date-fns';
-import {AlertModal} from '../../components/AlertModal/AlertModal';
-import {ChatHeader} from '../../components/ChatHeader/ChatHeader';
-import {blockUserChat} from '../../components/ChatOptionsModal/blockChat.service';
-import {ChatOptionsModal} from '../../components/ChatOptionsModal/ChatOptionsModal';
-import {clearUserChat} from '../../components/ChatOptionsModal/clearChat.service';
-import {unblockUserChat} from '../../components/ChatOptionsModal/unblockChat.service';
-import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
-import {InputChatBox} from '../../components/InputChatBox/InputChatBox';
-import {Menu} from '../../components/Menu/Menu';
-import {MessageBox} from '../../components/MessageBox/MessageBox';
-import {useRealm} from '../../contexts/RealmContext';
-import {useAppTheme} from '../../hooks/appTheme';
-import {useAlertModal} from '../../hooks/useAlertModal';
-import {blockContactInRealm} from '../../realm-database/operations/blockContact';
-import {clearChatInRealm} from '../../realm-database/operations/clearChat';
-import {unblockContactInRealm} from '../../realm-database/operations/unblockContact';
-import {updateMessageStatusInRealm} from '../../realm-database/operations/updateMessageStatus';
-import {Chat} from '../../realm-database/schemas/Chat';
-import {storeState} from '../../redux/store';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { format } from 'date-fns';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { FlatList, Text, View } from 'react-native';
+import { useSelector } from 'react-redux';
+import { AlertModal } from '../../components/AlertModal/AlertModal';
+import { ChatHeader } from '../../components/ChatHeader/ChatHeader';
+import { blockUserChat } from '../../components/ChatOptionsModal/blockChat.service';
+import { ChatOptionsModal } from '../../components/ChatOptionsModal/ChatOptionsModal';
+import { clearUserChat } from '../../components/ChatOptionsModal/clearChat.service';
+import { unblockUserChat } from '../../components/ChatOptionsModal/unblockChat.service';
+import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
+import { InputChatBox } from '../../components/InputChatBox/InputChatBox';
+import { Menu } from '../../components/Menu/Menu';
+import { MessageBox } from '../../components/MessageBox/MessageBox';
+import { TimeStamp } from '../../components/TimeStamp/TimeStamp';
+import { useRealm } from '../../contexts/RealmContext';
+import { useAppTheme } from '../../hooks/appTheme';
+import { useGroupedMessages } from '../../hooks/groupMessageByDate';
+import { useAlertModal } from '../../hooks/useAlertModal';
+import { blockContactInRealm } from '../../realm-database/operations/blockContact';
+import { clearChatInRealm } from '../../realm-database/operations/clearChat';
+import { unblockContactInRealm } from '../../realm-database/operations/unblockContact';
+import { updateMessageStatusInRealm } from '../../realm-database/operations/updateMessageStatus';
+import { Chat } from '../../realm-database/schemas/Chat';
+import { storeState } from '../../redux/store';
 import {
   HomeScreenNavigationProps,
   HomeStackParamList,
 } from '../../types/Navigations';
-import {getSocket} from '../../utils/socket';
-import {Theme} from '../../utils/themes';
-import {getStyles} from './IndividualChat.styles';
-import {useGroupedMessages} from '../../hooks/groupMessageByDate';
-import {TimeStamp} from '../../components/TimeStamp/TimeStamp';
+import { getSocket } from '../../utils/socket';
+import { Theme } from '../../utils/themes';
+import { getStyles } from './IndividualChat.styles';
 export type IndividualChatRouteProp = RouteProp<
   HomeStackParamList,
   'IndividualChat'
