@@ -6,6 +6,7 @@ import { socketConnection, socketDisconnect } from './socket';
 import { getRealmInstance } from '../realm-database/connection';
 import { updateMessageStatusInRealm } from '../realm-database/operations/updateMessageStatus';
 import { addNewMessageInRealm } from '../realm-database/operations/addNewMessage';
+import { updateUserAccountStatusInRealm } from '../realm-database/operations/updateUserAccountStatus';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -21,6 +22,10 @@ jest.mock('../realm-database/operations/addNewMessage', () => ({
 
 jest.mock('../realm-database/operations/updateMessageStatus', () => ({
   updateMessageStatusInRealm: jest.fn(),
+}));
+
+jest.mock('../realm-database/operations/updateUserAccountStatus', () => ({
+  updateUserAccountStatusInRealm: jest.fn(),
 }));
 
 jest.mock('socket.io-client', () => ({
@@ -180,6 +185,22 @@ describe('Socket Utility (with Realm instance mocking)', () => {
       updateAllBeforeSentAt: true,
     });
   });
+
+    it('should handle isAccountDeleted and call updateUserAccountStatusInRealm', async () => {
+      const deliveryData = {
+        isAccountDeleted: true,
+        chatId: mobileNumber,
+      };
+
+      await socketConnection(mobileNumber);
+      const handler = mockOn.mock.calls.find(call => call[0] === 'isAccountDeleted')?.[1];
+      handler?.(deliveryData);
+
+      expect(updateUserAccountStatusInRealm).toHaveBeenCalledWith(
+        mobileNumber,
+        true,
+      );
+    });
 
   it('should handle disconnect and log it', async () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
