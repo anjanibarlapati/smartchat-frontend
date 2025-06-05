@@ -6,6 +6,7 @@ type UpdateMessageStatusParams = {
   sentAt: string;
   status: 'sent' | 'delivered' | 'seen';
   updateAllBeforeSentAt?: boolean;
+  messageIds?: string[];
 };
 
 export const updateMessageStatusInRealm = async ({
@@ -13,6 +14,7 @@ export const updateMessageStatusInRealm = async ({
   sentAt,
   status,
   updateAllBeforeSentAt,
+  messageIds,
 }: UpdateMessageStatusParams) => {
   const realm = getRealmInstance();
 
@@ -22,14 +24,18 @@ export const updateMessageStatusInRealm = async ({
       const messages = realm.objects<Message>('Message').filtered('chat.chatId == $0 AND isSender == true', chatId).sorted('sentAt');
 
       if (updateAllBeforeSentAt) {
-        for (let i = messages.length - 1; i >= 0; i--) {
-          const message = messages[i];
+        for (let index = messages.length - 1; index >= 0; index--) {
+          const message = messages[index];
+          if(messageIds && messageIds.includes(message.sentAt)){
           if (message.sentAt <= sentAt && message.status !== status) {
+
             message.status = status;
+
           } else {
             break;
           }
-        }
+          }
+         }
       } else {
         const message = messages.filtered('sentAt == $0', sentAt)[0];
         if (message) {
