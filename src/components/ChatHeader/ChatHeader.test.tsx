@@ -14,10 +14,10 @@ const contact = {
 };
 
 describe('Tests related to the ChatHeader component', () => {
-    const mockGoBack = jest.fn();
+    const mockReplace = jest.fn();
     beforeEach(() => {
         require('@react-navigation/native').useNavigation.mockReturnValue({
-            goBack: mockGoBack,
+            replace: mockReplace,
         });
     });
     const renderChatHeader = () => {
@@ -49,7 +49,7 @@ describe('Tests related to the ChatHeader component', () => {
     it('Should call navigation.goBack when back button is pressed', () => {
         renderChatHeader();
         fireEvent.press(screen.getByLabelText('Back-Icon'));
-        expect(mockGoBack).toHaveBeenCalledTimes(1);
+        expect(mockReplace).toHaveBeenCalledTimes(1);
     });
 
 });
