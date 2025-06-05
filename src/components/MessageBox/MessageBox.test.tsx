@@ -56,7 +56,7 @@ describe('MessageBox Component Check', () => {
       isSender: true,
     });
 
-    expect(screen.getByLabelText('sent-tick-icon').props.source).toEqual(
+    expect(screen.getByLabelText('tick-icon').props.source).toEqual(
       require('../../../assets/images/singleTick.png'),
     );
   });
@@ -69,19 +69,20 @@ describe('MessageBox Component Check', () => {
       isSender: true,
     });
 
-    expect(screen.getByLabelText('delivered-tick-icon').props.source).toEqual(
+    expect(screen.getByLabelText('tick-icon').props.source).toEqual(
       require('../../../assets/images/doubleTick.png'),
     );
   });
 
-  it('Should render read tick icon when status is "read"', () => {
+  it('Should render read tick icon when status is "seen"', () => {
     renderMessageBox({
-      message: 'Test Read',
+      message: 'Test Seen',
       timestamp: '1:03 PM',
       status: 'seen',
       isSender: true,
     });
-    expect(screen.getByLabelText('read-tick-icon').props.source).toEqual(
+
+    expect(screen.getByLabelText('tick-icon').props.source).toEqual(
       require('../../../assets/images/readTick.png'),
     );
   });
