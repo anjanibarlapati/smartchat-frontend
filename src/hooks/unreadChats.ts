@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { useQuery } from '../contexts/RealmContext';
 import { Chat } from '../realm-database/schemas/Chat';
+import { Contact } from '../realm-database/schemas/Contact';
 import { Message } from '../realm-database/schemas/Message';
 import { HomeChats } from './homechats';
-import { Contact } from '../realm-database/schemas/Contact';
 
 
 export const useUnreadChats = (): HomeChats[] => {

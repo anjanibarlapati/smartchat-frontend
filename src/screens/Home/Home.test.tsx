@@ -1,14 +1,14 @@
+import React from 'react';
+import { Provider } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import React from 'react';
-import { Provider } from 'react-redux';
+import { useHomeChats } from '../../hooks/homechats';
 import * as useAlertModalHook from '../../hooks/useAlertModal';
 import { authReducer } from '../../redux/reducers/auth.reducer';
 import { themeReducer } from '../../redux/reducers/theme.reducer';
 import { store } from '../../redux/store';
 import { Home } from './Home';
-import { useHomeChats } from '../../hooks/homechats';
 
 jest.mock('../../hooks/homechats', () => ({
   useHomeChats: jest.fn(),

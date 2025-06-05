@@ -1,9 +1,9 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native';
-import { getStyles } from './ChatHeader.styles';
-import { useAppTheme } from '../../hooks/appTheme';
-import { Theme } from '../../utils/themes';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useAppTheme } from '../../hooks/appTheme';
 import { HomeScreenNavigationProps } from '../../types/Navigations';
+import { Theme } from '../../utils/themes';
+import { getStyles } from './ChatHeader.styles';
 
 interface ChatHeaderProps {
     name: string,

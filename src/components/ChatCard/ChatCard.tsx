@@ -1,13 +1,13 @@
-import {Image, Text, TouchableOpacity, View} from 'react-native';
-import {useAppTheme} from '../../hooks/appTheme';
-import {Theme} from '../../utils/themes';
-import {getStyles} from './ChatCard.styles';
-import {Badge} from '../Badge/Badge';
-import {ChatCardProps} from '../../types/Chat';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useAppTheme } from '../../hooks/appTheme';
+import { ChatCardProps } from '../../types/Chat';
+import { HomeScreenNavigationProps } from '../../types/Navigations';
+import { Theme } from '../../utils/themes';
+import { Badge } from '../Badge/Badge';
 import { getTickIcon } from '../MessageBox/MessageBox';
 import { TimeStamp } from '../TimeStamp/TimeStamp';
-import { useNavigation } from '@react-navigation/native';
-import { HomeScreenNavigationProps } from '../../types/Navigations';
+import { getStyles } from './ChatCard.styles';
 
 export const ChatCard = ({
   contact,

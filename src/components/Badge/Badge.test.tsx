@@ -1,7 +1,7 @@
-import {render, screen} from '@testing-library/react-native';
-import {Badge} from './Badge';
-import {Provider} from 'react-redux';
-import {store} from '../../redux/store';
+import { Provider } from 'react-redux';
+import { render, screen } from '@testing-library/react-native';
+import { store } from '../../redux/store';
+import { Badge } from './Badge';
 
 const renderBadge = (value: string, size: 'small' | 'big') => {
   return render(

@@ -1,7 +1,7 @@
 import { Provider } from 'react-redux';
-import { render, screen , fireEvent} from '@testing-library/react-native';
-import { ChatHeader } from './ChatHeader';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import { store } from '../../redux/store';
+import { ChatHeader } from './ChatHeader';
 
 jest.mock('@react-navigation/native', () => ({
     useNavigation: jest.fn(),

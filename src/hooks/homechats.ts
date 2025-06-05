@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
+import { compareDesc, parseISO } from 'date-fns';
 import { useQuery } from '../contexts/RealmContext';
 import { Chat } from '../realm-database/schemas/Chat';
+import { Contact } from '../realm-database/schemas/Contact';
 import { Message as RealmMessage } from '../realm-database/schemas/Message';
 import { Message } from '../types/message';
-import { compareDesc, parseISO } from 'date-fns';
-import { Contact } from '../realm-database/schemas/Contact';
 
 
 export type HomeChats = {

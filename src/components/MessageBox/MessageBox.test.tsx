@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
+import { render, screen } from '@testing-library/react-native';
 import { store } from '../../redux/store';
 import { MessageProps } from '../../types/MessageProps';
 import { MessageBox } from './MessageBox';

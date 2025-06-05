@@ -1,10 +1,10 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
-import { ChatCard } from './ChatCard';
-import { ChatCardProps } from '../../types/Chat';
 import { Provider } from 'react-redux';
-import { store } from '../../redux/store';
+import { fireEvent, render } from '@testing-library/react-native';
 import { realmConfig, RealmProvider } from '../../contexts/RealmContext';
+import { store } from '../../redux/store';
+import { ChatCardProps } from '../../types/Chat';
+import { ChatCard } from './ChatCard';
 
 const mockReplace = jest.fn();
 

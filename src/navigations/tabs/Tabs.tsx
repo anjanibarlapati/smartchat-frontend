@@ -1,14 +1,14 @@
 import React, { memo } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { BottomTabParamList, tabBarIconProps } from '../../types/Navigations';
-import { getStyles } from './Tabs.styles';
+import { Badge } from '../../components/Badge/Badge';
 import { useAppTheme } from '../../hooks/appTheme';
+import { useUnreadChatsCount } from '../../hooks/unreadChatsCount';
+import { Profile } from '../../screens/Profile/Profile';
+import { BottomTabParamList, tabBarIconProps } from '../../types/Navigations';
 import { Theme } from '../../utils/themes';
 import { HomeStack } from '../stacks/HomeStack';
-import { Profile } from '../../screens/Profile/Profile';
-import { Badge } from '../../components/Badge/Badge';
-import { useUnreadChatsCount } from '../../hooks/unreadChatsCount';
+import { getStyles } from './Tabs.styles';
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();

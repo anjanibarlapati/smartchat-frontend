@@ -1,8 +1,8 @@
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { format } from 'date-fns';
 import { useSelector } from 'react-redux';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { format } from 'date-fns';
 import { AlertModal } from '../../components/AlertModal/AlertModal';
 import { ChatHeader } from '../../components/ChatHeader/ChatHeader';
 import { blockUserChat } from '../../components/ChatOptionsModal/blockChat.service';
@@ -19,6 +19,7 @@ import { useAlertModal } from '../../hooks/useAlertModal';
 import { blockContactInRealm } from '../../realm-database/operations/blockContact';
 import { clearChatInRealm } from '../../realm-database/operations/clearChat';
 import { unblockContactInRealm } from '../../realm-database/operations/unblockContact';
+import { updateMessageStatusInRealm } from '../../realm-database/operations/updateMessageStatus';
 import { Chat } from '../../realm-database/schemas/Chat';
 import { Message } from '../../realm-database/schemas/Message';
 import { storeState } from '../../redux/store';
@@ -26,7 +27,6 @@ import { HomeScreenNavigationProps, HomeStackParamList } from '../../types/Navig
 import { getSocket } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './IndividualChat.styles';
-import { updateMessageStatusInRealm } from '../../realm-database/operations/updateMessageStatus';
 
 export type IndividualChatRouteProp = RouteProp<
   HomeStackParamList,

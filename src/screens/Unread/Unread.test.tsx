@@ -1,10 +1,10 @@
 import React from 'react';
-import {Provider} from 'react-redux';
-import {store} from '../../redux/store';
-import {useNavigation} from '@react-navigation/native';
-import {fireEvent, render} from '@testing-library/react-native';
-import {Unread} from './Unread';
+import { Provider } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { fireEvent, render } from '@testing-library/react-native';
 import { useUnreadChats } from '../../hooks/unreadChats';
+import { store } from '../../redux/store';
+import { Unread } from './Unread';
 
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),

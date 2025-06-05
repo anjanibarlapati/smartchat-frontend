@@ -1,15 +1,15 @@
-import NetInfo from '@react-native-community/netinfo';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { ReactElement } from 'react';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import SplashScreen from 'react-native-splash-screen';
 import { Provider } from 'react-redux';
+import NetInfo from '@react-native-community/netinfo';
+import { RealmProvider } from '@realm/react';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { useAlertModal } from '../hooks/useAlertModal';
 import { store } from '../redux/store';
 import { checkAccessToken } from '../utils/checkToken';
 import { socketConnection } from '../utils/socket.ts';
 import { AppNavigator } from './AppNavigator';
-import { RealmProvider } from '@realm/react';
-import { ReactElement } from 'react';
 
 jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn(),

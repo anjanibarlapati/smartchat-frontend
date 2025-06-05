@@ -1,8 +1,8 @@
 import React from 'react';
-import {Text, View} from 'react-native';
-import {Badgestyles} from './Badge.styles';
-import {Theme} from '../../utils/themes';
-import {useAppTheme} from '../../hooks/appTheme';
+import { Text, View } from 'react-native';
+import { useAppTheme } from '../../hooks/appTheme';
+import { Theme } from '../../utils/themes';
+import { Badgestyles } from './Badge.styles';
 
 type BadgeProps = {
   value?: string;

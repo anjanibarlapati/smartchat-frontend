@@ -1,5 +1,5 @@
-import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { Image, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { useAppTheme } from '../../hooks/appTheme';
 import { Contact } from '../../screens/Contact/Contact';
 import '../../screens/Contact/Contact.styles';

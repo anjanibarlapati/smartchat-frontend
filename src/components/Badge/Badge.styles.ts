@@ -1,5 +1,5 @@
-import {StyleSheet} from 'react-native';
-import {Theme} from '../../utils/themes';
+import { StyleSheet } from 'react-native';
+import { Theme } from '../../utils/themes';
 
 export const Badgestyles = (theme: Theme) =>
   StyleSheet.create({

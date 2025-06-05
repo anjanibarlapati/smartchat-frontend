@@ -1,13 +1,13 @@
-import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { FlatList, Image, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { ChatCard } from '../../components/ChatCard/ChatCard';
 import { useAppTheme } from '../../hooks/appTheme';
+import { HomeChats } from '../../hooks/homechats';
+import { useUnreadChats } from '../../hooks/unreadChats';
 import { AllChatsTabScreenNavigationProps, ContactScreenNavigationProps } from '../../types/Navigations';
 import { Theme } from '../../utils/themes';
 import { getStyles } from '../Home/Home.styles';
-import { ChatCard } from '../../components/ChatCard/ChatCard';
-import { useUnreadChats } from '../../hooks/unreadChats';
-import { HomeChats } from '../../hooks/homechats';
 
 export function Unread(): React.JSX.Element {
 
