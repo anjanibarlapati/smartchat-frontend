@@ -6,7 +6,7 @@ export class Message extends Realm.Object<Message> {
   message!: string;
   sentAt!: string;
   isSender!: boolean;
-  status!: 'sent' | 'delivered' | 'seen';
+  status!: 'sent' | 'delivered' | 'seen' | 'pending';
   chat!: Chat;
 
   static schema: Realm.ObjectSchema = {

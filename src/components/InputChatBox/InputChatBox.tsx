@@ -1,3 +1,4 @@
+import NetInfo from '@react-native-community/netinfo';
 import React, {useState} from 'react';
 import {
   Image,
@@ -6,17 +7,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
+import {useRealm} from '../../contexts/RealmContext';
 import {useAppTheme} from '../../hooks/appTheme';
 import {useAlertModal} from '../../hooks/useAlertModal';
+import {addNewMessageInRealm} from '../../realm-database/operations/addNewMessage';
 import {storeState} from '../../redux/store';
 import {Message} from '../../types/message';
 import {Theme} from '../../utils/themes';
 import {CustomAlert} from '../CustomAlert/CustomAlert';
 import {sendMessage} from './InputChatBox.service';
 import {ChatInputStyles} from './InputChatBox.styles';
-import { addNewMessageInRealm } from '../../realm-database/operations/addNewMessage';
-import { useRealm } from '../../contexts/RealmContext';
 
 export function InputChatBox({
   receiverMobileNumber,
@@ -46,6 +47,12 @@ export function InputChatBox({
       };
       if (receiverMobileNumber === user.mobileNumber) {
         newMessage.status = 'seen';
+      }
+      const netState = await NetInfo.fetch();
+      if (!netState.isConnected) {
+        newMessage.status = 'pending';
+        addNewMessageInRealm(realm, receiverMobileNumber, newMessage);
+        return;
       }
       addNewMessageInRealm(realm, receiverMobileNumber, newMessage);
       sendMessage(

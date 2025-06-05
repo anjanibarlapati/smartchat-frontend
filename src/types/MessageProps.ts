@@ -1,6 +1,6 @@
 export type MessageProps = {
   message: string;
   timestamp: string;
-  status: 'sent' | 'delivered' | 'seen';
+  status: 'sent' | 'delivered' | 'seen' | 'pending';
   isSender: boolean;
 };

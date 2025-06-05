@@ -1,10 +1,14 @@
-import {NavigationContainer} from '@react-navigation/native';
-import {fireEvent, render, screen} from '@testing-library/react-native';
-import {Provider} from 'react-redux';
-import {store} from '../../redux/store';
-import {HomeStack} from './HomeStack';
+import { NavigationContainer } from '@react-navigation/native';
 import { RealmProvider } from '@realm/react';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import { ReactElement } from 'react';
+import { Provider } from 'react-redux';
+import { store } from '../../redux/store';
+import { HomeStack } from './HomeStack';
+
+jest.mock('@react-native-community/netinfo', () => ({
+  fetch: jest.fn(),
+}));
 
 jest.mock('../../screens/Unread/Unread', () => {
   const {Text, View} = require('react-native');

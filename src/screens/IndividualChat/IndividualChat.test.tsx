@@ -1,8 +1,4 @@
-import {
-  NavigationContainer,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
+import { NavigationContainer, useNavigation, useRoute } from '@react-navigation/native';
 import { configureStore } from '@reduxjs/toolkit';
 import { render, screen, waitFor } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
@@ -19,6 +15,10 @@ jest.mock('react-native-encrypted-storage', () => ({
 jest.mock('react-native-localize', () => ({
   getCountry: jest.fn(() => 'IN'),
 }));
+jest.mock('@react-native-community/netinfo', () => ({
+  fetch: jest.fn(),
+}));
+
 jest.mock('../../realm-database/operations/updateMessageStatus', () => ({
   updateMessageStatusInRealm: jest.fn(),
 }));
