@@ -3,6 +3,8 @@ import {fireEvent, render, screen} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import {store} from '../../redux/store';
 import {HomeStack} from './HomeStack';
+import { RealmProvider } from '@realm/react';
+import { ReactElement } from 'react';
 
 jest.mock('../../screens/Unread/Unread', () => {
   const {Text, View} = require('react-native');
@@ -56,6 +58,52 @@ jest.mock('react-native-libsodium', () => ({
   crypto_secretbox_easy: jest.fn().mockReturnValue('mockEncryptedMessage'),
 }));
 
+jest.mock('../../hooks/unreadChatsCount', () => ({
+  useUnreadChatsCount: jest.fn(),
+}));
+
+jest.mock('../../hooks/unreadChats', () => ({
+  useUnreadChats: jest.fn(() => [
+    {
+      contact: {
+        mobileNumber: '1234567890',
+        name: 'Test Contact',
+        originalNumber: '1234567890',
+        profilePicture: null,
+      },
+      lastMessage: {
+        message: 'Test message',
+        sentAt: new Date(),
+        isSender: false,
+        status: 'sent',
+      },
+      unreadCount: 2,
+    },
+  ]),
+}));
+
+jest.mock('@realm/react', () => {
+  const actual = jest.requireActual('@realm/react');
+
+  return {
+    ...actual,
+    createRealmContext: () => ({
+      RealmProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+      useRealm: () => ({}),
+      useQuery: () => [],
+    }),
+  };
+});
+
+export const renderWithProviders = (ui: ReactElement) =>
+  render(
+    <Provider store={store}>
+      <RealmProvider>
+        <NavigationContainer>{ui}</NavigationContainer>
+      </RealmProvider>
+    </Provider>
+  );
+
 describe('render home stack', () => {
   beforeAll(() => {
   jest.spyOn(console, 'error').mockImplementation((message) => {
@@ -69,49 +117,27 @@ describe('render home stack', () => {
   });
 });
 
-  const renderComponent = (props = {}) => {
-    return render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <HomeStack {...props} />
-        </NavigationContainer>
-      </Provider>,
-    );
-  };
-
   test('should it render title', () => {
-    const {getByText} = renderComponent();
+    const {getByText} = renderWithProviders(<HomeStack/>);
     expect(getByText('SmartChat')).toBeTruthy();
   });
 
   test('should renders Home screen element', () => {
-    renderComponent();
+    renderWithProviders(<HomeStack/>);
     expect(
       screen.getByText('Start conversations with your closed ones'),
     ).toBeTruthy();
   });
 
   test('should renders Unread screen when showUnread is true', () => {
-    const {getByText} = render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <HomeStack showUnread={true} />
-        </NavigationContainer>
-      </Provider>,
-    );
+    const {getByText} = renderWithProviders(<HomeStack showUnread={true}/>);
     expect(getByText('Unread')).toBeTruthy();
     expect(screen.getByText('No unread chats here')).toBeTruthy();
     expect(screen.getByText('View all chats')).toBeTruthy();
   });
 
   test('should renders Contact screen', () => {
-    const {getByLabelText, getAllByText} = render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <HomeStack />
-        </NavigationContainer>
-      </Provider>,
-    );
+    const {getByLabelText, getAllByText} = renderWithProviders(<HomeStack/>);
     const button = getByLabelText('addContact');
     fireEvent.press(button);
 
@@ -119,13 +145,7 @@ describe('render home stack', () => {
   });
 
   test('should return to homescreen', () => {
-    const {getByLabelText, getByText} = render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <HomeStack />
-        </NavigationContainer>
-      </Provider>,
-    );
+    const {getByLabelText, getByText} = renderWithProviders(<HomeStack/>);
     const button = getByLabelText('addContact');
     fireEvent.press(button);
     const backButton = getByLabelText('chevronIcon');

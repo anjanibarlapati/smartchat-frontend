@@ -1,5 +1,4 @@
 import NetInfo from '@react-native-community/netinfo';
-import { RealmProvider } from '@realm/react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import SplashScreen from 'react-native-splash-screen';
@@ -9,6 +8,8 @@ import { store } from '../redux/store';
 import { checkAccessToken } from '../utils/checkToken';
 import { socketConnection } from '../utils/socket.ts';
 import { AppNavigator } from './AppNavigator';
+import { RealmProvider } from '@realm/react';
+import { ReactElement } from 'react';
 
 jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn(),
@@ -57,17 +58,82 @@ jest.mock('../utils/socket.ts', () => ({
 }));
 
 
-jest.mock('../contexts/RealmContext', () => ({
-  RealmProvider: ({children}: any) => <>{children}</>,
-  useRealm: jest.fn(),
-  useQuery: jest.fn(() => []),
-}));
+jest.mock('@realm/react', () => {
+  const actual = jest.requireActual('@realm/react');
+
+  return {
+    ...actual,
+    createRealmContext: () => ({
+      RealmProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+      useRealm: () => ({}),
+      useQuery: () => ({
+        filtered: jest.fn().mockReturnValue([]), 
+      }),
+    }),
+  };
+});
+
 
 jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn(),
 }));
 
+
+
+jest.mock('../hooks/homechats', () => ({
+  useHomeChats: jest.fn(() => [
+    {
+      contact: {
+        mobileNumber: '1234567890',
+        name: 'Test Contact',
+        originalNumber: '1234567890',
+        profilePicture: null,
+      },
+      lastMessage: {
+        message: 'Test message',
+        sentAt: new Date(),
+        isSender: false,
+        status: 'sent',
+      },
+      unreadCount: 2,
+    },
+  ]),
+}));
+
+jest.mock('../hooks/unreadChats', () => ({
+  useUnreadChats: jest.fn(() => [
+    {
+      contact: {
+        mobileNumber: '1234567890',
+        name: 'Test Contact',
+        originalNumber: '1234567890',
+        profilePicture: null,
+      },
+      lastMessage: {
+        message: 'Test message',
+        sentAt: new Date(),
+        isSender: false,
+        status: 'sent',
+      },
+      unreadCount: 2,
+    },
+  ]),
+}));
+
+
+  const renderWithProviders = (ui: ReactElement) =>
+  render(
+    <Provider store={store}>
+      <RealmProvider>
+       {ui}
+      </RealmProvider>
+    </Provider>
+  );
+
+
 describe('render AppNavigator', () => {
+  const originalConsoleError = console.error;
+
   beforeAll(() => {
     jest.spyOn(console, 'error').mockImplementation(message => {
       if (
@@ -76,8 +142,12 @@ describe('render AppNavigator', () => {
       ) {
         return;
       }
-      console.error(message);
+      originalConsoleError(message);
     });
+  });
+
+  afterAll(() => {
+    console.error = originalConsoleError;
   });
   beforeEach(() => {
     (useAlertModal as jest.Mock).mockReturnValue({
@@ -92,17 +162,8 @@ describe('render AppNavigator', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  const renderAppNavigator = () => {
-    return render(
-      <RealmProvider>
-        <Provider store={store}>
-          <AppNavigator />
-        </Provider>
-      </RealmProvider>,
-    );
-  };
   test('should it render the welcomscreen when no user data found', async () => {
-    const {getByText} = renderAppNavigator();
+    const {getByText} = renderWithProviders(<AppNavigator/>);
 
     await waitFor(() => {
       expect(getByText('SmartChat')).toBeTruthy();
@@ -112,7 +173,7 @@ describe('render AppNavigator', () => {
   });
 
   test('should navigate to RegistrationScreen when Get Started button is clicked', async () => {
-    const {getByText} = renderAppNavigator();
+    const {getByText} = renderWithProviders(<AppNavigator/>);
 
     const startButton = await waitFor(() => getByText(/Let's Get Started/i));
     fireEvent.press(startButton);
@@ -121,7 +182,7 @@ describe('render AppNavigator', () => {
     });
   });
   test('should navigate to LoginScreen when login button is clicked', async () => {
-    const {getByText} = renderAppNavigator();
+    const {getByText} = renderWithProviders(<AppNavigator/>);
     const startButton = await waitFor(() => getByText(/Let's Get Started/i));
     fireEvent.press(startButton);
     const loginButton = await waitFor(() => getByText(/Login/i));
@@ -132,7 +193,7 @@ describe('render AppNavigator', () => {
     });
   });
   test('should navigate to RegistrationScreen when Register button is clicked', async () => {
-    const {getByText} = renderAppNavigator();
+    const {getByText} = renderWithProviders(<AppNavigator/>);
     const startButton = await waitFor(() => getByText(/Let's Get Started/i));
     fireEvent.press(startButton);
     const loginButton = await waitFor(() => getByText(/Login/i));
@@ -153,7 +214,7 @@ describe('render AppNavigator', () => {
     );
     (checkAccessToken as jest.Mock).mockResolvedValue(true);
 
-    const {getByText} = renderAppNavigator();
+    const {getByText} = renderWithProviders(<AppNavigator/>);
     await waitFor(() => {
       expect(getByText('SmartChat')).toBeTruthy();
     });
@@ -164,7 +225,7 @@ describe('render AppNavigator', () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
     (checkAccessToken as jest.Mock).mockResolvedValue(false);
 
-    const {getByText} = renderAppNavigator();
+    const {getByText} = renderWithProviders(<AppNavigator/>);
 
     await waitFor(() => {
       expect(getByText('SmartChat')).toBeTruthy();
@@ -175,7 +236,7 @@ describe('render AppNavigator', () => {
   test('should show alert when an error occurs', async () => {
     (NetInfo.fetch as jest.Mock).mockRejectedValue(new Error('Network Error'));
 
-    renderAppNavigator();
+    renderWithProviders(<AppNavigator/>);
 
     await waitFor(() => {
       expect(mockShowAlert).toHaveBeenCalledWith(
@@ -186,36 +247,38 @@ describe('render AppNavigator', () => {
   });
 
   test('should hide splash screen after user load', async () => {
-    renderAppNavigator();
+    renderWithProviders(<AppNavigator/>);
     await waitFor(() => {
       expect(SplashScreen.hide).toHaveBeenCalled();
     });
   });
 
-  test('should load user, when device is online', async () => {
-    (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: true});
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify({user:{mobileNumber:'1234'}}));
-    (checkAccessToken as jest.Mock).mockResolvedValue(true);
-    (socketConnection as jest.Mock).mockResolvedValue({});
 
-    const {getByText} = renderAppNavigator();
+    test('should load user, when device is online', async () => {
+      (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: true});
+      (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify({user:{mobileNumber:'1234'}}));
+      (checkAccessToken as jest.Mock).mockResolvedValue(true);
+      (socketConnection as jest.Mock).mockResolvedValue({});
 
-    await waitFor(() => {
-      expect(socketConnection).toHaveBeenCalled();
+      const {getByText} = renderWithProviders(<AppNavigator/>);
+
+      await waitFor(() => {
+        expect(socketConnection).toHaveBeenCalled();
+        expect(getByText('SmartChat')).toBeTruthy();
+      });
     });
-    await waitFor(()=> {
-      expect(getByText('SmartChat')).toBeTruthy();
-    });
-  });
   test('should reset user and clear storage if not authenticated', async () => {
     (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: true});
     (checkAccessToken as jest.Mock).mockResolvedValue(false);
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
 
-    renderAppNavigator();
+    renderWithProviders(<AppNavigator/>);
 
     await waitFor(() => {
       expect(EncryptedStorage.clear).toHaveBeenCalled();
     });
   });
 });
+
+
+
