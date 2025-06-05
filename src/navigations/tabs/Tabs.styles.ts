@@ -40,6 +40,11 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
         fontWeight:'800',
         fontFamily:'Nunito-Regular',
     },
+    badgeContainer:{
+        position: 'absolute',
+        top: -5,
+        right: 0,
+    },
 });
 
 

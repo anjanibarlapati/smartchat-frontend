@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BottomTabParamList, tabBarIconProps } from '../../types/Navigations';
@@ -7,6 +7,8 @@ import { useAppTheme } from '../../hooks/appTheme';
 import { Theme } from '../../utils/themes';
 import { HomeStack } from '../stacks/HomeStack';
 import { Profile } from '../../screens/Profile/Profile';
+import { Badge } from '../../components/Badge/Badge';
+import { useUnreadChatsCount } from '../../hooks/unreadChatsCount';
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -34,13 +36,23 @@ const getTabLabel = (routeName: string) => {
   }
 };
 
+const UnreadBadge = memo(() => {
+    const theme: Theme = useAppTheme();
+    const styles = getStyles(theme);
+  const unreadChatsCount = useUnreadChatsCount();
+  return unreadChatsCount > 0 ? (
+    <View style={styles.badgeContainer} accessibilityLabel="badge">
+      <Badge value={String(unreadChatsCount)} size="small"/>
+    </View>
+  ) : null;
+});
+
 
 const TabBarIcon = ({ routeName, focused}: tabBarIconProps): React.JSX.Element => {
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme);
   const iconPath = getTabIcon(routeName, focused, theme);
   const label = getTabLabel(routeName);
-
 
   return (
     <View style={styles.container}>
@@ -49,6 +61,7 @@ const TabBarIcon = ({ routeName, focused}: tabBarIconProps): React.JSX.Element =
             focused ? styles.focused : styles.unfocused,
         ]}>
             <Image source={iconPath} style={styles.icon} />
+            {routeName === 'UnreadTab' && <UnreadBadge />}
         </View>
         <Text style={[styles.label, focused && styles.focusedText]}>{label}</Text>
     </View>
