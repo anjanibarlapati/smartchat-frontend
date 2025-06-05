@@ -82,9 +82,11 @@ describe('updateMessageStatusInRealm', () => {
     const message2 = { sentAt: '2025-06-01T00:00:00Z', status: 'delivered' };
     const newer = { sentAt: '2025-06-02T00:00:00Z', status: 'sent' };
 
+    const messageIds= [message1.sentAt, message2.sentAt, newer.sentAt];
+
     mockMessages.push(message1, message2, newer);
 
-    await updateMessageStatusInRealm({ chatId, sentAt, status, updateAllBeforeSentAt: true });
+    await updateMessageStatusInRealm({ chatId, sentAt, status, updateAllBeforeSentAt: true, messageIds: messageIds });
 
     expect(message1.status).toBe(status);
     expect(message2.status).toBe(status);
