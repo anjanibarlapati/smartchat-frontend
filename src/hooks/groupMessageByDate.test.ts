@@ -75,4 +75,30 @@ describe('useGroupedMessages', () => {
     renderHook(() => useGroupedMessages('789'));
     expect(filteredMock).toHaveBeenCalledWith('chat.chatId == $0', '789');
   });
+  it('correctly handles multiple date groups and message sorting', () => {
+    const messages = [
+      createMessage(1, '2024-06-03T14:00:00Z', '321'),
+      createMessage(2, '2024-06-03T09:00:00Z', '321'),
+      createMessage(3, '2024-06-02T12:00:00Z', '321'),
+      createMessage(4, '2024-06-01T08:00:00Z', '321'),
+    ];
+    mockUseQuery.mockReturnValue({
+      filtered: () => ({
+        sorted: () => messages,
+      }),
+    });
+    const {result} = renderHook(() => useGroupedMessages('321'));
+    expect(result.current.sections[0].dateKey).toBe('2024-06-01');
+    expect(result.current.sections[0].data.map((m: Message) => m._id)).toEqual([
+      4,
+    ]);
+    expect(result.current.sections[1].dateKey).toBe('2024-06-02');
+    expect(result.current.sections[1].data.map((m: Message) => m._id)).toEqual([
+      3,
+    ]);
+    expect(result.current.sections[2].dateKey).toBe('2024-06-03');
+    expect(result.current.sections[2].data.map((m: Message) => m._id)).toEqual([
+      2, 1,
+    ]);
+  });
 });
