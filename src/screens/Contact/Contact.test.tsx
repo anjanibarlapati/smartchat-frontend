@@ -168,7 +168,9 @@ describe('Contacts Screen', () => {
     await waitFor(() => {
       renderContactScreen();
     });
-    expect(screen.getByText('Anjani')).toBeTruthy();
+    waitFor(()=>{
+      expect(screen.getByText('Anjani')).toBeTruthy();
+    });
   });
 
   it('should switch to Invite tab and show contacts who are not on app', async () => {

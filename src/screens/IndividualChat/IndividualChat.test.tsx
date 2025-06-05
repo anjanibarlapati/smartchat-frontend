@@ -198,6 +198,13 @@ describe('IndividualChat', () => {
     (updateMessageStatusInRealm as jest.Mock).mockReturnValue({});
     renderComponent();
     await waitFor(() => {
+      expect(mockEmit).toHaveBeenCalledWith('isAccountDeleted', {
+        senderMobileNumber: '',
+        receiverMobileNumber: '+91 86395 23822',
+      });
+    });
+
+    await waitFor(() => {
       expect(mockEmit).toHaveBeenCalledWith('messageRead', {
         sentAt,
         chatId: '+91 86395 23822',
@@ -218,6 +225,7 @@ describe('IndividualChat', () => {
     mockRealm.objectForPrimaryKey.mockReturnValue({
       chatId: '+91 86395 23822',
       isBlocked: true,
+      isAccountDeleted: false,
       publicKey: null,
     });
     (useQuery as jest.Mock).mockReturnValue({
@@ -228,5 +236,40 @@ describe('IndividualChat', () => {
     const {getByText} = renderComponent();
     expect(getByText(/You have blocked this contact/i)).toBeTruthy();
   });
+
+  test('renders account deleted message box when other user account is deleted', () => {
+    mockRealm.objectForPrimaryKey.mockReturnValue({
+      chatId: '+91 86395 23822',
+      isBlocked: false,
+      isAccountDeleted: true,
+      publicKey: null,
+    });
+
+    (useQuery as jest.Mock).mockReturnValue({
+      filtered: jest.fn().mockReturnValue([]),
+    });
+
+    const { getByText } = renderComponent();
+
+    expect(getByText(/This user has deleted their account/i)).toBeTruthy();
+  });
+
+  test('renders account deleted message box when other user account is deleted and blocks the chat', () => {
+    mockRealm.objectForPrimaryKey.mockReturnValue({
+      chatId: '+91 86395 23822',
+      isBlocked: true,
+      isAccountDeleted: true,
+      publicKey: null,
+    });
+
+    (useQuery as jest.Mock).mockReturnValue({
+      filtered: jest.fn().mockReturnValue([]),
+    });
+
+    const { getByText } = renderComponent();
+
+    expect(getByText(/This user has deleted their account/i)).toBeTruthy();
+  });
+
 });
 

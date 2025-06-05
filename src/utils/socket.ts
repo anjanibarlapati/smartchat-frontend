@@ -9,6 +9,7 @@ import { decryptMessage } from './decryptMessage';
 import { addNewMessageInRealm } from '../realm-database/operations/addNewMessage';
 import { updateMessageStatusInRealm } from '../realm-database/operations/updateMessageStatus';
 import { getRealmInstance } from '../realm-database/connection';
+import { updateUserAccountStatusInRealm } from '../realm-database/operations/updateUserAccountStatus';
 
 let socket: Socket<DefaultEventsMap, DefaultEventsMap> | null = null;
 
@@ -59,6 +60,12 @@ export const socketConnection = async (mobileNumber: string) => {
         const { sentAt, chatId, status, updatedCount, messageIds } = data;
         updateMessageStatusInRealm( {chatId: chatId, sentAt: sentAt, messageIds: messageIds, status: status, updateAllBeforeSentAt: updatedCount > 1});
       });
+
+      socket.on('isAccountDeleted', data => {
+        const { isAccountDeleted, chatId} = data;
+        updateUserAccountStatusInRealm(chatId, isAccountDeleted);
+      });
+
       socket.on('force-logout', () => {
         store.dispatch(clearSuccessMessage());
       });

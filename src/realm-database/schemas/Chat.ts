@@ -6,6 +6,7 @@ export class Chat extends Realm.Object<Chat> {
   isBlocked!: boolean;
   publicKey!: string | null;
   messages!: Realm.List<Message>;
+  isAccountDeleted!: boolean;
 
   static schema: Realm.ObjectSchema = {
     name: 'Chat',
@@ -19,7 +20,7 @@ export class Chat extends Realm.Object<Chat> {
         objectType: 'Message',
         property: 'chat',
       },
+      isAccountDeleted: { type: 'bool', default: false },
     },
   };
 }
-

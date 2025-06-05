@@ -65,17 +65,25 @@ export const IndividualChat = () => {
     }
   }, [chat, mobileNumber, realm]);
   useEffect(() => {
-    if (!groupedMessages.length) {
-      return;
-    }
     const socket = getSocket();
     if (!socket?.connected) {
+      return;
+    }
+    if(chat && !chat.isAccountDeleted) {
+      socket.emit('isAccountDeleted', {
+        senderMobileNumber: user.mobileNumber,
+        receiverMobileNumber: mobileNumber,
+      });
+    }
+
+    if (!groupedMessages.length) {
       return;
     }
     const allMessages = groupedMessages.flatMap(section => section.data);
     const latestUnseen = [...allMessages]
       .reverse()
       .find(msg => !msg.isSender && msg.status !== 'seen');
+
     if (latestUnseen) {
       socket.emit('messageRead', {
         sentAt: latestUnseen.sentAt,
@@ -88,7 +96,8 @@ export const IndividualChat = () => {
         updateAllBeforeSentAt: true,
       });
     }
-  }, [groupedMessages, mobileNumber]);
+  }, [chat, groupedMessages, mobileNumber, user.mobileNumber]);
+
   const renderChatHeader = useCallback(
     () => (
       <>
@@ -214,16 +223,16 @@ export const IndividualChat = () => {
             }}
           />
         </View>
-        {!chat?.isBlocked ? (
-          <View style={styles.inputContainer}>
+        {!chat?.isBlocked && !chat?.isAccountDeleted ?
+          (<View style={styles.inputContainer}>
             <InputChatBox receiverMobileNumber={mobileNumber} />
           </View>
         ) : (
           <View style={styles.blockedMessageContainer}>
             <View style={styles.box}>
               <Text style={styles.blockedText}>
-                You have blocked this contact. Unblock to send or receive
-                messages.
+                { chat?.isAccountDeleted && 'This user has deleted their account.\n You can no longer send messages'}
+                { !chat?.isAccountDeleted && chat?.isBlocked && 'You have blocked this contact. Unblock to send or receive messages.'}
               </Text>
             </View>
           </View>
