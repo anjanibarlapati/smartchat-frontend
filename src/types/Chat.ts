@@ -1,7 +1,12 @@
+import { Message } from './message';
+
 export type ChatCardProps = {
-  name: string;
-  message: string;
-  time: string;
+  message: Message;
   unreadCount?: number;
-  profileImage?: string;
+  contact: {
+    name: string;
+    originalNumber: string;
+    mobileNumber: string;
+    profilePicture: string | null;
+  }
 };
