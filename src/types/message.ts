@@ -7,6 +7,15 @@ export interface Message {
 export type DBMessage = Message & {
   nonce: string,
 }
+export type UserMessage = {
+  chatId: string;
+  message: string;
+  nonce: string;
+  sentAt: string;
+  status: 'sent' | 'delivered' | 'seen';
+};
+
+export type UserChatData = Record<string, UserMessage[]>;
 
 export interface Messages {
   [chatId: string]: Message[];
