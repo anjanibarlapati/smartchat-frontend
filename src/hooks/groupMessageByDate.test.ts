@@ -1,5 +1,5 @@
 import {renderHook} from '@testing-library/react-native';
-import { useGroupedMessages } from './groupMessageByDate';
+import {useGroupedMessages} from './groupMessageByDate';
 import * as RealmContext from '../contexts/RealmContext';
 import {Message} from '../realm-database/schemas/Message';
 
@@ -33,7 +33,7 @@ describe('useGroupedMessages', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
- it('returns empty array if no messages', () => {
+  it('returns empty array if no messages', () => {
     mockUseQuery.mockReturnValue({
       filtered: jest.fn().mockReturnThis(),
       sorted: jest.fn().mockReturnValue([]),
@@ -43,7 +43,7 @@ describe('useGroupedMessages', () => {
     expect(result.current.flattenedMessages).toEqual([]);
   });
 
-   it('groups and sorts messages by date and time descending', () => {
+  it('groups and sorts messages by date and time descending', () => {
     const messages = [
       createMessage(1, '2024-06-01T08:00:00Z', '123'),
       createMessage(2, '2024-06-01T10:00:00Z', '123'),
@@ -64,4 +64,15 @@ describe('useGroupedMessages', () => {
     expect(group2.title).toBe('June 02, 2024');
     expect(group2.data.map((msg: Message) => msg._id)).toEqual([3]);
   });
-})
+
+  it('filters messages by chat.chatId', () => {
+    const filteredMock = jest.fn(() => ({
+      sorted: () => [],
+    }));
+    mockUseQuery.mockReturnValue({
+      filtered: filteredMock,
+    });
+    renderHook(() => useGroupedMessages('789'));
+    expect(filteredMock).toHaveBeenCalledWith('chat.chatId == $0', '789');
+  });
+});
