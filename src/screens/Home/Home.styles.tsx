@@ -12,23 +12,29 @@ export const getStyles = (theme: Theme, width:number) =>
       fontFamily: 'Nunito-Bold',
       color: theme.primaryColor,
     },
-    bodyContainer: {
-      display: 'flex',
-      zIndex: -1,
-      position: 'relative',
-    },
     totalContainer: {
       flex: 1,
     },
     textContainer: {
-      paddingTop: width > 600 ? '15%' : '40%',
       display: 'flex',
+      flex:1,
       justifyContent: 'center',
       alignItems: 'center',
       padding: 10,
-      margin: 10,
     },
-
+    unreadTextContainer: {
+      display: 'flex',
+      flex:1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 10,
+      gap:15,
+    },
+    homeChatsContainer:{
+      flex:1,
+      display:'flex',
+      flexDirection:'row',
+    },
     homeImageStyles: {
       height: width > 600 ? 300 : 250,
       width: width > 600 ?  300 : 250,
@@ -40,6 +46,18 @@ export const getStyles = (theme: Theme, width:number) =>
       textAlign: 'center',
       fontFamily: 'Nunito-Bold',
       color: theme.primaryTextColor,
+    },
+    unReadBodyText: {
+      fontSize: width > 600 ? 24 : 20,
+      textAlign: 'center',
+      fontFamily: 'Nunito-Regular',
+      color: theme.primaryTextColor,
+    },
+    viewText:{
+        fontSize: 20,
+        textAlign: 'center',
+        fontFamily: 'Nunito-Bold',
+        color: theme.primaryColor,
     },
     addContactContainer: {
       margin: 20,

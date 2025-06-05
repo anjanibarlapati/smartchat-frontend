@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect } from 'react';
-import { Alert, Image, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Alert, FlatList, Image, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
@@ -12,6 +12,8 @@ import { storeState } from '../../redux/store';
 import { HomeScreenNavigationProps, WelcomeScreenNavigationProps } from '../../types/Navigations';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './Home.styles';
+import { ChatCard } from '../../components/ChatCard/ChatCard';
+import { HomeChats, useHomeChats } from '../../hooks/homechats';
 
 export function Home(): React.JSX.Element {
   const { width } = useWindowDimensions();
@@ -22,6 +24,7 @@ export function Home(): React.JSX.Element {
   const { alertMessage, alertType, alertVisible, hideAlert, showAlert } = useAlertModal();
   const successMessage = useSelector((state: storeState) => state.auth.successMessage);
   const dispatch = useDispatch();
+  const homeChats: HomeChats[] = useHomeChats();
 
   useEffect(() => {
     if (successMessage === 'You\'ve successfully logged in to SmartChat!') {
@@ -48,18 +51,32 @@ export function Home(): React.JSX.Element {
   return (
     <View style={styles.container}>
       <View style={styles.totalContainer}>
-        <ScrollView contentContainerStyle={styles.bodyContainer}>
-          <View style={styles.textContainer}>
-           <Image
+            {homeChats.length === 0 ? (
+                <View style={styles.textContainer}>
+                  <Image
                     source={theme.images.homeImageIcon}
                     style={styles.homeImageStyles}
                     accessibilityLabel="home-image"
                   />
-            <Text style={styles.bodyText}>
-              Start conversations with your closed ones
-            </Text>
-          </View>
-        </ScrollView>
+                  <Text style={styles.bodyText}>
+                    Start conversations with your closed ones
+                  </Text>
+                </View>
+            ) : (
+              <View style={styles.homeChatsContainer}>
+                <FlatList
+                  data={homeChats}
+                  keyExtractor={(item) => item.contact.mobileNumber}
+                  renderItem={({ item }) => (
+                    <ChatCard
+                      contact={item.contact}
+                      message={item.lastMessage}
+                      unreadCount={item.unreadCount}
+                    />
+                  )}
+                />
+              </View>
+            )}
         <TouchableOpacity
           onPress={() => navigation.navigate('Contact')}
           style={styles.addContactContainer}>
