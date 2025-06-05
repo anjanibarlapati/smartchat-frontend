@@ -67,15 +67,17 @@ export const IndividualChat = () => {
   }, [chat, mobileNumber, realm]);
 
   useEffect(() => {
-    if (!messages.length) {
-      return;
-    }
-
     const socket = getSocket();
     if (!socket?.connected) {
       return;
     }
-
+    socket.emit('isAccountDeleted', {
+      senderMobileNumber: user.mobileNumber,
+      receiverMobileNumber: mobileNumber,
+    });
+    if (!messages.length) {
+      return;
+    }
     const reversedMessages = [...messages].reverse();
     const latestUnseen = reversedMessages.find(
       msg => !msg.isSender && msg.status !== 'seen',
@@ -88,7 +90,7 @@ export const IndividualChat = () => {
       });
       updateMessageStatusInRealm( {chatId: mobileNumber, sentAt: latestUnseen.sentAt, status: 'seen', updateAllBeforeSentAt: true});
     }
-  }, [messages, mobileNumber]);
+  }, [messages, mobileNumber, user.mobileNumber]);
 
   const renderChatHeader = useCallback(
     () => (
@@ -206,13 +208,14 @@ export const IndividualChat = () => {
         />
         </View>
 
-        {!chat?.isBlocked ? <View style={styles.inputContainer}>
+        {!chat?.isBlocked && !chat?.isAccountDeleted ? <View style={styles.inputContainer}>
           <InputChatBox receiverMobileNumber={mobileNumber} />
           </View> :
         <View style={styles.blockedMessageContainer}>
           <View style={styles.box}>
             <Text style={styles.blockedText}>
-              You have blocked this contact. Unblock to send or receive messages.
+            { chat?.isAccountDeleted && 'This user has deleted their account.\n You can no longer send messages'}
+             { !chat?.isAccountDeleted && chat?.isBlocked && 'You have blocked this contact. Unblock to send or receive messages.'}
             </Text>
           </View>
         </View>
