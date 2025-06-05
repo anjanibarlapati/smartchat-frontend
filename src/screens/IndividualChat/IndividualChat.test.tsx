@@ -11,6 +11,7 @@ import { themeReducer } from '../../redux/reducers/theme.reducer';
 import { userReducer } from '../../redux/reducers/user.reducer';
 import { getSocket } from '../../utils/socket';
 import { IndividualChat } from './IndividualChat';
+import { updateMessageStatusInRealm } from '../../realm-database/operations/updateMessageStatus';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -19,6 +20,11 @@ jest.mock('react-native-encrypted-storage', () => ({
 
 jest.mock('react-native-localize', () => ({
   getCountry: jest.fn(() => 'IN'),
+}));
+
+
+jest.mock('../../realm-database/operations/updateMessageStatus', () => ({
+  updateMessageStatusInRealm: jest.fn(),
 }));
 
 jest.mock('@react-navigation/native', () => ({
@@ -210,6 +216,8 @@ describe('IndividualChat', () => {
   (useQuery as jest.Mock).mockReturnValue({
     filtered: jest.fn().mockReturnValue([unseenMessage, seenMessage]),
    });
+  (updateMessageStatusInRealm as jest.Mock).mockReturnValue({});
+   
 
     renderComponent();
 
