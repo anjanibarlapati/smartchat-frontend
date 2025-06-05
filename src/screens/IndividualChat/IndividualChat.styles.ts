@@ -38,5 +38,8 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
     },
+     dayContainer: {
+      alignItems: 'center',
+    },
 
 });
