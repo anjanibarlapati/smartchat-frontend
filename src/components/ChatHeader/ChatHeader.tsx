@@ -3,6 +3,7 @@ import { getStyles } from './ChatHeader.styles';
 import { useAppTheme } from '../../hooks/appTheme';
 import { Theme } from '../../utils/themes';
 import { useNavigation } from '@react-navigation/native';
+import { HomeScreenNavigationProps } from '../../types/Navigations';
 
 interface ChatHeaderProps {
     name: string,
@@ -13,9 +14,9 @@ interface ChatHeaderProps {
 export const ChatHeader = ({name, originalNumber, profilePic}: ChatHeaderProps) => {
     const theme: Theme = useAppTheme();
     const styles = getStyles(theme);
-    const navigation = useNavigation();
+    const navigation = useNavigation<HomeScreenNavigationProps>();
     const handleNavigation = ()=>{
-        navigation.goBack();
+        navigation.replace('Home');
     };
 
   return (
