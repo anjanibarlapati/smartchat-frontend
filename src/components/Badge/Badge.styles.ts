@@ -4,13 +4,17 @@ import {Theme} from '../../utils/themes';
 export const Badgestyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
-      position: 'absolute',
-      top: 10,
-      right: 10,
-      minWidth: 24,
+      width: 24,
       height: 24,
-      paddingHorizontal: 6,
-      borderRadius: 12,
+      borderRadius: 50,
+      backgroundColor: theme.badgeBackground,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    smallContainer:{
+      width: 20,
+      height: 20,
+      borderRadius: 50,
       backgroundColor: theme.badgeBackground,
       justifyContent: 'center',
       alignItems: 'center',
