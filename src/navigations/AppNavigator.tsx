@@ -18,6 +18,8 @@ import { checkAccessToken } from '../utils/checkToken.ts';
 import { socketConnection } from '../utils/socket.ts';
 import { Tabs } from './tabs/Tabs.tsx';
 import { setSuccessMessage } from '../redux/reducers/auth.reducer.ts';
+import { useRealm } from '../contexts/RealmContext.tsx';
+import { storeMessages } from '../utils/storeMessages.ts';
 
 
 
@@ -27,6 +29,7 @@ export function AppNavigator(): React.JSX.Element {
 
     const [isUserStored, setIsUserStored] = useState<boolean>(false);
     const [isReady, setIsReady] = useState<boolean>(false);
+     const realm = useRealm();
     const dispatch = useDispatch();
     const {
         alertVisible, alertMessage, alertType, showAlert, hideAlert,
@@ -53,6 +56,9 @@ export function AppNavigator(): React.JSX.Element {
             await getDBConnection();
             const dbInstance = await getDBinstance();
             await createContactsTable(dbInstance);
+            if(netState.isConnected){
+                await storeMessages(user.mobileNumber,realm);
+             }
             setIsUserStored(true);
           }
         } catch (error) {
@@ -63,7 +69,7 @@ export function AppNavigator(): React.JSX.Element {
         }
       };
       loadUser();
-    }, [dispatch, showAlert]);
+    }, [dispatch, realm, showAlert]);
 
     if(!isReady) {
       return <></>;
