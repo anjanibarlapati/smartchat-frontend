@@ -1,61 +1,60 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { format } from 'date-fns';
-import { AlertModal } from '../../components/AlertModal/AlertModal';
-import { ChatHeader } from '../../components/ChatHeader/ChatHeader';
-import { blockUserChat } from '../../components/ChatOptionsModal/blockChat.service';
-import { ChatOptionsModal } from '../../components/ChatOptionsModal/ChatOptionsModal';
-import { clearUserChat } from '../../components/ChatOptionsModal/clearChat.service';
-import { unblockUserChat } from '../../components/ChatOptionsModal/unblockChat.service';
-import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
-import { InputChatBox } from '../../components/InputChatBox/InputChatBox';
-import { Menu } from '../../components/Menu/Menu';
-import { MessageBox } from '../../components/MessageBox/MessageBox';
-import { useQuery, useRealm } from '../../contexts/RealmContext';
-import { useAppTheme } from '../../hooks/appTheme';
-import { useAlertModal } from '../../hooks/useAlertModal';
-import { blockContactInRealm } from '../../realm-database/operations/blockContact';
-import { clearChatInRealm } from '../../realm-database/operations/clearChat';
-import { unblockContactInRealm } from '../../realm-database/operations/unblockContact';
-import { updateMessageStatusInRealm } from '../../realm-database/operations/updateMessageStatus';
-import { Chat } from '../../realm-database/schemas/Chat';
-import { Message } from '../../realm-database/schemas/Message';
-import { storeState } from '../../redux/store';
-import { HomeScreenNavigationProps, HomeStackParamList } from '../../types/Navigations';
-import { getSocket } from '../../utils/socket';
-import { Theme } from '../../utils/themes';
-import { getStyles } from './IndividualChat.styles';
-
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {Text, View, FlatList} from 'react-native';
+import {useSelector} from 'react-redux';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {format} from 'date-fns';
+import {AlertModal} from '../../components/AlertModal/AlertModal';
+import {ChatHeader} from '../../components/ChatHeader/ChatHeader';
+import {blockUserChat} from '../../components/ChatOptionsModal/blockChat.service';
+import {ChatOptionsModal} from '../../components/ChatOptionsModal/ChatOptionsModal';
+import {clearUserChat} from '../../components/ChatOptionsModal/clearChat.service';
+import {unblockUserChat} from '../../components/ChatOptionsModal/unblockChat.service';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {InputChatBox} from '../../components/InputChatBox/InputChatBox';
+import {Menu} from '../../components/Menu/Menu';
+import {MessageBox} from '../../components/MessageBox/MessageBox';
+import {useRealm} from '../../contexts/RealmContext';
+import {useAppTheme} from '../../hooks/appTheme';
+import {useAlertModal} from '../../hooks/useAlertModal';
+import {blockContactInRealm} from '../../realm-database/operations/blockContact';
+import {clearChatInRealm} from '../../realm-database/operations/clearChat';
+import {unblockContactInRealm} from '../../realm-database/operations/unblockContact';
+import {updateMessageStatusInRealm} from '../../realm-database/operations/updateMessageStatus';
+import {Chat} from '../../realm-database/schemas/Chat';
+import {storeState} from '../../redux/store';
+import {
+  HomeScreenNavigationProps,
+  HomeStackParamList,
+} from '../../types/Navigations';
+import {getSocket} from '../../utils/socket';
+import {Theme} from '../../utils/themes';
+import {getStyles} from './IndividualChat.styles';
+import {useGroupedMessages} from '../../hooks/groupMessageByDate';
+import {TimeStamp} from '../../components/TimeStamp/TimeStamp';
 export type IndividualChatRouteProp = RouteProp<
   HomeStackParamList,
   'IndividualChat'
 >;
-
 export const IndividualChat = () => {
   const navigation = useNavigation();
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme);
   const route = useRoute<IndividualChatRouteProp>();
   const navigateToHomeScreen = useNavigation<HomeScreenNavigationProps>();
-  const {
-        alertVisible, alertMessage, alertType, showAlert, hideAlert,
-      } = useAlertModal();
+  const {alertVisible, alertMessage, alertType, showAlert, hideAlert} =
+    useAlertModal();
   const [optionsModalVisible, setOptionsModalVisible] = useState(false);
   const [showClearChatAlert, setShowClearChatAlert] = useState(false);
   const [showBlockUnblockAlert, setShowBlockUnblockAlert] = useState(false);
-
   const {name, originalNumber, mobileNumber, profilePic} = route.params;
   const user = useSelector((state: storeState) => state.user);
-  const messages = useQuery<Message>('Message').filtered('chat.chatId == $0', mobileNumber);
   const realm = useRealm();
   const chat = realm.objectForPrimaryKey<Chat>('Chat', mobileNumber);
   const flatListRef = useRef<FlatList>(null);
-
-
+  const {sections: groupedMessages, flattenedMessages} =
+    useGroupedMessages(mobileNumber);
   useEffect(() => {
-    if(!chat) {
+    if (!chat) {
       realm.write(() => {
         realm.create<Chat>('Chat', {
           chatId: mobileNumber,
@@ -65,52 +64,49 @@ export const IndividualChat = () => {
       });
     }
   }, [chat, mobileNumber, realm]);
-
   useEffect(() => {
-    if (!messages.length) {
+    if (!groupedMessages.length) {
       return;
     }
-
     const socket = getSocket();
     if (!socket?.connected) {
       return;
     }
-
-    const reversedMessages = [...messages].reverse();
-    const latestUnseen = reversedMessages.find(
-      msg => !msg.isSender && msg.status !== 'seen',
-    );
-
+    const allMessages = groupedMessages.flatMap(section => section.data);
+    const latestUnseen = [...allMessages]
+      .reverse()
+      .find(msg => !msg.isSender && msg.status !== 'seen');
     if (latestUnseen) {
       socket.emit('messageRead', {
         sentAt: latestUnseen.sentAt,
         chatId: mobileNumber,
       });
-      updateMessageStatusInRealm( {chatId: mobileNumber, sentAt: latestUnseen.sentAt, status: 'seen', updateAllBeforeSentAt: true});
+      updateMessageStatusInRealm({
+        chatId: mobileNumber,
+        sentAt: latestUnseen.sentAt,
+        status: 'seen',
+        updateAllBeforeSentAt: true,
+      });
     }
-  }, [messages, mobileNumber]);
-
+  }, [groupedMessages, mobileNumber]);
   const renderChatHeader = useCallback(
     () => (
       <>
-      <ChatHeader
-        name={name}
-        originalNumber={originalNumber}
-        profilePic={profilePic}
-      />
-      <Menu onClick={() => setOptionsModalVisible(true)}/>
+        <ChatHeader
+          name={name}
+          originalNumber={originalNumber}
+          profilePic={profilePic}
+        />
+        <Menu onClick={() => setOptionsModalVisible(true)} />
       </>
     ),
     [name, originalNumber, profilePic],
   );
-
   useEffect(() => {
     const parentNav = navigation.getParent();
-
     parentNav?.setOptions({
       tabBarStyle: {display: 'none'},
     });
-
     return () => {
       parentNav?.setOptions({
         tabBarStyle: {
@@ -125,7 +121,6 @@ export const IndividualChat = () => {
       });
     };
   }, [navigation, theme]);
-
   useEffect(() => {
     navigation.setOptions({
       headerTitle: '',
@@ -133,94 +128,116 @@ export const IndividualChat = () => {
       headerStyle: styles.headerStyle,
     });
   }, [navigation, renderChatHeader, styles.headerStyle]);
-
   const handleClearChat = async () => {
     try {
-      const response = await clearUserChat(
-        user.mobileNumber,
-        mobileNumber,
-      );
+      const response = await clearUserChat(user.mobileNumber, mobileNumber);
       if (response.ok) {
         clearChatInRealm(realm, mobileNumber);
-        setTimeout(()=> {
-           navigateToHomeScreen.replace('Home');
+        setTimeout(() => {
+          navigateToHomeScreen.replace('Home');
         }, 1000);
       }
     } catch (error) {
       showAlert('Unable to Clear Chat', 'error');
     }
   };
-
   const handleBlockAndUnblock = async () => {
     const isAlreadyBlocked = chat?.isBlocked;
-    try{
-      if(!isAlreadyBlocked) {
+    try {
+      if (!isAlreadyBlocked) {
         blockContactInRealm(realm, mobileNumber);
         const response = await blockUserChat({
           senderMobileNumber: user.mobileNumber,
           receiverMobileNumber: mobileNumber,
         });
-        if(!response.ok) {
+        if (!response.ok) {
           unblockContactInRealm(realm, mobileNumber);
           const result = await response.json();
           showAlert(result.message, 'warning');
         }
-      } else{
+      } else {
         unblockContactInRealm(realm, mobileNumber);
         const response = await unblockUserChat(user.mobileNumber, mobileNumber);
-        if(!response.ok) {
+        if (!response.ok) {
           blockContactInRealm(realm, mobileNumber);
           const result = await response.json();
           showAlert(result.message, 'warning');
         }
       }
-    } catch(error) {
-      isAlreadyBlocked ? blockContactInRealm(realm, mobileNumber) : unblockContactInRealm(realm, mobileNumber);
-      showAlert('Something went wrong please try agian', 'error');
+    } catch (error) {
+      isAlreadyBlocked
+        ? blockContactInRealm(realm, mobileNumber)
+        : unblockContactInRealm(realm, mobileNumber);
+      showAlert('Something went wrong please try again', 'error');
     }
   };
-
   return (
     <>
-      <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+      <CustomAlert
+        visible={alertVisible}
+        message={alertMessage}
+        type={alertType}
+        onClose={hideAlert}
+      />
       <View style={styles.container}>
         <View style={styles.messageContainer}>
-        <FlatList
-          data={messages}
-          ref={flatListRef}
-          keyExtractor={item => item._id.toString()}
-          renderItem={({item}) => (
-            <MessageBox
-              message={item.message}
-              timestamp={format(new Date(item.sentAt), 'hh:mm a')}
-              isSender={item.isSender}
-              status={item.status}
-            />
-          )}
-          onContentSizeChange={() => {
-            flatListRef.current?.scrollToEnd({ animated: false });
-          }}
-          onLayout={() => {
-            flatListRef.current?.scrollToEnd({ animated: false });
-          }}
-        />
+          <FlatList
+            data={flattenedMessages}
+            ref={flatListRef}
+            keyExtractor={item =>
+              item.type === 'timestamp'
+                ? item.id!
+                : `${item.sentAt}_${item.isSender ? '1' : '0'}`
+            }
+            renderItem={({item}) => {
+              if (item.type === 'timestamp') {
+                return (
+                  <View style={styles.dayContainer}>
+                    <TimeStamp from="chat-screen" date={item.dateKey!} />
+                  </View>
+                );
+              }
+              return (
+                <MessageBox
+                  message={item.message}
+                  timestamp={format(new Date(item.sentAt), 'hh:mm a')}
+                  isSender={item.isSender}
+                  status={item.status}
+                />
+              );
+            }}
+            onContentSizeChange={() => {
+              flatListRef.current?.scrollToEnd({animated: false});
+            }}
+            onLayout={() => {
+              flatListRef.current?.scrollToEnd({animated: false});
+            }}
+          />
         </View>
-
-        {!chat?.isBlocked ? <View style={styles.inputContainer}>
-          <InputChatBox receiverMobileNumber={mobileNumber} />
-          </View> :
-        <View style={styles.blockedMessageContainer}>
-          <View style={styles.box}>
-            <Text style={styles.blockedText}>
-              You have blocked this contact. Unblock to send or receive messages.
-            </Text>
+        {!chat?.isBlocked ? (
+          <View style={styles.inputContainer}>
+            <InputChatBox receiverMobileNumber={mobileNumber} />
           </View>
-        </View>
-        }
+        ) : (
+          <View style={styles.blockedMessageContainer}>
+            <View style={styles.box}>
+              <Text style={styles.blockedText}>
+                You have blocked this contact. Unblock to send or receive
+                messages.
+              </Text>
+            </View>
+          </View>
+        )}
         <ChatOptionsModal
           visible={optionsModalVisible}
-          onClearChat={() => {setOptionsModalVisible(false); setShowClearChatAlert(true);}}
-          onBlockAndUnblock={() => {setOptionsModalVisible(false); setShowBlockUnblockAlert(true);}}
+          onClearChat={() => {
+            setOptionsModalVisible(false);
+            setShowClearChatAlert(true);
+          }}
+          onBlockAndUnblock={() => {
+            setOptionsModalVisible(false);
+            setShowBlockUnblockAlert(true);
+          }}
           onClose={() => setOptionsModalVisible(false)}
           receiverMobileNumber={mobileNumber}
         />
@@ -236,9 +253,11 @@ export const IndividualChat = () => {
           onCancel={() => setShowClearChatAlert(false)}
         />
         <AlertModal
-          message={chat?.isBlocked
-            ? 'Are you sure you want to unblock this chat?'
-            : 'Are you sure you want to block this chat?'}
+          message={
+            chat?.isBlocked
+              ? 'Are you sure you want to unblock this chat?'
+              : 'Are you sure you want to block this chat?'
+          }
           visible={showBlockUnblockAlert}
           confirmText="Yes"
           cancelText="Cancel"
@@ -252,3 +271,4 @@ export const IndividualChat = () => {
     </>
   );
 };
+
