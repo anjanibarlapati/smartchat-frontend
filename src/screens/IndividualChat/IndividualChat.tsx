@@ -71,10 +71,13 @@ export const IndividualChat = () => {
     if (!socket?.connected) {
       return;
     }
-    socket.emit('isAccountDeleted', {
-      senderMobileNumber: user.mobileNumber,
-      receiverMobileNumber: mobileNumber,
-    });
+    if(chat && !chat.isAccountDeleted) {
+      socket.emit('isAccountDeleted', {
+        senderMobileNumber: user.mobileNumber,
+        receiverMobileNumber: mobileNumber,
+      });
+    }
+
     if (!messages.length) {
       return;
     }
@@ -90,7 +93,7 @@ export const IndividualChat = () => {
       });
       updateMessageStatusInRealm( {chatId: mobileNumber, sentAt: latestUnseen.sentAt, status: 'seen', updateAllBeforeSentAt: true});
     }
-  }, [messages, mobileNumber, user.mobileNumber]);
+  }, [chat, messages, mobileNumber, user.mobileNumber]);
 
   const renderChatHeader = useCallback(
     () => (
