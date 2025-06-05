@@ -6,7 +6,9 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import SplashScreen from 'react-native-splash-screen';
 import { useDispatch } from 'react-redux';
 import { CustomAlert } from '../components/CustomAlert/CustomAlert.tsx';
+import { useRealm } from '../contexts/RealmContext.tsx';
 import { useAlertModal } from '../hooks/useAlertModal.ts';
+import { setSuccessMessage } from '../redux/reducers/auth.reducer.ts';
 import { resetUser, setUserDetails } from '../redux/reducers/user.reducer.ts';
 import Login from '../screens/Login/Login.tsx';
 import Registration from '../screens/Registration/Registration.tsx';
@@ -14,10 +16,9 @@ import WelcomeScreen from '../screens/Welcome/Welcome.tsx';
 import { RootStackParamList } from '../types/Navigations.ts';
 import { checkAccessToken } from '../utils/checkToken.ts';
 import { socketConnection } from '../utils/socket.ts';
-import { Tabs } from './tabs/Tabs.tsx';
-import { setSuccessMessage } from '../redux/reducers/auth.reducer.ts';
-import { useRealm } from '../contexts/RealmContext.tsx';
 import { storeMessages } from '../utils/storeMessages.ts';
+import { storePendingMessages } from '../utils/storePendingMessages.ts';
+import { Tabs } from './tabs/Tabs.tsx';
 
 
 
@@ -53,6 +54,7 @@ export function AppNavigator(): React.JSX.Element {
             dispatch(setSuccessMessage('loggedIn'));
             if(netState.isConnected){
                 await storeMessages(user.mobileNumber,realm);
+                await storePendingMessages(user.mobileNumber, realm);
              }
             setIsUserStored(true);
           }
