@@ -1,10 +1,9 @@
-import { Message as MessageSchema } from '../realm-database/schemas/Message';
-import { Message } from '../realm-database/schemas/Message';
-import { Chat } from '../realm-database/schemas/Chat';
-import { useQuery } from '../contexts/RealmContext';
-import { useMemo } from 'react';
 import { format } from 'date-fns';
+import { useMemo } from 'react';
 import { BSON } from 'realm';
+import { useQuery } from '../contexts/RealmContext';
+import { Chat } from '../realm-database/schemas/Chat';
+import { Message, Message as MessageSchema } from '../realm-database/schemas/Message';
 
 export interface GroupedMessageSection {
   title: string;
