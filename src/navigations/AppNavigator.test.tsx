@@ -67,7 +67,7 @@ jest.mock('@realm/react', () => {
       RealmProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
       useRealm: () => ({}),
       useQuery: () => ({
-        filtered: jest.fn().mockReturnValue([]), 
+        filtered: jest.fn().mockReturnValue([]),
       }),
     }),
   };

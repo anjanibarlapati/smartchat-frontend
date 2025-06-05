@@ -217,7 +217,6 @@ describe('IndividualChat', () => {
     filtered: jest.fn().mockReturnValue([unseenMessage, seenMessage]),
    });
   (updateMessageStatusInRealm as jest.Mock).mockReturnValue({});
-   
 
     renderComponent();
 
