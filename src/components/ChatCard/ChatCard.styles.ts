@@ -3,29 +3,33 @@ import { Theme } from '../../utils/themes';
 
 const getStyles = (theme: Theme, unreadCount: number) => StyleSheet.create({
     cardContainer: {
+        display:'flex',
+        width:'100%',
         flexDirection: 'row',
-        alignItems: 'center',
         backgroundColor: theme.primaryBackground,
         paddingVertical: 15,
         paddingHorizontal: 16,
         borderBottomColor: '#ccc',
+        gap:10,
     },
     profileImage: {
         width: 55,
         height: 55,
         borderRadius: 50,
-        marginRight: 12,
     },
     chatContent: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        display:'flex',
+        flexDirection: 'column',
+        gap:5,
+        alignItems: 'flex-start',
+        justifyContent:'center',
     },
     textContainer: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
+        display:'flex',
+        width:'90%',
+        flexDirection: 'row',
+        justifyContent:'space-between',
+        alignItems:'center',
     },
     personName: {
         color: theme.primaryTextColor,
@@ -36,31 +40,24 @@ const getStyles = (theme: Theme, unreadCount: number) => StyleSheet.create({
     },
     latestMessage: {
         color: theme.secondaryTextColor,
-        fontSize: 14,
-        marginTop: 2,
+        fontSize: 15,
         overflow: 'hidden',
         fontFamily:'Nunito-SemiBold',
     },
-    badgeTimeContainer: {
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-        paddingBottom: 2,
-        minHeight: 50,
-    },
-
     timeText: {
-        marginTop: -22,
         fontSize: 12,
         color: (unreadCount > 0) ? '#008080' : theme.secondaryTextColor,
         fontFamily:(unreadCount > 0) ? 'Nunito-Bold' : 'Nunito-SemiBold',
     },
-
-    badgeWrapper: {
-        marginTop: -5,
-        alignSelf: 'flex-end',
-        marginRight: 0,
-
+    tickIcon: {
+      width: 16,
+      height: 16,
+    },
+    messageContainer:{
+        display:'flex',
+        flexDirection:'row',
+        gap:5,
+        alignItems:'center',
     },
 });
 

@@ -1,28 +1,31 @@
-import {Image, Text, View} from 'react-native';
+import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {useAppTheme} from '../../hooks/appTheme';
 import {Theme} from '../../utils/themes';
 import {getStyles} from './ChatCard.styles';
 import {Badge} from '../Badge/Badge';
 import {ChatCardProps} from '../../types/Chat';
+import { getTickIcon } from '../MessageBox/MessageBox';
+import { TimeStamp } from '../TimeStamp/TimeStamp';
+import { useNavigation } from '@react-navigation/native';
+import { HomeScreenNavigationProps } from '../../types/Navigations';
 
 export const ChatCard = ({
-  name,
+  contact,
   message,
-  time,
   unreadCount = 0,
-  profileImage,
 }: ChatCardProps): React.JSX.Element => {
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme, unreadCount);
+  const navigation = useNavigation<HomeScreenNavigationProps>();
 
   return (
-    <View style={styles.cardContainer}>
+    <TouchableOpacity style={styles.cardContainer} onPress={()=>navigation.replace('IndividualChat', {name: contact.name, originalNumber: contact.originalNumber, mobileNumber: contact.mobileNumber, profilePic: contact.profilePicture})}>
       <Image
-        style={styles.profileImage}
-        source={
-          profileImage || require('../../../assets/images/profileImage.png')
-        }
-        accessibilityLabel="profile-image"
+            style={styles.profileImage}
+            source={
+              contact.profilePicture || require('../../../assets/images/profileImage.png')
+            }
+            accessibilityLabel="profile-image"
       />
       <View style={styles.chatContent}>
         <View style={styles.textContainer}>
@@ -30,25 +33,29 @@ export const ChatCard = ({
             numberOfLines={1}
             ellipsizeMode="tail"
             style={styles.personName}>
-            {name}
+            {contact.name}
           </Text>
-          <Text
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            style={styles.latestMessage}>
-            {message}
-          </Text>
+          <TimeStamp from="chat-card" date={message.sentAt}/>
         </View>
-        <View style={styles.badgeTimeContainer}>
-          <Text style={styles.timeText}>{time}</Text>
-
-          {unreadCount > 0 && (
-            <View style={styles.badgeWrapper}>
-              <Badge value={String(unreadCount)} />
+        <View style={styles.textContainer}>
+            <View style={styles.messageContainer}>
+              {message.isSender && <Image
+                  accessibilityLabel="tick-icon"
+                  source={getTickIcon(message.status)}
+                  style={styles.tickIcon}
+              />}
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={styles.latestMessage}>
+                {message.message}
+              </Text>
             </View>
-          )}
+            {unreadCount > 0 &&
+              <Badge value={String(unreadCount)} size="big"/>
+            }
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
