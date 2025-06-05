@@ -1,3 +1,4 @@
+import NetInfo from '@react-native-community/netinfo';
 import {
   fireEvent,
   render,
@@ -5,16 +6,20 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import React from 'react';
-import {Provider} from 'react-redux';
-import {store} from '../../redux/store';
-import {InputChatBox} from './InputChatBox';
-import {sendMessage} from './InputChatBox.service';
-import { addNewMessageInRealm } from '../../realm-database/operations/addNewMessage';
+import { Provider } from 'react-redux';
 import { useRealm } from '../../contexts/RealmContext';
+import { addNewMessageInRealm } from '../../realm-database/operations/addNewMessage';
+import { store } from '../../redux/store';
+import { InputChatBox } from './InputChatBox';
+import { sendMessage } from './InputChatBox.service';
+
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
   setItem: jest.fn(),
+}));
+jest.mock('@react-native-community/netinfo', () => ({
+  fetch: jest.fn(),
 }));
 
 jest.mock('react-native-localize', () => ({
@@ -55,7 +60,7 @@ jest.mock('../../contexts/RealmContext', () => ({
 }));
 
 const mockRealmInstance = {
-  write: jest.fn((fn) => fn()),
+  write: jest.fn(fn => fn()),
   create: jest.fn(),
 };
 const renderInputBox = (mobileNumber: string) => {
@@ -121,6 +126,7 @@ describe('InputChatBox', () => {
     expect(sendMessage).not.toHaveBeenCalled();
   });
   test('Should send status as "seen" when sender and receiver are same', async () => {
+    (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: true});
     (sendMessage as jest.Mock).mockResolvedValue({});
     (addNewMessageInRealm as jest.Mock).mockResolvedValue({});
     renderInputBox('');
@@ -135,8 +141,63 @@ describe('InputChatBox', () => {
     expect(addNewMessageInRealm).toHaveBeenCalledWith(
       mockRealmInstance,
       '',
-      expect.objectContaining({status:'seen'})
+      expect.objectContaining({status: 'seen'}),
+    );
+  });
+  test('Should store message as pending when offline', async () => {
+    (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: false});
+
+    renderInputBox('6303974914');
+
+    const input = screen.getByPlaceholderText('Type a message');
+    fireEvent.changeText(input, 'Pending message');
+
+    const sendButton = screen.getByLabelText('send-icon');
+    await waitFor(() => {
+      fireEvent.press(sendButton);
+    });
+
+    expect(addNewMessageInRealm).toHaveBeenCalledWith(
+      mockRealmInstance,
+      '6303974914',
+      expect.objectContaining({
+        message: 'Pending message',
+        status: 'pending',
+      }),
     );
 
+    expect(sendMessage).not.toHaveBeenCalled();
+  });
+
+  test('Should send message and mark as sent when online', async () => {
+    (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: true});
+    (sendMessage as jest.Mock).mockResolvedValue({});
+    (addNewMessageInRealm as jest.Mock).mockResolvedValue({});
+
+    renderInputBox('9502147010');
+
+    const input = screen.getByPlaceholderText('Type a message');
+    fireEvent.changeText(input, 'Online message');
+
+    const sendButton = screen.getByLabelText('send-icon');
+    await waitFor(() => {
+      fireEvent.press(sendButton);
+    });
+
+    expect(addNewMessageInRealm).toHaveBeenCalledWith(
+      mockRealmInstance,
+      '9502147010',
+      expect.objectContaining({
+        message: 'Online message',
+        status: 'sent',
+      }),
+    );
+
+    expect(sendMessage).toHaveBeenCalledWith(
+      expect.any(String),
+      '9502147010',
+      'Online message',
+      expect.any(String),
+    );
   });
 });
