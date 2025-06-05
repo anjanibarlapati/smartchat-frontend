@@ -27,7 +27,10 @@ export interface FlattenedChatMessage {
 export type FlattenedMessage = FlattenedTimestamp | FlattenedChatMessage;
 export const useGroupedMessages = (
   mobileNumber: string,
-): { sections: GroupedMessageSection[]; flattenedMessages: FlattenedMessage[] } => {
+): {
+  sections: GroupedMessageSection[];
+  flattenedMessages: FlattenedMessage[];
+} => {
   const messages = useQuery(MessageSchema)
     .filtered('chat.chatId == $0', mobileNumber)
     .sorted('sentAt');
@@ -40,5 +43,19 @@ export const useGroupedMessages = (
       }
       groupedMessages.get(dateKey)!.push(message);
     }
+    const sections = Array.from(groupedMessages.entries())
+      .map(([dateKey, msgs]) => {
+        const sortedMsgs = msgs
+          .slice()
+          .sort(
+            (a, b) =>
+              new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime(),
+          );
+        const title = format(new Date(dateKey), 'MMMM dd, yyyy');
+        return {title, dateKey, data: sortedMsgs};
+      })
+      .sort(
+        (a, b) => new Date(a.dateKey).getTime() - new Date(b.dateKey).getTime(),
+      );
   }, [messages]);
 };
