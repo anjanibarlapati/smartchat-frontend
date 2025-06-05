@@ -1,7 +1,7 @@
-import {renderHook} from '@testing-library/react-native';
-import {useGroupedMessages} from './groupMessageByDate';
+import { renderHook } from '@testing-library/react-native';
 import * as RealmContext from '../contexts/RealmContext';
-import {Message} from '../realm-database/schemas/Message';
+import { Message } from '../realm-database/schemas/Message';
+import { useGroupedMessages } from './groupMessageByDate';
 
 jest.mock('../contexts/RealmContext', () => ({
   useQuery: jest.fn(),
