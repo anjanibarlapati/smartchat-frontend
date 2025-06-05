@@ -21,19 +21,18 @@ export const updateMessageStatusInRealm = async ({
 
   try {
     realm.write(() => {
-      const messages = realm.objects<Message>('Message').filtered('chat.chatId == $0 AND isSender == true', chatId).sorted('sentAt');
+      const messages = realm.objects<Message>('Message').filtered('chat.chatId == $0', chatId).sorted('sentAt');
 
       if (updateAllBeforeSentAt) {
         for (let index = messages.length - 1; index >= 0; index--) {
           const message = messages[index];
-          if(messageIds && messageIds.includes(message.sentAt)){
-          if (message.sentAt <= sentAt && message.status !== status) {
+          if((message.isSender === true && messageIds && messageIds.includes(message.sentAt)) || !message.isSender){
+            if (message.sentAt <= sentAt && message.status !== status) {
+              message.status = status;
 
-            message.status = status;
-
-          } else {
-            break;
-          }
+            } else {
+              break;
+            }
           }
          }
       } else {
