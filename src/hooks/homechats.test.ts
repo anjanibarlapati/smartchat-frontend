@@ -194,4 +194,10 @@ describe('should render useHomeChats', () => {
 
     expect(result.current).toHaveLength(0);
   });
+
+  it('returns empty when no chats', () => {
+    mockUseQuery.mockImplementation(() => createRealmCollection([]));
+    const {result} = renderHook(() => useHomeChats());
+    expect(result.current).toEqual([]);
+  });
 });
