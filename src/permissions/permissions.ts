@@ -1,5 +1,12 @@
 import {PermissionsAndroid, Platform} from 'react-native';
-import {check, checkNotifications, PERMISSIONS, request, requestNotifications, RESULTS} from 'react-native-permissions';
+import {
+  check,
+  checkNotifications,
+  PERMISSIONS,
+  request,
+  requestNotifications,
+  RESULTS,
+} from 'react-native-permissions';
 
 const requestPermission = async (permissionType: string) => {
   try {
@@ -14,7 +21,10 @@ const requestPermission = async (permissionType: string) => {
       case 'media':
         permission = Platform.select({
           ios: PERMISSIONS.IOS.PHOTO_LIBRARY,
-          android: PERMISSIONS.ANDROID.READ_MEDIA_IMAGES,
+          android:
+            Number(Platform.Version) >= 33
+              ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
+              : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
         });
         break;
       case 'contacts':
@@ -51,25 +61,33 @@ const requestPermission = async (permissionType: string) => {
   }
 };
 
-export const requestNotificationPermissions = async() => {
-  try{
-    if(Platform.OS === 'android') {
-      const isPermisssinGranted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+export const requestNotificationPermissions = async () => {
+  try {
+    if (Platform.OS === 'android') {
+      const isPermisssinGranted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+      );
       console.log('permission status: ', isPermisssinGranted);
-      if(!isPermisssinGranted) {
-        const status = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+      if (!isPermisssinGranted) {
+        const status = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+        );
         return status === 'granted' ? true : false;
       }
       return true;
-    } else if(Platform.OS === 'ios') {
-      const { status: currentStatus } = await checkNotifications();
+    } else if (Platform.OS === 'ios') {
+      const {status: currentStatus} = await checkNotifications();
       if (currentStatus === 'granted') {
         return true;
       }
-      const { status: newStatus } = await requestNotifications(['alert', 'sound', 'badge']);
+      const {status: newStatus} = await requestNotifications([
+        'alert',
+        'sound',
+        'badge',
+      ]);
       return newStatus === 'granted' ? true : false;
     }
-  } catch(error) {
+  } catch (error) {
     throw new Error('Unable to ask permissions');
   }
 };
