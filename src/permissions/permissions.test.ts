@@ -1,6 +1,6 @@
-import { PermissionsAndroid, Platform } from 'react-native';
+import {PermissionsAndroid, Platform} from 'react-native';
 import * as RNPermissions from 'react-native-permissions';
-import { requestNotificationPermissions, requestPermission } from './permissions';
+import {requestNotificationPermissions, requestPermission} from './permissions';
 
 jest.mock('react-native', () => ({
   Platform: {
@@ -64,6 +64,7 @@ describe('Tests related to the requestPermission method', () => {
   it('Should denies the media permission on Android', async () => {
     (Platform as any).OS = 'android';
     (Platform as any).select = (obj: any) => obj.android;
+    (Platform as any).Version = 33;
     (RNPermissions.check as jest.Mock).mockResolvedValue('denied');
     (RNPermissions.request as jest.Mock).mockResolvedValue('denied');
     const result = await requestPermission('media');
@@ -91,8 +92,12 @@ describe('Tests related to the requestNotificationPermissions method', () => {
   it('Should grants notification permission on iOS after requesting', async () => {
     (Platform as any).OS = 'ios';
     (Platform as any).select = (obj: any) => obj.ios;
-    (RNPermissions.checkNotifications as jest.Mock).mockResolvedValue({ status: 'denied' });
-    (RNPermissions.requestNotifications as jest.Mock).mockResolvedValue({ status: 'granted' });
+    (RNPermissions.checkNotifications as jest.Mock).mockResolvedValue({
+      status: 'denied',
+    });
+    (RNPermissions.requestNotifications as jest.Mock).mockResolvedValue({
+      status: 'granted',
+    });
     const result = await requestNotificationPermissions();
     expect(result).toBe(true);
   });
@@ -100,7 +105,9 @@ describe('Tests related to the requestNotificationPermissions method', () => {
   it('Should returns true if notification already granted on iOS', async () => {
     (Platform as any).OS = 'ios';
     (Platform as any).select = (obj: any) => obj.ios;
-    (RNPermissions.checkNotifications as jest.Mock).mockResolvedValue({ status: 'granted' });
+    (RNPermissions.checkNotifications as jest.Mock).mockResolvedValue({
+      status: 'granted',
+    });
     const result = await requestNotificationPermissions();
     expect(result).toBe(true);
   });
@@ -108,8 +115,12 @@ describe('Tests related to the requestNotificationPermissions method', () => {
   it('Should returns false if notification denied on iOS', async () => {
     (Platform as any).OS = 'ios';
     (Platform as any).select = (obj: any) => obj.ios;
-    (RNPermissions.checkNotifications as jest.Mock).mockResolvedValue({ status: 'denied' });
-    (RNPermissions.requestNotifications as jest.Mock).mockResolvedValue({ status: 'blocked' });
+    (RNPermissions.checkNotifications as jest.Mock).mockResolvedValue({
+      status: 'denied',
+    });
+    (RNPermissions.requestNotifications as jest.Mock).mockResolvedValue({
+      status: 'blocked',
+    });
     const result = await requestNotificationPermissions();
     expect(result).toBe(false);
   });
@@ -137,6 +148,55 @@ describe('Tests related to the requestNotificationPermissions method', () => {
     (PermissionsAndroid.check as jest.Mock).mockResolvedValue(false);
     (PermissionsAndroid.request as jest.Mock).mockResolvedValue('denied');
     const result = await requestNotificationPermissions();
+    expect(result).toBe(false);
+  });
+  it('should grant send-sms permission in android', async () => {
+    (Platform as any).OS = 'android';
+    (Platform as any).select = (obj: any) => obj.android;
+    (RNPermissions.check as jest.Mock).mockResolvedValue('denied');
+    (RNPermissions.request as jest.Mock).mockResolvedValue('granted');
+    const result = await requestPermission('send-sms');
+    expect(result).toBe(true);
+  });
+  it('should deny send-sms permission in android', async () => {
+    (Platform as any).OS = 'android';
+    (Platform as any).select = (obj: any) => obj.android;
+    (RNPermissions.check as jest.Mock).mockResolvedValue('denied');
+    (RNPermissions.request as jest.Mock).mockResolvedValue('denied');
+    const result = await requestPermission('send-sms');
+    expect(result).toBe(false);
+  });
+  it('should return true when permission undefined', async () => {
+    (Platform as any).OS = 'ios';
+    (Platform as any).select = (obj: any) => obj.ios;
+    const result = await requestPermission('send-sms');
+    expect(result).toBe(true);
+  });
+  it('should throw an error when exception occurs in permission', async () => {
+    (Platform as any).OS = 'android';
+    (Platform as any).select = (obj: any) => obj.android;
+    (RNPermissions.check as jest.Mock).mockRejectedValue(
+      new Error('Mock failure'),
+    );
+    await expect(requestPermission('camera')).rejects.toThrow(
+      'Something went wrong!',
+    );
+  });
+  it('should throw an error when exception occurs in requestNotifications permission', async () => {
+    (Platform as any).OS = 'android';
+    (Platform as any).select = (obj: any) => obj.android;
+    (PermissionsAndroid.check as jest.Mock).mockRejectedValue(
+      new Error('Mock android error'),
+    );
+    await expect(requestNotificationPermissions()).rejects.toThrow(
+      'Unable to ask permissions',
+    );
+  });
+  it('should return false if permission is blocked', async () => {
+    (Platform as any).OS = 'android';
+    (Platform as any).select = (obj: any) => obj.android;
+    (RNPermissions.check as jest.Mock).mockResolvedValue('blocked');
+    const result = await requestPermission('camera');
     expect(result).toBe(false);
   });
 });
