@@ -172,4 +172,24 @@ describe('Tests related to the requestNotificationPermissions method', () => {
     const result = await requestPermission('send-sms');
     expect(result).toBe(true);
   });
+  it('should throw an error when exception occurs in permission', async () => {
+    (Platform as any).OS = 'android';
+    (Platform as any).select = (obj: any) => obj.android;
+    (RNPermissions.check as jest.Mock).mockRejectedValue(
+      new Error('Mock failure'),
+    );
+    await expect(requestPermission('camera')).rejects.toThrow(
+      'Something went wrong!',
+    );
+  });
+   it('should throw an error when exception occurs in requestNotifications permission', async () => {
+    (Platform as any).OS = 'android';
+    (Platform as any).select = (obj: any) => obj.android;
+    (PermissionsAndroid.check as jest.Mock).mockRejectedValue(
+      new Error('Mock android error'),
+    );
+    await expect(requestNotificationPermissions()).rejects.toThrow(
+      'Unable to ask permissions',
+    );
+  });
 });
