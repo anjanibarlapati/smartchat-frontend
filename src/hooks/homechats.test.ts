@@ -127,4 +127,35 @@ describe('should render useHomeChats', () => {
     expect(result.current[1].lastMessage.message).toBe('How are you?');
     expect(result.current[1].unreadCount).toBe(1);
   });
+
+  it('should use fallback contact info if not found', () => {
+    const chats = [{chatId: 'chat-3'}];
+    const messages = [
+      {
+        chat: {chatId: 'chat-3'},
+        message: 'Hey',
+        sentAt: '2023-01-01T08:00:00Z',
+        isSender: false,
+        status: 'delivered',
+      },
+    ];
+
+    mockUseQuery.mockImplementation(schema => {
+      if (schema === Chat) {
+        return createRealmCollection(chats);
+      }
+      if (schema === RealmMessage) {
+        return createRealmCollection(messages);
+      }
+      if (schema === Contact) {
+        return createRealmCollection([]);
+      }
+      return [];
+    });
+
+    const {result} = renderHook(() => useHomeChats());
+
+    expect(result.current[0].contact.name).toBe('chat-3');
+    expect(result.current[0].contact.profilePicture).toBe('');
+  });
 });
