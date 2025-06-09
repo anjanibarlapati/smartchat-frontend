@@ -49,4 +49,16 @@ describe('shoud render useUnreadChatsCount', () => {
     const { result } = renderHook(() => useUnreadChatsCount());
     expect(result.current).toBe(2);
   });
+
+  it('should ignores messages marked as seen or sent by self', () => {
+    const messages = [
+      { chat: { chatId: '1' }, isSender: false, status: 'seen' },
+      { chat: { chatId: '2' }, isSender: true, status: 'delivered' },
+      { chat: { chatId: '3' }, isSender: false, status: 'delivered' },
+    ];
+    mockUseQuery.mockReturnValue(createRealmCollection(messages));
+
+    const { result } = renderHook(() => useUnreadChatsCount());
+    expect(result.current).toBe(1);
+  });
 });
