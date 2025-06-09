@@ -150,4 +150,12 @@ describe('Tests related to the requestNotificationPermissions method', () => {
     const result = await requestNotificationPermissions();
     expect(result).toBe(false);
   });
+  it('should grant send-sms permission in android', async () => {
+    (Platform as any).OS = 'android';
+    (Platform as any).select = (obj: any) => obj.android;
+    (RNPermissions.check as jest.Mock).mockResolvedValue('denied');
+    (RNPermissions.request as jest.Mock).mockResolvedValue('granted');
+    const result = await requestPermission('send-sms');
+    expect(result).toBe(true);
+  });
 });
