@@ -31,4 +31,16 @@ describe('useAlertModal', () => {
     expect(result.current.alertMessage).toBe('Error occurred');
     expect(result.current.alertType).toBe('error');
   });
+  it('should hide the alert', () => {
+    const {result} = renderHook(() => useAlertModal());
+
+    act(() => {
+      result.current.showAlert('Some alert');
+      result.current.hideAlert();
+    });
+
+    expect(result.current.alertVisible).toBe(false);
+    expect(result.current.alertMessage).toBe('Some alert');
+    expect(result.current.alertType).toBe('info');
+  });
 });
