@@ -124,4 +124,30 @@ describe('should render useUnreadChats', () => {
     expect(result.current[1].unreadCount).toBe(1);
     expect(result.current[0].lastMessage.message).toBe('Hey');
   });
+  it('should exclude chats with no unread messages', () => {
+    const chats = [{chatId: '1'}];
+    const messages = [
+      {
+        chat: {chatId: '1'},
+        message: 'Seen',
+        sentAt: '2023-01-02T10:00:00Z',
+        isSender: false,
+        status: 'seen',
+      },
+    ];
+    mockUseQuery.mockImplementation(schema => {
+      if (schema === Chat) {
+        return createRealmCollection(chats);
+      }
+      if (schema === Message) {
+        return createRealmCollection(messages);
+      }
+      if (schema === Contact) {
+        return createRealmCollection([]);
+      }
+    });
+
+    const {result} = renderHook(() => useUnreadChats());
+    expect(result.current).toHaveLength(0);
+  });
 });
