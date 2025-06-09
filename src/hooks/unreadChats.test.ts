@@ -150,4 +150,27 @@ describe('should render useUnreadChats', () => {
     const {result} = renderHook(() => useUnreadChats());
     expect(result.current).toHaveLength(0);
   });
+  it('should use fallback contact info if contact is missing', () => {
+    const chats = [{chatId: '999'}];
+    const messages = [
+      {
+        chat: {chatId: '999'},
+        message: 'Yo',
+        sentAt: '2023-01-02T10:00:00Z',
+        isSender: false,
+        status: 'delivered',
+      },
+    ];
+
+    mockUseQuery.mockImplementation(schema => {
+      if (schema === Chat) {return createRealmCollection(chats);}
+      if (schema === Message) {return createRealmCollection(messages);}
+      if (schema === Contact) {return createRealmCollection([]);}
+    });
+
+    const {result} = renderHook(() => useUnreadChats());
+
+    expect(result.current[0].contact.name).toBe('999');
+    expect(result.current[0].contact.profilePicture).toBe('');
+  });
 });
