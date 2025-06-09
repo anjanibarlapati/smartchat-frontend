@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-native';
-import { useUnreadChatsCount } from './unreadChatsCount';
 import { useQuery } from '../contexts/RealmContext';
 import { Message } from '../realm-database/schemas/Message';
+import { useUnreadChatsCount } from './unreadChatsCount';
 
 jest.mock('../contexts/RealmContext', () => ({
   useQuery: jest.fn(),

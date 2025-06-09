@@ -1,9 +1,9 @@
-import {renderHook} from '@testing-library/react-native';
-import {useHomeChats} from './homechats';
-import {useQuery} from '../contexts/RealmContext';
-import {Chat} from '../realm-database/schemas/Chat';
-import {Contact} from '../realm-database/schemas/Contact';
-import {Message as RealmMessage} from '../realm-database/schemas/Message';
+import { renderHook } from '@testing-library/react-native';
+import { useQuery } from '../contexts/RealmContext';
+import { Chat } from '../realm-database/schemas/Chat';
+import { Contact } from '../realm-database/schemas/Contact';
+import { Message as RealmMessage } from '../realm-database/schemas/Message';
+import { useHomeChats } from './homechats';
 
 jest.mock('../contexts/RealmContext', () => ({
   useQuery: jest.fn(),

@@ -1,5 +1,5 @@
-import {renderHook, act} from '@testing-library/react-native';
-import {useAlertModal} from './useAlertModal';
+import { act, renderHook } from '@testing-library/react-native';
+import { useAlertModal } from './useAlertModal';
 
 describe('useAlertModal', () => {
   it('should initialize with default values', () => {
