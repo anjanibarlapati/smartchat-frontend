@@ -20,4 +20,15 @@ describe('useAlertModal', () => {
     expect(result.current.alertMessage).toBe('Test message');
     expect(result.current.alertType).toBe('info');
   });
+  it('should show alert with specific type', () => {
+    const {result} = renderHook(() => useAlertModal());
+
+    act(() => {
+      result.current.showAlert('Error occurred', 'error');
+    });
+
+    expect(result.current.alertVisible).toBe(true);
+    expect(result.current.alertMessage).toBe('Error occurred');
+    expect(result.current.alertType).toBe('error');
+  });
 });
