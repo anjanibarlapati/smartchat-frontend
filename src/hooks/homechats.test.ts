@@ -158,4 +158,40 @@ describe('should render useHomeChats', () => {
     expect(result.current[0].contact.name).toBe('chat-3');
     expect(result.current[0].contact.profilePicture).toBe('');
   });
+
+  it('should skip chat with no messages', () => {
+    const chats = [{chatId: 'chat-4'}];
+    const messages: Array<{
+      chat: {chatId: string};
+      message: string;
+      sentAt: string;
+      isSender: boolean;
+      status: string;
+    }> = [];
+    const contacts = [
+      {
+        mobileNumber: 'chat-4',
+        name: 'Someone',
+        originalNumber: '004',
+        profilePicture: 'img',
+      },
+    ];
+
+    mockUseQuery.mockImplementation(schema => {
+      if (schema === Chat) {
+        return createRealmCollection(chats);
+      }
+      if (schema === RealmMessage) {
+        return createRealmCollection(messages);
+      }
+      if (schema === Contact) {
+        return createRealmCollection(contacts);
+      }
+      return [];
+    });
+
+    const {result} = renderHook(() => useHomeChats());
+
+    expect(result.current).toHaveLength(0);
+  });
 });
