@@ -182,7 +182,7 @@ describe('Tests related to the requestNotificationPermissions method', () => {
       'Something went wrong!',
     );
   });
-   it('should throw an error when exception occurs in requestNotifications permission', async () => {
+  it('should throw an error when exception occurs in requestNotifications permission', async () => {
     (Platform as any).OS = 'android';
     (Platform as any).select = (obj: any) => obj.android;
     (PermissionsAndroid.check as jest.Mock).mockRejectedValue(
@@ -191,5 +191,12 @@ describe('Tests related to the requestNotificationPermissions method', () => {
     await expect(requestNotificationPermissions()).rejects.toThrow(
       'Unable to ask permissions',
     );
+  });
+  it('should return false if permission is blocked', async () => {
+    (Platform as any).OS = 'android';
+    (Platform as any).select = (obj: any) => obj.android;
+    (RNPermissions.check as jest.Mock).mockResolvedValue('blocked');
+    const result = await requestPermission('camera');
+    expect(result).toBe(false);
   });
 });
