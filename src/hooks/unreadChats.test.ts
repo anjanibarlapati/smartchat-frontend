@@ -163,14 +163,25 @@ describe('should render useUnreadChats', () => {
     ];
 
     mockUseQuery.mockImplementation(schema => {
-      if (schema === Chat) {return createRealmCollection(chats);}
-      if (schema === Message) {return createRealmCollection(messages);}
-      if (schema === Contact) {return createRealmCollection([]);}
+      if (schema === Chat) {
+        return createRealmCollection(chats);
+      }
+      if (schema === Message) {
+        return createRealmCollection(messages);
+      }
+      if (schema === Contact) {
+        return createRealmCollection([]);
+      }
     });
 
     const {result} = renderHook(() => useUnreadChats());
 
     expect(result.current[0].contact.name).toBe('999');
     expect(result.current[0].contact.profilePicture).toBe('');
+  });
+  it('should return empty array when there are no chats', () => {
+    mockUseQuery.mockImplementation(() => createRealmCollection([]));
+    const {result} = renderHook(() => useUnreadChats());
+    expect(result.current).toEqual([]);
   });
 });
