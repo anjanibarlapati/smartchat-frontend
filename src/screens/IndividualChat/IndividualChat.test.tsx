@@ -3,16 +3,16 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import {configureStore} from '@reduxjs/toolkit';
-import {render, screen, waitFor} from '@testing-library/react-native';
-import {Provider} from 'react-redux';
-import {useQuery, useRealm} from '../../contexts/RealmContext';
-import {updateMessageStatusInRealm} from '../../realm-database/operations/updateMessageStatus';
-import {themeReducer} from '../../redux/reducers/theme.reducer';
-import {userReducer} from '../../redux/reducers/user.reducer';
-import {getSocket} from '../../utils/socket';
-import {IndividualChat} from './IndividualChat';
+import { configureStore } from '@reduxjs/toolkit';
+import { render, screen, waitFor } from '@testing-library/react-native';
+import { Provider } from 'react-redux';
 import { ChatHeader } from '../../components/ChatHeader/ChatHeader';
+import { useQuery, useRealm } from '../../contexts/RealmContext';
+import { updateMessageStatusInRealm } from '../../realm-database/operations/updateMessageStatus';
+import { themeReducer } from '../../redux/reducers/theme.reducer';
+import { userReducer } from '../../redux/reducers/user.reducer';
+import { getSocket } from '../../utils/socket';
+import { IndividualChat } from './IndividualChat';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
