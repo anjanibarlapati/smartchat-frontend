@@ -1,13 +1,19 @@
-import { NavigationContainer, useNavigation, useRoute } from '@react-navigation/native';
-import { configureStore } from '@reduxjs/toolkit';
-import { render, screen, waitFor } from '@testing-library/react-native';
-import { Provider } from 'react-redux';
-import { useQuery, useRealm } from '../../contexts/RealmContext';
-import { updateMessageStatusInRealm } from '../../realm-database/operations/updateMessageStatus';
-import { themeReducer } from '../../redux/reducers/theme.reducer';
-import { userReducer } from '../../redux/reducers/user.reducer';
-import { getSocket } from '../../utils/socket';
-import { IndividualChat } from './IndividualChat';
+import {
+  NavigationContainer,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
+import {configureStore} from '@reduxjs/toolkit';
+import {render, screen, waitFor} from '@testing-library/react-native';
+import {Provider} from 'react-redux';
+import {useQuery, useRealm} from '../../contexts/RealmContext';
+import {updateMessageStatusInRealm} from '../../realm-database/operations/updateMessageStatus';
+import {themeReducer} from '../../redux/reducers/theme.reducer';
+import {userReducer} from '../../redux/reducers/user.reducer';
+import {getSocket} from '../../utils/socket';
+import {IndividualChat} from './IndividualChat';
+
+
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
   setItem: jest.fn(),
@@ -45,27 +51,80 @@ jest.mock('realm', () => ({
   },
   Object: class {},
 }));
+
+const mockClearChatInRealm = jest.fn();
+const mockBlockContactInRealm = jest.fn();
+jest.mock('../../realm-database/operations/blockContact', () => ({
+  blockContactInRealm: mockBlockContactInRealm,
+}));
+jest.mock('../../realm-database/operations/clearChat', () => ({
+  clearChatInRealm: mockClearChatInRealm,
+}));
+
 jest.mock('react-native-libsodium', () => ({
   crypto_box_keypair: jest.fn(),
   to_base64: jest.fn(),
 }));
-jest.mock('../../components/ChatOptionsModal/blockChat.service', () => ({
-  blockUserChat: jest.fn(() => Promise.resolve({ok: true})),
-}));
+const mockClearUserChat = jest.fn();
+const mockBlockUserChat = jest.fn();
+
 jest.mock('../../realm-database/operations/blockContact', () => ({
   blockContactInRealm: jest.fn(),
 }));
+jest.mock('../../components/ChatOptionsModal/blockChat.service', () => ({
+  blockUserChat: mockBlockUserChat,
+}));
+jest.mock('../../components/ChatOptionsModal/clearChat.service', () => ({
+  clearUserChat: mockClearUserChat,
+}));
+const mockDispatch = jest.fn();
+
+const mockUser = {
+  firstName: 'Anjali',
+  email: 'anjali@gmail.com',
+  mobileNumber: '',
+};
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useSelector: () => mockUser,
+  useDispatch: () => mockDispatch,
+}));
+
+const mockShowAlert = jest.fn();
+const mockHideAlert = jest.fn();
+jest.mock('../../hooks/useAlertModal', () => ({
+  useAlertModal: () => ({
+    alertVisible: false,
+    alertMessage: '',
+    alertType: 'info',
+    showAlert: mockShowAlert,
+    hideAlert: mockHideAlert,
+  }),
+}));
+// const mockRealm = {
+//   write: jest.fn(fn => fn()),
+//   objectForPrimaryKey: jest.fn().mockReturnValue({
+//     chatId: '+91 86395 23822',
+//     isBlocked: false,
+//     publicKey: null,
+//   }),
+//   create: jest.fn(),
+// };
+const mockChatObject = {
+  chatId: '+91 86395 23822',
+  isBlocked: false,
+  isAccountDeleted: false,
+  publicKey: null,
+};
+
 const mockRealm = {
   write: jest.fn(fn => fn()),
-  objectForPrimaryKey: jest.fn().mockReturnValue({
-    chatId: '+91 86395 23822',
-    isBlocked: false,
-    publicKey: null,
-  }),
+  objectForPrimaryKey: jest.fn().mockReturnValue(mockChatObject),
   create: jest.fn(),
 };
 describe('IndividualChat', () => {
   let store: ReturnType<typeof configureStore>;
+  let mockNavigateToHomeScreen: {replace: jest.Mock};
   const sentAt = new Date().toISOString();
   const unseenMessage = {
     _id: '1',
@@ -97,15 +156,19 @@ describe('IndividualChat', () => {
     );
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
     (useRealm as jest.Mock).mockReturnValue(mockRealm);
     const setOptionsMock = jest.fn();
     const getParentMock = jest
       .fn()
       .mockReturnValue({setOptions: setOptionsMock});
+    mockNavigateToHomeScreen = {replace: jest.fn()};
+
     (useNavigation as jest.Mock).mockReturnValue({
       goBack: jest.fn(),
       setOptions: setOptionsMock,
       getParent: getParentMock,
+      replace: mockNavigateToHomeScreen.replace,
     });
     (useRoute as jest.Mock).mockReturnValue({
       params: {
@@ -246,12 +309,12 @@ describe('IndividualChat', () => {
       publicKey: null,
     });
     (useQuery as jest.Mock).mockReturnValue({
-       filtered: jest.fn().mockReturnValue({
-      sorted: jest.fn().mockReturnValue([]),
-    }),
+      filtered: jest.fn().mockReturnValue({
+        sorted: jest.fn().mockReturnValue([]),
+      }),
     });
 
-    const { getByText } = renderComponent();
+    const {getByText} = renderComponent();
 
     expect(getByText(/This user has deleted their account/i)).toBeTruthy();
   });
@@ -265,15 +328,13 @@ describe('IndividualChat', () => {
     });
 
     (useQuery as jest.Mock).mockReturnValue({
-       filtered: jest.fn().mockReturnValue({
-      sorted: jest.fn().mockReturnValue([]),
-    }),
+      filtered: jest.fn().mockReturnValue({
+        sorted: jest.fn().mockReturnValue([]),
+      }),
     });
 
-    const { getByText } = renderComponent();
+    const {getByText} = renderComponent();
 
     expect(getByText(/This user has deleted their account/i)).toBeTruthy();
   });
-
 });
-
