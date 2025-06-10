@@ -1,10 +1,13 @@
 import { Image, TouchableOpacity } from 'react-native';
 import { styles } from './Menu.styles';
 
-export const Menu = ({onClick}: {onClick: () => void}) => {
+interface MenuProps {
+  onClick: () => void;
+}
+export const Menu = ({ onClick }: MenuProps) => {
 
   return (
-      <TouchableOpacity onPress={onClick} style={styles.menuBox}>
+      <TouchableOpacity onPress={onClick} style={styles.menuBox}  accessibilityLabel={'Menu'}>
         <Image
           source={require('../../../assets/icons/menu.png')}
           style={styles.menuIcon}
