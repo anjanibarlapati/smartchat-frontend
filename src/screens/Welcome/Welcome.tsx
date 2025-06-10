@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Image, Pressable, Text, useWindowDimensions, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useRealm } from '../../contexts/RealmContext';
 import { useAppTheme } from '../../hooks/appTheme';
-import { setRealmInstance } from '../../realm-database/connection';
 import { WelcomeScreenNavigationProps } from '../../types/Navigations';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './Welcome.styles';
@@ -12,12 +10,6 @@ const WelcomeScreen = ():React.JSX.Element => {
 
   const navigation = useNavigation<WelcomeScreenNavigationProps>();
   const { width, height } = useWindowDimensions();
-  const realm = useRealm();
-
-  useEffect(() => {
-      setRealmInstance(realm);
-  }, [realm]);
-
 
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme, width, height);
