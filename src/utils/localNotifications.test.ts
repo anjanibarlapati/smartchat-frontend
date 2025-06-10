@@ -38,3 +38,26 @@ describe('initNotifications', () => {
     expect(mockConsoleError).toHaveBeenCalledWith('Notification init error:', 'error');
   });
 });
+describe('sendLocalNotification', () => {
+  it('should send a local notification', async () => {
+    await notifications.sendLocalNotification('Title', 'Body');
+
+    expect(notifee.displayNotification).toHaveBeenCalledWith({
+      title: 'Title',
+      body: 'Body',
+      android: {
+        channelId: 'messages',
+        pressAction: { id: 'default' },
+      },
+    });
+  });
+
+  it('should handle errors while sending local notification', async () => {
+    (notifee.displayNotification as jest.Mock).mockRejectedValueOnce('display-error');
+
+    await notifications.sendLocalNotification('ErrTitle', 'ErrBody');
+
+    expect(mockConsoleError).toHaveBeenCalledWith('Notification display error:', 'display-error');
+  });
+});
+
