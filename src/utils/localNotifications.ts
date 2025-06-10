@@ -1,4 +1,9 @@
-import notifee, {AndroidImportance} from '@notifee/react-native';
+import notifee, {
+  AndroidImportance,
+  TimestampTrigger,
+  TriggerType,
+} from '@notifee/react-native';
+
 
 export async function initNotifications() {
   try {
@@ -28,3 +33,30 @@ export async function sendLocalNotification(title: string, body: string) {
     console.error('Notification display error:', err);
   }
 }
+export async function scheduleNotification(
+  title: string,
+  body: string,
+  delayInSeconds: number
+) {
+  try {
+    const date = new Date(Date.now() + delayInSeconds * 1000);
+    const trigger: TimestampTrigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: date.getTime(),
+    };
+    await notifee.createTriggerNotification(
+      {
+        title,
+        body,
+        android: {
+          channelId: 'messages',
+          pressAction: { id: 'default' },
+        },
+      },
+      trigger
+    );
+  } catch (err) {
+    console.error('Notification schedule error:', err);
+  }
+}
+
