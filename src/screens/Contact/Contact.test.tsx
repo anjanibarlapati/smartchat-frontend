@@ -151,10 +151,6 @@ describe('Contacts Screen', () => {
     });
     await waitFor(() => {
       expect(EncryptedStorage.clear).toHaveBeenCalled();
-      expect(mockReset).toHaveBeenCalledWith({
-        index: 0,
-        routes: [{name: 'WelcomeScreen'}],
-      });
     });
   });
 

@@ -22,6 +22,7 @@ import { getRealmInstance } from '../../realm-database/connection.ts';
 import { getContactsFromRealm } from '../../realm-database/operations/getContacts.ts';
 import { clearAllContactsInRealm } from '../../realm-database/operations/clearContacts.ts';
 import { insertContactsInRealm } from '../../realm-database/operations/insertContacts.ts';
+import { useRealmReset } from '../../contexts/RealmContext.tsx';
 
 
 export function Contact(): React.JSX.Element {
@@ -37,6 +38,7 @@ export function Contact(): React.JSX.Element {
       alertVisible, alertMessage, alertType, showAlert, hideAlert,
     } = useAlertModal();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const {resetRealm} = useRealmReset();
 
   useEffect(() => {
     const loadContacts = async () => {
@@ -51,10 +53,7 @@ export function Contact(): React.JSX.Element {
         const tokens = await getTokens(user.mobileNumber);
         if (!tokens) {
           await EncryptedStorage.clear();
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'WelcomeScreen'}],
-          });
+          resetRealm();
           return;
         }
 
@@ -83,7 +82,7 @@ export function Contact(): React.JSX.Element {
         }
     };
     loadContacts();
-  }, [ navigation, showAlert, user.mobileNumber]);
+  }, [navigation, resetRealm, showAlert, user.mobileNumber]);
 
 const filteredContacts = useMemo(() => {
   if (contacts.length === 0) {
