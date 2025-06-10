@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { ChatCard } from '../../components/ChatCard/ChatCard';
 import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
+import { useRealmReset } from '../../contexts/RealmContext';
 import { useAppTheme } from '../../hooks/appTheme';
 import { HomeChats, useHomeChats } from '../../hooks/homechats';
 import { useAlertModal } from '../../hooks/useAlertModal';
@@ -25,6 +26,7 @@ export function Home(): React.JSX.Element {
   const successMessage = useSelector((state: storeState) => state.auth.successMessage);
   const dispatch = useDispatch();
   const homeChats: HomeChats[] = useHomeChats();
+  const {resetRealm} = useRealmReset();
 
   useEffect(() => {
     if (successMessage === 'You\'ve successfully logged in to SmartChat!') {
@@ -37,16 +39,13 @@ export function Home(): React.JSX.Element {
     const forceLogout = async() => {
       dispatch(resetUser());
       await EncryptedStorage.clear();
-      welcomeNavigation.reset({
-        index: 0,
-        routes: [{name: 'WelcomeScreen'}],
-      });
+      resetRealm();
       Alert.alert('You have been logged out due to another device login.');
     };
     if(successMessage === null){
       forceLogout();
     }
-  }, [dispatch, welcomeNavigation, successMessage]);
+  }, [dispatch, welcomeNavigation, successMessage, resetRealm]);
 
   return (
     <View style={styles.container}>

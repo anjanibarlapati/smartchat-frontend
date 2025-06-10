@@ -32,10 +32,12 @@ jest.mock('react-native-encrypted-storage', () => ({
 }));
 
 jest.mock('@realm/react', () => {
-  return {
-    useRealm: jest.fn(() => ({})),
-    useQuery: jest.fn(() => []),
-    RealmProvider: ({ children }: any) => <>{children}</>,
+return {
+    createRealmContext: jest.fn(() => ({
+      RealmProvider: ({ children }: any) => <>{children}</>,
+      useRealm: jest.fn(() => ({})),
+      useQuery: jest.fn(() => []),
+    })),
   };
 });
 

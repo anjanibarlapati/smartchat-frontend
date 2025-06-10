@@ -1,15 +1,15 @@
-import { DefaultEventsMap } from '@socket.io/component-emitter';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { io, Socket } from 'socket.io-client';
+import { DefaultEventsMap } from '@socket.io/component-emitter';
+import { getRealmInstance } from '../realm-database/connection';
+import { addNewMessageInRealm } from '../realm-database/operations/addNewMessage';
+import { updateMessageStatusInRealm } from '../realm-database/operations/updateMessageStatus';
+import { updateUserAccountStatusInRealm } from '../realm-database/operations/updateUserAccountStatus';
 import { clearSuccessMessage } from '../redux/reducers/auth.reducer';
 import { store } from '../redux/store';
 import { Message } from '../types/message';
 import { BASE_URL } from './constants';
 import { decryptMessage } from './decryptMessage';
-import { addNewMessageInRealm } from '../realm-database/operations/addNewMessage';
-import { updateMessageStatusInRealm } from '../realm-database/operations/updateMessageStatus';
-import { getRealmInstance } from '../realm-database/connection';
-import { updateUserAccountStatusInRealm } from '../realm-database/operations/updateUserAccountStatus';
 
 let socket: Socket<DefaultEventsMap, DefaultEventsMap> | null = null;
 
@@ -20,7 +20,7 @@ export const socketConnection = async (mobileNumber: string) => {
       return;
     }
     const tokenData = JSON.parse(token);
-    await socketDisconnect();
+    socketDisconnect();
 
     if (tokenData.access_token) {
       socket = io(BASE_URL, { transports: ['websocket'] });
