@@ -12,7 +12,7 @@ import {themeReducer} from '../../redux/reducers/theme.reducer';
 import {userReducer} from '../../redux/reducers/user.reducer';
 import {getSocket} from '../../utils/socket';
 import {IndividualChat} from './IndividualChat';
-
+import { ChatHeader } from '../../components/ChatHeader/ChatHeader';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -336,5 +336,38 @@ describe('IndividualChat', () => {
     const {getByText} = renderComponent();
 
     expect(getByText(/This user has deleted their account/i)).toBeTruthy();
+  });
+  test('should execute renderChatHeader callback when headerLeft is called', async () => {
+    const setOptionsMock = jest.fn();
+    const getParentMock = jest.fn().mockReturnValue({setOptions: jest.fn()});
+    (useNavigation as jest.Mock).mockReturnValue({
+      goBack: jest.fn(),
+      setOptions: setOptionsMock,
+      getParent: getParentMock,
+    });
+    (useQuery as jest.Mock).mockReturnValue({
+      filtered: jest.fn().mockReturnValue({
+        sorted: jest.fn().mockReturnValue([seenMessage]),
+      }),
+    });
+    renderComponent();
+    await waitFor(() => {
+      expect(setOptionsMock).toHaveBeenCalled();
+    });
+    const headerLeftCall = setOptionsMock.mock.calls.find(
+      call => call[0]?.headerLeft,
+    );
+    expect(headerLeftCall).toBeTruthy();
+    const result = headerLeftCall[0].headerLeft();
+    expect(result).toBeTruthy();
+  });
+
+  test('should render ChatHeader component correctly', () => {
+    const chatHeaderScreen = render(
+      <ChatHeader name="Naruto" originalNumber="7702153247" profilePic="" />,
+    );
+
+    expect(chatHeaderScreen.getByText('Naruto')).toBeTruthy();
+    expect(chatHeaderScreen.getByText('7702153247')).toBeTruthy();
   });
 });
