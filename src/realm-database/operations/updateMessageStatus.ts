@@ -1,3 +1,4 @@
+import { STATUS_ORDER } from '../../utils/constants';
 import { getRealmInstance } from '../connection';
 import { Message } from '../schemas/Message';
 
@@ -26,19 +27,31 @@ export const updateMessageStatusInRealm = async ({
       if (updateAllBeforeSentAt) {
         for (let index = messages.length - 1; index >= 0; index--) {
           const message = messages[index];
-          if((message.isSender === true && messageIds && messageIds.includes(message.sentAt)) || !message.isSender){
-            if (message.sentAt <= sentAt && message.status !== status) {
+          const requiredMessage = (message.isSender === true && messageIds?.includes(message.sentAt)) || !message.isSender;
+          if (!requiredMessage) {
+            continue;
+          }
+          if (requiredMessage && message.sentAt <= sentAt) {
+            const currentStatusRank = STATUS_ORDER[message.status];
+            const newStatusRank = STATUS_ORDER[status];
+            if (newStatusRank > currentStatusRank) {
+              console.log(`${message.message} status updated ${status}`);
               message.status = status;
-
             } else {
               break;
+
             }
           }
-         }
+        }
       } else {
         const message = messages.filtered('sentAt == $0', sentAt)[0];
         if (message) {
-          message.status = status;
+          const currentStatusRank = STATUS_ORDER[message.status];
+          const newStatusRank = STATUS_ORDER[status];
+
+          if (newStatusRank > currentStatusRank) {
+            message.status = status;
+          }
         }
       }
     });
