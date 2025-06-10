@@ -7,9 +7,9 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { useAppTheme } from '../../hooks/appTheme';
-import { Theme } from '../../utils/themes';
-import { getStyles } from './AlertModal.styles';
+import {useAppTheme} from '../../hooks/appTheme';
+import {Theme} from '../../utils/themes';
+import {getStyles} from './AlertModal.styles';
 
 interface AlertModalProps {
   message: string;
@@ -37,23 +37,27 @@ export const AlertModal = ({
       transparent={true}
       visible={visible}
       onRequestClose={onCancel}>
-        <TouchableWithoutFeedback onPress={onCancel}>
-          <View style={styles.overlay}>
-            <View style={styles.modalContainer}>
-              <Text style={styles.message}>{message}</Text>
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  onPress={onCancel} style={styles.cancelTextContainer}>
-                  <Text style={styles.cancelText}>{cancelText}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={onConfirm} style={styles.confirmTextContainer}>
-                  <Text style={styles.confirmText}>{confirmText}</Text>
-                </TouchableOpacity>
-              </View>
+      <TouchableWithoutFeedback onPress={onCancel}>
+        <View style={styles.overlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.message}>{message}</Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                onPress={onCancel}
+                style={styles.cancelTextContainer}
+                accessibilityLabel={'ConfirmClearChat'}>
+                <Text style={styles.cancelText}>{cancelText}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={onConfirm}
+                style={styles.confirmTextContainer}
+                accessibilityLabel={'CancelClearChat'}>
+                <Text style={styles.confirmText}>{confirmText}</Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </TouchableWithoutFeedback>
+        </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
