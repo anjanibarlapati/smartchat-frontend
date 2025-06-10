@@ -1,24 +1,19 @@
-import NetInfo from '@react-native-community/netinfo';
-import { useNavigation } from '@react-navigation/native';
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react-native';
 import Contacts from 'react-native-contacts';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Provider } from 'react-redux';
+import NetInfo from '@react-native-community/netinfo';
+import { useNavigation } from '@react-navigation/native';
+import {fireEvent, render, screen,waitFor} from '@testing-library/react-native';
 import { requestPermission } from '../../permissions/permissions';
+import { getRealmInstance } from '../../realm-database/connection.ts';
+import { clearAllContactsInRealm } from '../../realm-database/operations/clearContacts.ts';
+import { getContactsFromRealm } from '../../realm-database/operations/getContacts.ts';
+import { insertContactsInRealm } from '../../realm-database/operations/insertContacts.ts';
 import { store } from '../../redux/store';
 import { Contact as ContactType } from '../../types/Contacts.ts';
 import { getContactsDetails } from '../../utils/getContactsDetails';
 import { getTokens } from '../../utils/getTokens.ts';
 import { Contact } from './Contact';
-import { clearAllContactsInRealm } from '../../realm-database/operations/clearContacts.ts';
-import { getRealmInstance } from '../../realm-database/connection.ts';
-import { getContactsFromRealm } from '../../realm-database/operations/getContacts.ts';
-import { insertContactsInRealm } from '../../realm-database/operations/insertContacts.ts';
 
 jest.mock('../../realm-database/connection.ts', () => ({
   getRealmInstance: jest.fn(),

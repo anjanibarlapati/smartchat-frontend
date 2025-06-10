@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Image, ImageSourcePropType, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
+import { useRealmReset } from '../../contexts/RealmContext';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal';
 import { setUserProperty } from '../../redux/reducers/user.reducer';
@@ -13,7 +14,6 @@ import { Properties } from '../../utils/Properties';
 import { Theme } from '../../utils/themes';
 import { CustomAlert } from '../CustomAlert/CustomAlert';
 import { getStyles } from './ProfileInfoTile.styles';
-import { useRealmReset } from '../../contexts/RealmContext';
 interface ProfileInfoTileProps {
   label: string;
   value: string;

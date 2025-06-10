@@ -1,12 +1,7 @@
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Provider } from 'react-redux';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { store } from '../../redux/store';
 import { User } from '../../types/User';
 import * as tokenUtil from '../../utils/getTokens';

@@ -1,8 +1,8 @@
-import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
+import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AlertModal } from '../../components/AlertModal/AlertModal';
 import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
 import LoadingIndicator from '../../components/Loading/Loading';
@@ -10,7 +10,7 @@ import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTil
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal';
-// import { deleteAllRealmData } from '../../realm-database/connection';
+import { useRealmReset } from '../../contexts/RealmContext';
 import { setUserProperty } from '../../redux/reducers/user.reducer';
 import { storeState } from '../../redux/store';
 import { RootStackParamList } from '../../types/Navigations';
@@ -20,7 +20,6 @@ import { socketDisconnect } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { deleteAccount, logout, removeProfilePic, updateProfilePic } from './Profile.services';
 import { getStyles } from './Profile.styles';
-import { useRealmReset } from '../../contexts/RealmContext';
 
 
 export const Profile = (): React.JSX.Element => {

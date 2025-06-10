@@ -1,7 +1,7 @@
-import { useNavigation } from '@react-navigation/native';
-import { fireEvent, render, screen } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import { store } from '../../redux/store.ts';
 import WelcomeScreen from './Welcome.tsx';
 

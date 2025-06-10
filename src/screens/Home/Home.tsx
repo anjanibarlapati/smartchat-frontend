@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { ChatCard } from '../../components/ChatCard/ChatCard';
 import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
+import { useRealmReset } from '../../contexts/RealmContext';
 import { useAppTheme } from '../../hooks/appTheme';
 import { HomeChats, useHomeChats } from '../../hooks/homechats';
 import { useAlertModal } from '../../hooks/useAlertModal';
@@ -14,7 +15,6 @@ import { storeState } from '../../redux/store';
 import { HomeScreenNavigationProps, WelcomeScreenNavigationProps } from '../../types/Navigations';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './Home.styles';
-import { useRealmReset } from '../../contexts/RealmContext';
 
 export function Home(): React.JSX.Element {
   const { width } = useWindowDimensions();

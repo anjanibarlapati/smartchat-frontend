@@ -1,16 +1,21 @@
-import NetInfo from '@react-native-community/netinfo';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import Contacts from 'react-native-contacts';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useSelector } from 'react-redux';
+import NetInfo from '@react-native-community/netinfo';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { ContactCard } from '../../components/ContactCard/ContactCard.tsx';
 import { CustomAlert } from '../../components/CustomAlert/CustomAlert.tsx';
 import LoadingIndicator from '../../components/Loading/Loading.tsx';
+import { useRealmReset } from '../../contexts/RealmContext.tsx';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal.ts';
 import { requestPermission } from '../../permissions/permissions.ts';
+import { getRealmInstance } from '../../realm-database/connection.ts';
+import { clearAllContactsInRealm } from '../../realm-database/operations/clearContacts.ts';
+import { getContactsFromRealm } from '../../realm-database/operations/getContacts.ts';
+import { insertContactsInRealm } from '../../realm-database/operations/insertContacts.ts';
 import { storeState } from '../../redux/store.ts';
 import { Contact as ContactType } from '../../types/Contacts.ts';
 import { RootStackParamList } from '../../types/Navigations.ts';
@@ -18,11 +23,6 @@ import { getContactsDetails } from '../../utils/getContactsDetails.ts';
 import { getTokens } from '../../utils/getTokens.ts';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './Contact.styles';
-import { getRealmInstance } from '../../realm-database/connection.ts';
-import { getContactsFromRealm } from '../../realm-database/operations/getContacts.ts';
-import { clearAllContactsInRealm } from '../../realm-database/operations/clearContacts.ts';
-import { insertContactsInRealm } from '../../realm-database/operations/insertContacts.ts';
-import { useRealmReset } from '../../contexts/RealmContext.tsx';
 
 
 export function Contact(): React.JSX.Element {

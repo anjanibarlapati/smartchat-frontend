@@ -1,6 +1,6 @@
-import { createRealmContext } from '@realm/react';
 import { createContext, ReactNode, useContext, useState } from 'react';
 import Realm from 'realm';
+import { createRealmContext } from '@realm/react';
 import { deleteAllRealmData } from '../realm-database/connection';
 import { Chat } from '../realm-database/schemas/Chat';
 import { Contact } from '../realm-database/schemas/Contact';

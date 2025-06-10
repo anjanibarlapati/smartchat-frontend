@@ -1,12 +1,12 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { io } from 'socket.io-client';
+import { getRealmInstance } from '../realm-database/connection';
+import { addNewMessageInRealm } from '../realm-database/operations/addNewMessage';
+import { updateMessageStatusInRealm } from '../realm-database/operations/updateMessageStatus';
+import { updateUserAccountStatusInRealm } from '../realm-database/operations/updateUserAccountStatus';
 import { store } from '../redux/store';
 import { decryptMessage } from './decryptMessage';
 import { socketConnection, socketDisconnect } from './socket';
-import { getRealmInstance } from '../realm-database/connection';
-import { updateMessageStatusInRealm } from '../realm-database/operations/updateMessageStatus';
-import { addNewMessageInRealm } from '../realm-database/operations/addNewMessage';
-import { updateUserAccountStatusInRealm } from '../realm-database/operations/updateUserAccountStatus';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
