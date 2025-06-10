@@ -60,4 +60,18 @@ describe('sendLocalNotification', () => {
     expect(mockConsoleError).toHaveBeenCalledWith('Notification display error:', 'display-error');
   });
 });
+describe('scheduleNotification', () => {
+  it('should schedule a notification', async () => {
+    await notifications.scheduleNotification('Scheduled', 'Message', 10);
+    expect(notifee.createTriggerNotification).toHaveBeenCalled();
+    const trigger = (notifee.createTriggerNotification as jest.Mock).mock.calls[0][1];
+    expect(trigger.type).toBe('timestamp');
+    expect(typeof trigger.timestamp).toBe('number');
+  });
+  it('should handle errors while scheduling notification', async () => {
+    (notifee.createTriggerNotification as jest.Mock).mockRejectedValueOnce('schedule-error');
+    await notifications.scheduleNotification('ErrScheduled', 'ErrMsg', 5);
+    expect(mockConsoleError).toHaveBeenCalledWith('Notification schedule error:', 'schedule-error');
+  });
+});
 
