@@ -35,7 +35,6 @@ export const updateMessageStatusInRealm = async ({
             const currentStatusRank = STATUS_ORDER[message.status];
             const newStatusRank = STATUS_ORDER[status];
             if (newStatusRank > currentStatusRank) {
-              console.log(`${message.message} status updated ${status}`);
               message.status = status;
             } else {
               break;
