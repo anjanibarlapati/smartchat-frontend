@@ -75,7 +75,7 @@ describe('Socket Utility (with Realm instance mocking)', () => {
 
   it('should disconnect socket on socketDisconnect', async () => {
     await socketConnection(mobileNumber);
-    await socketDisconnect();
+    socketDisconnect();
     expect(mockDisconnect).toHaveBeenCalled();
     expect(mockRemoveAllListeners).toHaveBeenCalled();
   });

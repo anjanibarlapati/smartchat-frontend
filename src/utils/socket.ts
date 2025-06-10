@@ -20,7 +20,7 @@ export const socketConnection = async (mobileNumber: string) => {
       return;
     }
     const tokenData = JSON.parse(token);
-    await socketDisconnect();
+    socketDisconnect();
 
     if (tokenData.access_token) {
       socket = io(BASE_URL, { transports: ['websocket'] });
