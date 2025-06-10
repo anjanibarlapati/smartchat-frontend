@@ -1,36 +1,36 @@
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { format } from 'date-fns';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
-import { AlertModal } from '../../components/AlertModal/AlertModal';
-import { ChatHeader } from '../../components/ChatHeader/ChatHeader';
-import { blockUserChat } from '../../components/ChatOptionsModal/blockChat.service';
-import { ChatOptionsModal } from '../../components/ChatOptionsModal/ChatOptionsModal';
-import { clearUserChat } from '../../components/ChatOptionsModal/clearChat.service';
-import { unblockUserChat } from '../../components/ChatOptionsModal/unblockChat.service';
-import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
-import { InputChatBox } from '../../components/InputChatBox/InputChatBox';
-import { Menu } from '../../components/Menu/Menu';
-import { MessageBox } from '../../components/MessageBox/MessageBox';
-import { TimeStamp } from '../../components/TimeStamp/TimeStamp';
-import { useRealm } from '../../contexts/RealmContext';
-import { useAppTheme } from '../../hooks/appTheme';
-import { useGroupedMessages } from '../../hooks/groupMessageByDate';
-import { useAlertModal } from '../../hooks/useAlertModal';
-import { blockContactInRealm } from '../../realm-database/operations/blockContact';
-import { clearChatInRealm } from '../../realm-database/operations/clearChat';
-import { unblockContactInRealm } from '../../realm-database/operations/unblockContact';
-import { updateMessageStatusInRealm } from '../../realm-database/operations/updateMessageStatus';
-import { Chat } from '../../realm-database/schemas/Chat';
-import { storeState } from '../../redux/store';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {format} from 'date-fns';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {FlatList, Text, View} from 'react-native';
+import {useSelector} from 'react-redux';
+import {AlertModal} from '../../components/AlertModal/AlertModal';
+import {ChatHeader} from '../../components/ChatHeader/ChatHeader';
+import {blockUserChat} from '../../components/ChatOptionsModal/blockChat.service';
+import {ChatOptionsModal} from '../../components/ChatOptionsModal/ChatOptionsModal';
+import {clearUserChat} from '../../components/ChatOptionsModal/clearChat.service';
+import {unblockUserChat} from '../../components/ChatOptionsModal/unblockChat.service';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {InputChatBox} from '../../components/InputChatBox/InputChatBox';
+import {Menu} from '../../components/Menu/Menu';
+import {MessageBox} from '../../components/MessageBox/MessageBox';
+import {TimeStamp} from '../../components/TimeStamp/TimeStamp';
+import {useRealm} from '../../contexts/RealmContext';
+import {useAppTheme} from '../../hooks/appTheme';
+import {useGroupedMessages} from '../../hooks/groupMessageByDate';
+import {useAlertModal} from '../../hooks/useAlertModal';
+import {blockContactInRealm} from '../../realm-database/operations/blockContact';
+import {clearChatInRealm} from '../../realm-database/operations/clearChat';
+import {unblockContactInRealm} from '../../realm-database/operations/unblockContact';
+import {updateMessageStatusInRealm} from '../../realm-database/operations/updateMessageStatus';
+import {Chat} from '../../realm-database/schemas/Chat';
+import {storeState} from '../../redux/store';
 import {
   HomeScreenNavigationProps,
   HomeStackParamList,
 } from '../../types/Navigations';
-import { getSocket } from '../../utils/socket';
-import { Theme } from '../../utils/themes';
-import { getStyles } from './IndividualChat.styles';
+import {getSocket} from '../../utils/socket';
+import {Theme} from '../../utils/themes';
+import {getStyles} from './IndividualChat.styles';
 export type IndividualChatRouteProp = RouteProp<
   HomeStackParamList,
   'IndividualChat'
@@ -69,7 +69,7 @@ export const IndividualChat = () => {
     if (!socket?.connected) {
       return;
     }
-    if(chat && !chat.isAccountDeleted) {
+    if (chat && !chat.isAccountDeleted) {
       socket.emit('isAccountDeleted', {
         senderMobileNumber: user.mobileNumber,
         receiverMobileNumber: mobileNumber,
@@ -106,7 +106,9 @@ export const IndividualChat = () => {
           originalNumber={originalNumber}
           profilePic={profilePic}
         />
-        <Menu onClick={() => setOptionsModalVisible(true)} />
+        <Menu
+          onClick={() => setOptionsModalVisible(true)}
+        />
       </>
     ),
     [name, originalNumber, profilePic],
@@ -223,16 +225,19 @@ export const IndividualChat = () => {
             }}
           />
         </View>
-        {!chat?.isBlocked && !chat?.isAccountDeleted ?
-          (<View style={styles.inputContainer}>
+        {!chat?.isBlocked && !chat?.isAccountDeleted ? (
+          <View style={styles.inputContainer}>
             <InputChatBox receiverMobileNumber={mobileNumber} />
           </View>
         ) : (
           <View style={styles.blockedMessageContainer}>
             <View style={styles.box}>
               <Text style={styles.blockedText}>
-                { chat?.isAccountDeleted && 'This user has deleted their account.\n You can no longer send messages'}
-                { !chat?.isAccountDeleted && chat?.isBlocked && 'You have blocked this contact. Unblock to send or receive messages.'}
+                {chat?.isAccountDeleted &&
+                  'This user has deleted their account.\n You can no longer send messages'}
+                {!chat?.isAccountDeleted &&
+                  chat?.isBlocked &&
+                  'You have blocked this contact. Unblock to send or receive messages.'}
               </Text>
             </View>
           </View>
@@ -280,4 +285,3 @@ export const IndividualChat = () => {
     </>
   );
 };
-
