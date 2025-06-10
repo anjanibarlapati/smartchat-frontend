@@ -93,6 +93,18 @@ describe('updateMessageStatusInRealm', () => {
     expect(newer.status).toBe('seen');
   });
 
+   it('should not update status if it is blocked message', async () => {
+    const message1 = { sentAt: '2025-05-30T00:00:00Z', status: 'sent' };
+    const message2 = { sentAt: '2025-06-01T00:00:00Z', status: 'delivered' };
+    const newer = { sentAt: '2025-06-02T00:00:00Z', status: 'sent', isSender: false};
+    mockMessages.push(message1, message2);
+     const messageIdss = [message1.sentAt, message2.sentAt];
+    await updateMessageStatusInRealm({ chatId, sentAt, status, updateAllBeforeSentAt: true, messageIds: messageIdss });
+    expect(message1.status).toBe(status);
+    expect(message2.status).toBe(status);
+    expect(newer.status).toBe('sent');
+  });
+
     it('should not update any message sent in socket payload before sentAt if updateAllBeforeSentAt is true for sender', async () => {
     const message1 = { sentAt: '2025-05-30T00:00:00Z', status: 'sent' };
     const message2 = { sentAt: '2025-06-01T00:00:00Z', status: 'delivered' };
