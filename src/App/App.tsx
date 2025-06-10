@@ -5,7 +5,7 @@ import { store } from '../redux/store.ts';
 import i18next from 'i18next';
 import * as RNLocalize from 'react-native-localize';
 import { resources } from '../i18n/i18n.config.ts';
-import { RealmProvider, useRealm } from '../contexts/RealmContext.tsx';
+import { RealmResetProvider, useRealm } from '../contexts/RealmContext.tsx';
 import { closeRealm, setRealmInstance } from '../realm-database/connection.ts';
 
 function RealmSetupWrapper() {
@@ -32,9 +32,9 @@ function App(): React.JSX.Element {
 
   return (
     <Provider store={store}>
-      <RealmProvider>
+      <RealmResetProvider>
         <RealmSetupWrapper/>
-      </RealmProvider>
+      </RealmResetProvider>
     </Provider>
   );
 }
