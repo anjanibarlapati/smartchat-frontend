@@ -1,7 +1,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { fireEvent, render } from '@testing-library/react-native';
-import { realmConfig, RealmProvider } from '../../contexts/RealmContext';
+import { realmConfig, RealmResetProvider } from '../../contexts/RealmContext';
 import { store } from '../../redux/store';
 import { ChatCardProps } from '../../types/Chat';
 import { ChatCard } from './ChatCard';
@@ -37,7 +37,7 @@ const chatDetails: ChatCardProps = {
 const renderChatCard = (ui: React.ReactElement) => {
   return render(
     <Provider store={store}>
-     <RealmProvider {...realmConfig}>{ui}</RealmProvider>
+     <RealmResetProvider {...realmConfig}>{ui}</RealmResetProvider>
     </Provider>
   );
 };
