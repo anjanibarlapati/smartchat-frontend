@@ -7,20 +7,20 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { useSelector } from 'react-redux';
-import { useRealm } from '../../contexts/RealmContext';
-import { useAppTheme } from '../../hooks/appTheme';
-import { Chat } from '../../realm-database/schemas/Chat';
-import { storeState } from '../../redux/store';
-import { Theme } from '../../utils/themes';
-import { getStyles } from './ChatOptionsModal.styles';
+import {useSelector} from 'react-redux';
+import {useRealm} from '../../contexts/RealmContext';
+import {useAppTheme} from '../../hooks/appTheme';
+import {Chat} from '../../realm-database/schemas/Chat';
+import {storeState} from '../../redux/store';
+import {Theme} from '../../utils/themes';
+import {getStyles} from './ChatOptionsModal.styles';
 
 type ChatBlockModalProps = {
   visible: boolean;
   onClearChat: () => void;
   onBlockAndUnblock: () => void;
   onClose: () => void;
-  receiverMobileNumber: string
+  receiverMobileNumber: string;
 };
 
 export const ChatOptionsModal = ({
@@ -42,7 +42,8 @@ export const ChatOptionsModal = ({
         transparent
         animationType="fade"
         visible={visible}
-        onRequestClose={onClose}>
+        onRequestClose={onClose}
+        accessibilityLabel="clear-block-modal">
         <TouchableWithoutFeedback onPress={onClose}>
           <View
             style={
@@ -52,15 +53,24 @@ export const ChatOptionsModal = ({
             }
             accessibilityLabel="overlay">
             <View style={styles.modalContainer}>
-              <TouchableOpacity onPress={() => {onClearChat();}}>
+              <TouchableOpacity
+                onPress={() => {
+                  onClearChat();
+                }}
+                accessibilityLabel={'ClearChat'}>
                 <Text style={styles.text}>Clear Chat</Text>
               </TouchableOpacity>
-              {user.mobileNumber !== receiverMobileNumber && <TouchableOpacity onPress={() => {onBlockAndUnblock();}}>
+              {user.mobileNumber !== receiverMobileNumber && (
+                <TouchableOpacity
+                  onPress={() => {
+                    onBlockAndUnblock();
+                  }}
+                  accessibilityLabel={'Block or Unblock'}>
                   <Text style={styles.text}>
                     {chat?.isBlocked ? 'Unblock' : 'Block'}
                   </Text>
                 </TouchableOpacity>
-              }
+              )}
             </View>
           </View>
         </TouchableWithoutFeedback>
