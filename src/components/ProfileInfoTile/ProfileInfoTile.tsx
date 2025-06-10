@@ -1,4 +1,3 @@
-import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import { Image, ImageSourcePropType, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -8,13 +7,13 @@ import { useAlertModal } from '../../hooks/useAlertModal';
 import { setUserProperty } from '../../redux/reducers/user.reducer';
 import { storeState } from '../../redux/store';
 import { updateProfileDetails } from '../../screens/Profile/Profile.services';
-import { RootStackParamList } from '../../types/Navigations';
 import { User } from '../../types/User';
 import { getTokens } from '../../utils/getTokens';
 import { Properties } from '../../utils/Properties';
 import { Theme } from '../../utils/themes';
 import { CustomAlert } from '../CustomAlert/CustomAlert';
 import { getStyles } from './ProfileInfoTile.styles';
+import { useRealmReset } from '../../contexts/RealmContext';
 interface ProfileInfoTileProps {
   label: string;
   value: string;
@@ -25,7 +24,6 @@ interface ProfileInfoTileProps {
 }
 
 export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const userDetails = useSelector((state: storeState) => state.user);
   const theme: Theme = useAppTheme();
@@ -37,6 +35,7 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
   const [newValue, setValue] = useState('');
   const isEdit = props.editField === props.label;
   const setLoading = props.setLoading;
+  const {resetRealm} = useRealmReset();
 
   const updateDetails = async() => {
     if(!newValue.trim() || newValue.trim() === props.value) {
@@ -54,10 +53,7 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
     const tokens = await getTokens(userDetails.mobileNumber);
     if (!tokens) {
       await EncryptedStorage.clear();
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'WelcomeScreen'}],
-      });
+      resetRealm();
       return;
     }
     try {
