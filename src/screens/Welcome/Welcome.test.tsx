@@ -10,20 +10,6 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
 }));
 
-jest.mock('realm', () => ({
-  BSON: {
-    ObjectId: jest.fn(() => 'mocked-object-id'),
-  },
-}));
-
-jest.mock('../../contexts/RealmContext', () => ({
-  useRealm: jest.fn(),
-}));
-
-jest.mock('../../realm-database/connection', ()=>({
-  setRealmInstance: jest.fn(),
-}));
-
 const renderWelcomeScreen = () => {
   return render(
     <Provider store={store}>
