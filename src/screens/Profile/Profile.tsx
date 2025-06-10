@@ -10,7 +10,7 @@ import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTil
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal';
-import { deleteAllRealmData } from '../../realm-database/connection';
+// import { deleteAllRealmData } from '../../realm-database/connection';
 import { setUserProperty } from '../../redux/reducers/user.reducer';
 import { storeState } from '../../redux/store';
 import { RootStackParamList } from '../../types/Navigations';
@@ -20,6 +20,7 @@ import { socketDisconnect } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { deleteAccount, logout, removeProfilePic, updateProfilePic } from './Profile.services';
 import { getStyles } from './Profile.styles';
+import { useRealmReset } from '../../contexts/RealmContext';
 
 
 export const Profile = (): React.JSX.Element => {
@@ -44,6 +45,7 @@ export const Profile = (): React.JSX.Element => {
   );
   const [visibleProfilePicModal, setVisibleProfilePicModal] = useState(false);
   const imageUploaded = useRef(false);
+  const {resetRealm} = useRealmReset();
 
   useEffect(() => {
     navigation.setOptions({
@@ -70,10 +72,7 @@ export const Profile = (): React.JSX.Element => {
         const tokens = await getTokens(userDetails.mobileNumber);
         if (!tokens) {
           await EncryptedStorage.clear();
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'WelcomeScreen'}],
-          });
+          resetRealm();
           return;
         }
         const formData = new FormData();
@@ -109,28 +108,21 @@ export const Profile = (): React.JSX.Element => {
     if (uploadImage) {
       handleUploadProfilePic();
     }
-}, [dispatch, navigation, showAlert, uploadImage, userDetails]);
+}, [dispatch, navigation, resetRealm, showAlert, uploadImage, userDetails]);
 
   const signout = async () => {
     try {
       const tokens = await getTokens(userDetails.mobileNumber);
       if (!tokens) {
         await EncryptedStorage.clear();
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'WelcomeScreen'}],
-        });
+        resetRealm();
         return;
       }
       const response = await logout(userDetails.mobileNumber, tokens.access_token);
       if(response.ok) {
-        await socketDisconnect();
+        socketDisconnect();
         await EncryptedStorage.clear();
-        deleteAllRealmData();
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'WelcomeScreen'}],
-        });
+        resetRealm();
       }
       else {
         const result = await response.json();
@@ -145,10 +137,7 @@ export const Profile = (): React.JSX.Element => {
     const tokens = await getTokens(userDetails.mobileNumber);
     if (!tokens) {
       await EncryptedStorage.clear();
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'WelcomeScreen'}],
-      });
+      resetRealm();
       return;
     }
     try{
@@ -180,10 +169,7 @@ export const Profile = (): React.JSX.Element => {
       const tokens = await getTokens(userDetails.mobileNumber);
       if (!tokens) {
         await EncryptedStorage.clear();
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'WelcomeScreen'}],
-        });
+        resetRealm();
         return;
       }
       const response = await deleteAccount(
@@ -192,11 +178,7 @@ export const Profile = (): React.JSX.Element => {
       );
       if (response.ok) {
         await EncryptedStorage.clear();
-        deleteAllRealmData();
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'WelcomeScreen'}],
-        });
+        resetRealm();
       } else {
         showAlert('Failed to delete account', 'error');
       }

@@ -7,7 +7,6 @@ import {
 } from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Provider } from 'react-redux';
-import { deleteAllRealmData } from '../../realm-database/connection';
 import { store } from '../../redux/store';
 import { User } from '../../types/User';
 import * as tokenUtil from '../../utils/getTokens';
@@ -15,16 +14,6 @@ import { openPhotoLibrary } from '../../utils/openPhotoLibrary';
 import { Profile } from './Profile';
 import * as ProfileServices from './Profile.services';
 
-
-jest.mock('realm', () => ({
-  BSON: {
-    ObjectId: jest.fn(() => 'mocked-object-id'),
-  },
-}));
-
-jest.mock('../../realm-database/connection', ()=>({
-  deleteAllRealmData: jest.fn(),
-}));
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
@@ -156,8 +145,6 @@ describe('Tests related to the Profile Screen', () => {
       access_token: 'RGUKT BASAR',
     });
     (ProfileServices.deleteAccount as jest.Mock).mockResolvedValue({ok: true});
-    (deleteAllRealmData as jest.Mock).mockResolvedValue({});
-
     RenderProfileScreen();
     const editTextIcon = await screen.findAllByLabelText('edit-text');
     fireEvent.press(editTextIcon[0]);
@@ -169,11 +156,6 @@ describe('Tests related to the Profile Screen', () => {
     });
     await waitFor(() => {
       expect(EncryptedStorage.clear).toHaveBeenCalled();
-      expect(deleteAllRealmData).toHaveBeenCalled();
-      expect(mockReset).toHaveBeenCalledWith({
-        index: 0,
-        routes: [{name: 'WelcomeScreen'}],
-      });
     });
   });
 
@@ -188,10 +170,6 @@ describe('Tests related to the Profile Screen', () => {
     });
     await waitFor(() => {
       expect(EncryptedStorage.clear).toHaveBeenCalled();
-      expect(mockReset).toHaveBeenCalledWith({
-        index: 0,
-        routes: [{name: 'WelcomeScreen'}],
-      });
     });
   });
 
@@ -272,7 +250,6 @@ describe('Tests related to the Profile Screen', () => {
   });
 
   it('Should clear encrypted storage and stack and navigate to welcome screen upon clicking on sign out', async () => {
-    (deleteAllRealmData as jest.Mock).mockResolvedValue({});
     (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
     (ProfileServices.logout as jest.Mock).mockResolvedValue({ok: true});
     RenderProfileScreen();
@@ -284,11 +261,6 @@ describe('Tests related to the Profile Screen', () => {
     });
     await waitFor(() => {
       expect(EncryptedStorage.clear).toHaveBeenCalled();
-      expect(deleteAllRealmData).toHaveBeenCalled();
-      expect(mockReset).toHaveBeenCalledWith({
-        index: 0,
-        routes: [{name: 'WelcomeScreen'}],
-      });
     });
   });
 
@@ -303,15 +275,10 @@ describe('Tests related to the Profile Screen', () => {
         });
         await waitFor(() => {
             expect(EncryptedStorage.clear).toHaveBeenCalled();
-            expect(mockReset).toHaveBeenCalledWith({
-                index: 0,
-                routes: [{ name: 'WelcomeScreen' }],
-            });
         });
     });
 
     it('Should give an alert if response is not ok during logout', async() => {
-        (deleteAllRealmData as jest.Mock).mockResolvedValue({});
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
         (ProfileServices.logout as jest.Mock).mockResolvedValue({ok: false, json: async () => ({ message: 'Something went wrong' })});
         RenderProfileScreen();
@@ -396,10 +363,6 @@ describe('Tests related to the Profile Screen', () => {
     fireEvent.press(screen.getByText('Remove'));
     await waitFor(() => {
       expect(EncryptedStorage.clear).toHaveBeenCalled();
-      expect(mockReset).toHaveBeenCalledWith({
-        index: 0,
-        routes: [{name: 'WelcomeScreen'}],
-      });
     });
   });
 
@@ -465,10 +428,6 @@ describe('Tests related to the Profile Screen', () => {
     fireEvent.press(screen.getByText('Gallery'));
     await waitFor(() => {
       expect(EncryptedStorage.clear).toHaveBeenCalled();
-      expect(mockReset).toHaveBeenCalledWith({
-        index: 0,
-        routes: [{name: 'WelcomeScreen'}],
-      });
     });
   });
 
