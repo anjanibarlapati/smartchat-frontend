@@ -3,6 +3,7 @@ import {encryptMessage} from './encryptMessage';
 import {getTokens} from './getTokens';
 import {storePendingMessages} from './storePendingMessages';
 import {unsendMessages} from './unsendMessages';
+import Realm from 'realm';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -34,13 +35,13 @@ describe('check for storing pending messages', () => {
       sentAt: '2025-06-01T12:01:00Z',
       status: MessageStatus.PENDING,
       isSender: true,
-      chat: {chatId: '+91 98765 43210'},
+      chat: {chatId: senderMobileNumber},
     },
   ];
 
   const mockRealmWrite = jest.fn(cb => cb());
 
-  let realm: any;
+  let realm: Partial<Realm>;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -65,7 +66,7 @@ describe('check for storing pending messages', () => {
   it('should encrypt and send messages, and mark them as sent if successful', async () => {
     (unsendMessages as jest.Mock).mockResolvedValue({ok: true});
 
-    await storePendingMessages(senderMobileNumber, realm);
+    await storePendingMessages(senderMobileNumber, realm as Realm);
 
     expect(getTokens).toHaveBeenCalledWith(senderMobileNumber);
     expect(encryptMessage).toHaveBeenCalledTimes(2);
@@ -77,9 +78,9 @@ describe('check for storing pending messages', () => {
         sentAt: '2025-06-01T12:00:00Z',
       },
       {
-        receiverMobileNumber: '+91 98765 43210',
+        receiverMobileNumber: senderMobileNumber,
         message: 'encrypted-hello',
-        nonce: 'nonce-+91 98765 43210',
+        nonce: 'nonce-+91 63039 74914',
         sentAt: '2025-06-01T12:01:00Z',
       },
     ]);
@@ -91,7 +92,7 @@ describe('check for storing pending messages', () => {
       filtered: jest.fn().mockReturnValue([]),
     });
 
-    await storePendingMessages(senderMobileNumber, realm);
+    await storePendingMessages(senderMobileNumber, realm as Realm);
 
     expect(getTokens).not.toHaveBeenCalled();
     expect(encryptMessage).not.toHaveBeenCalled();
@@ -102,7 +103,7 @@ describe('check for storing pending messages', () => {
   it('should not write to Realm if unsendMessages response is not ok', async () => {
     (unsendMessages as jest.Mock).mockResolvedValue({ok: false});
 
-    await storePendingMessages(senderMobileNumber, realm);
+    await storePendingMessages(senderMobileNumber, realm as Realm);
 
     expect(realm.write).not.toHaveBeenCalled();
   });
@@ -121,7 +122,7 @@ describe('check for storing pending messages', () => {
       filtered: jest.fn().mockReturnValue(messagesWithMissingChat),
     });
 
-    await storePendingMessages(senderMobileNumber, realm);
+    await storePendingMessages(senderMobileNumber, realm as Realm);
 
     expect(getTokens).toHaveBeenCalled();
     expect(encryptMessage).not.toHaveBeenCalled();
