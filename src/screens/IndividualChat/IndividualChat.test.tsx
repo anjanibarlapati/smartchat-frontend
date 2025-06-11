@@ -95,6 +95,17 @@ jest.mock('react-redux', () => ({
   useSelector: () => mockUser,
   useDispatch: () => mockDispatch,
 }));
+const mockClearUserChat = jest.fn();
+const mockBlockUserChat = jest.fn();
+jest.mock('../../realm-database/operations/blockContact', () => ({
+  blockContactInRealm: jest.fn(),
+}));
+jest.mock('../../components/ChatOptionsModal/blockChat.service', () => ({
+  blockUserChat: mockBlockUserChat,
+}));
+jest.mock('../../components/ChatOptionsModal/clearChat.service', () => ({
+  clearUserChat: mockClearUserChat,
+}));
 
 describe('IndividualChat', () => {
   let store: ReturnType<typeof configureStore>;
