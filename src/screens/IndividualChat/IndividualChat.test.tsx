@@ -331,4 +331,28 @@ describe('IndividualChat', () => {
 
     expect(getByText(/This user has deleted their account/i)).toBeTruthy();
   });
+  test('should renderChatHeader callback when headerLeft is called', async () => {
+    const setOptionsMock = jest.fn();
+    const getParentMock = jest.fn().mockReturnValue({setOptions: jest.fn()});
+    (useNavigation as jest.Mock).mockReturnValue({
+      goBack: jest.fn(),
+      setOptions: setOptionsMock,
+      getParent: getParentMock,
+    });
+    (useQuery as jest.Mock).mockReturnValue({
+      filtered: jest.fn().mockReturnValue({
+        sorted: jest.fn().mockReturnValue([seenMessage]),
+      }),
+    });
+    renderComponent();
+    await waitFor(() => {
+      expect(setOptionsMock).toHaveBeenCalled();
+    });
+    const headerLeftCall = setOptionsMock.mock.calls.find(
+      call => call[0]?.headerLeft,
+    );
+    expect(headerLeftCall).toBeTruthy();
+    const result = headerLeftCall[0].headerLeft();
+    expect(result).toBeTruthy();
+  });
 });
