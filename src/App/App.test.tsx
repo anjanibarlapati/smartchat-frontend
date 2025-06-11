@@ -65,6 +65,11 @@ jest.mock('@notifee/react-native', () => ({
   },
 }));
 
+jest.mock('../utils/fcmService', () => ({
+  generateAndUploadFcmToken: jest.fn,
+}));
+
+
 describe('App', () => {
   beforeEach(() => {
     jest.clearAllMocks();

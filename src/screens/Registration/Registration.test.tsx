@@ -65,6 +65,10 @@ jest.mock('../../utils/privateKey', () => ({
   decryptPrivateKey: jest.fn().mockResolvedValue('mockDecryptedPrivateKey'),
 }));
 
+jest.mock('../../utils/fcmService', () => ({
+  generateAndUploadFcmToken: jest.fn,
+}));
+
 const renderRegistrationScreen = () => {
   return render(
     <Provider store={store}>

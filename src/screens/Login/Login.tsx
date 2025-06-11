@@ -10,20 +10,21 @@ import Button from '../../components/Button/Button';
 import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
 import InputField from '../../components/InputField/InputField';
 import LoadingIndicator from '../../components/Loading/Loading';
+import { useRealm } from '../../contexts/RealmContext';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal';
+import { storeChats } from '../../realm-database/operations/storeChats';
 import { setSuccessMessage } from '../../redux/reducers/auth.reducer';
 import { setUserDetails } from '../../redux/reducers/user.reducer';
 import { Credentials } from '../../types/Credentials';
 import { Chat } from '../../types/message';
 import { RegistrationScreenNavigationProps } from '../../types/Navigations';
+import { generateAndUploadFcmToken } from '../../utils/fcmService';
 import { decryptPrivateKey } from '../../utils/privateKey';
 import { socketConnection } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { fetchChats, formatMessages, login } from './Login.service';
 import { getStyles } from './Login.styles';
-import { useRealm } from '../../contexts/RealmContext';
-import { storeChats } from '../../realm-database/operations/storeChats';
 
 const LoginScreen = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();
@@ -138,6 +139,7 @@ const LoginScreen = () => {
           JSON.stringify(result.user),
         );
         dispatch(setSuccessMessage('You\'ve successfully logged in to SmartChat!'));
+        await generateAndUploadFcmToken(credentials.mobileNumber);
         await socketConnection(result.user.mobileNumber);
         navigation.reset({
           index: 0,

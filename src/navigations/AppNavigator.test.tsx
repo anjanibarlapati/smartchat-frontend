@@ -25,6 +25,9 @@ jest.mock('react-native-device-info', () => ({
   getDeviceId: jest.fn(),
 }));
 
+jest.mock('../utils/fcmService', () => ({
+  generateAndUploadFcmToken: jest.fn,
+}));
 
 jest.mock('react-native-libsodium', () => ({
   crypto_box_seal: jest.fn().mockReturnValue('mockEncryptedMessage'),

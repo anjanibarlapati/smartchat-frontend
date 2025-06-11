@@ -24,6 +24,7 @@ import { socketConnection } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { register } from './Registration.service';
 import { getStyles } from './Registration.styles';
+import { generateAndUploadFcmToken } from '../../utils/fcmService';
 
 
 const Registration = () => {
@@ -189,6 +190,7 @@ const { width, height } = useWindowDimensions();
           'User Data',
           JSON.stringify(result.user),
         );
+        await generateAndUploadFcmToken(result.user.mobileNumber);
         await socketConnection(result.user.mobileNumber);
         navigation.reset({
           index: 0,
