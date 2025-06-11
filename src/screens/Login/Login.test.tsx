@@ -78,6 +78,10 @@ jest.mock('./Login.service', () => ({
   formatMessages: jest.fn(),
 }));
 
+jest.mock('../../utils/fcmService', () => ({
+  generateAndUploadFcmToken: jest.fn,
+}));
+
 describe('Login Screen check', () => {
   const mockReplace = jest.fn();
   const mockReset = jest.fn();
