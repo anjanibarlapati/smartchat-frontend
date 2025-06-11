@@ -1,3 +1,4 @@
+
 import NetInfo from '@react-native-community/netinfo';
 import React, {useState} from 'react';
 import {
@@ -43,22 +44,22 @@ export function InputChatBox({
         message: message.trim(),
         sentAt: sentAt,
         isSender: true,
-        status: MessageStatus.SENT,
+        status: MessageStatus.PENDING,
       };
-      if (receiverMobileNumber === user.mobileNumber) {
-        newMessage.status = MessageStatus.SEEN;
-      }
       const netState = await NetInfo.fetch();
       if (!netState.isConnected) {
-        newMessage.status = MessageStatus.PENDING;
         addNewMessageInRealm(realm, receiverMobileNumber, newMessage);
         return;
+      }
+      newMessage.status = MessageStatus.SENT;
+      if(receiverMobileNumber === user.mobileNumber && netState.isConnected) {
+        newMessage.status = MessageStatus.SEEN;
       }
       addNewMessageInRealm(realm, receiverMobileNumber, newMessage);
       sendMessage(
         user.mobileNumber,
         receiverMobileNumber,
-        message.trim(),
+        newMessage.message,
         sentAt,
       );
     } catch (error) {

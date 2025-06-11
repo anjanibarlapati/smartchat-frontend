@@ -126,7 +126,7 @@ describe('InputChatBox', () => {
     });
     expect(sendMessage).not.toHaveBeenCalled();
   });
-  test('Should send status as "seen" when sender and receiver are same', async () => {
+  test('Should send status as "seen" when sender and receiver are same and network is connected', async () => {
     (NetInfo.fetch as jest.Mock).mockResolvedValue({isConnected: true});
     (sendMessage as jest.Mock).mockResolvedValue({});
     (addNewMessageInRealm as jest.Mock).mockResolvedValue({});
