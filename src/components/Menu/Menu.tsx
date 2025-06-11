@@ -4,7 +4,7 @@ import { styles } from './Menu.styles';
 export const Menu = ({onClick}: {onClick: () => void}) => {
 
   return (
-      <TouchableOpacity onPress={onClick} style={styles.menuBox}>
+      <TouchableOpacity onPress={onClick} style={styles.menuBox} accessibilityLabel={'Menu'}>
         <Image
           source={require('../../../assets/icons/menu.png')}
           style={styles.menuIcon}
