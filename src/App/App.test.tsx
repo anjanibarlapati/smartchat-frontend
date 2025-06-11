@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react-native';
+import {render, waitFor} from '@testing-library/react-native';
 import i18next from 'i18next';
 import React from 'react';
 import App from './App';
@@ -40,8 +40,8 @@ jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn(),
 }));
 
-jest.mock('react-native-device-info', ()=>({
-  getDeviceId:jest.fn(),
+jest.mock('react-native-device-info', () => ({
+  getDeviceId: jest.fn(),
 }));
 
 jest.mock('react-native-libsodium', () => ({
@@ -49,22 +49,35 @@ jest.mock('react-native-libsodium', () => ({
   crypto_secretbox_easy: jest.fn().mockReturnValue('mockEncryptedMessage'),
   randombytes_buf: jest.fn().mockReturnValue('mockNonce'),
 }));
-
-
+jest.mock('@notifee/react-native', () => ({
+  __esModule: true,
+  default: {
+    requestPermission: jest.fn(),
+    createChannel: jest.fn(),
+    displayNotification: jest.fn(),
+    createTriggerNotification: jest.fn(),
+  },
+  AndroidImportance: {
+    HIGH: 'high',
+  },
+  TriggerType: {
+    TIMESTAMP: 'timestamp',
+  },
+}));
 
 describe('App', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders the app component', async() => {
+  it('renders the app component', async () => {
     const app = render(<App />);
-     await waitFor(()=>{
-     expect(app).toBeTruthy();
+    await waitFor(() => {
+      expect(app).toBeTruthy();
     });
   });
 
-it('calls changeLanguage with "en" if English is in locale', async() => {
+  it('calls changeLanguage with "en" if English is in locale', async () => {
     const {getLocales} = require('react-native-localize');
     getLocales.mockReturnValue([{languageCode: 'en'}]);
     render(<App />);
@@ -73,7 +86,7 @@ it('calls changeLanguage with "en" if English is in locale', async() => {
     });
   });
 
-  it('calls changeLanguage with "te" if Telugu is in locale', async() => {
+  it('calls changeLanguage with "te" if Telugu is in locale', async () => {
     const {getLocales} = require('react-native-localize');
     getLocales.mockReturnValue([{languageCode: 'te'}]);
     render(<App />);
@@ -82,7 +95,7 @@ it('calls changeLanguage with "en" if English is in locale', async() => {
     });
   });
 
-  it('defaults to "en" if no supported language is found', async() => {
+  it('defaults to "en" if no supported language is found', async () => {
     const {getLocales} = require('react-native-localize');
     getLocales.mockReturnValue([{languageCode: 'fr'}]);
     render(<App />);
