@@ -187,6 +187,26 @@ describe('IndividualChat', () => {
       expect(mockEmit).not.toHaveBeenCalled();
     });
   });
+
+  test('should not emit messageRead if it is self-chat', async () => {
+    (useRoute as jest.Mock).mockReturnValue({
+      params: {
+        name: 'Shailu',
+        originalNumber: '',
+        mobileNumber: '',
+        profilePic: 'pic-url',
+      },
+    });
+    (useQuery as jest.Mock).mockReturnValue({
+      filtered: jest.fn().mockReturnValue({
+        sorted: jest.fn().mockReturnValue([unseenMessage]),
+      }),
+    });
+    renderComponent();
+    await waitFor(() => {
+      expect(mockEmit).not.toHaveBeenCalled();
+    });
+  });
   test('should emit messageRead for unread received messages', async () => {
     (getSocket as jest.Mock).mockReturnValue({
       connected: true,
