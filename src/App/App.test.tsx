@@ -50,6 +50,9 @@ jest.mock('react-native-libsodium', () => ({
   randombytes_buf: jest.fn().mockReturnValue('mockNonce'),
 }));
 
+jest.mock('../utils/fcmService', () => ({
+  generateAndUploadFcmToken: jest.fn,
+}));
 
 
 describe('App', () => {
