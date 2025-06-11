@@ -45,7 +45,11 @@ export const storePendingMessages = async (
   if (response.ok) {
     realm.write(() => {
       pendingMessages.forEach(msg => {
-        msg.status = MessageStatus.SENT;
+        if(senderMobileNumber === msg.chat.chatId){
+          msg.status = MessageStatus.SEEN;
+        } else{
+          msg.status = MessageStatus.SENT;
+        }
       });
     });
   }
