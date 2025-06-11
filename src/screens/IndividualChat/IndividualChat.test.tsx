@@ -4,7 +4,7 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import {configureStore} from '@reduxjs/toolkit';
-import {render, screen, waitFor} from '@testing-library/react-native';
+import {fireEvent, render, screen, waitFor} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import {useQuery, useRealm} from '../../contexts/RealmContext';
 import {useGroupedMessages} from '../../hooks/groupMessageByDate';
@@ -355,4 +355,37 @@ describe('IndividualChat', () => {
     const result = headerLeftCall[0].headerLeft();
     expect(result).toBeTruthy();
   });
+  test('should render the menu component', async () => {
+    const setOptionsMock = jest.fn();
+    const replaceMock = jest.fn();
+    const getParentMock = jest.fn().mockReturnValue({setOptions: jest.fn()});
+    (useNavigation as jest.Mock).mockReturnValue({
+      goBack: jest.fn(),
+      setOptions: setOptionsMock,
+      getParent: getParentMock,
+      replace: replaceMock,
+    });
+    (useRoute as jest.Mock).mockReturnValue({
+      params: {
+        name: 'Naruto',
+        originalNumber: '7702153247',
+        mobileNumber: '+91  7702153247',
+        profilePic: '',
+      },
+    });
+
+    mockClearUserChat.mockResolvedValue({ok: true});
+    mockClearChatInRealm.mockImplementation(jest.fn());
+
+    renderComponent();
+
+    const options = setOptionsMock.mock.calls[0][0];
+    const chatHeaderComponent = options.headerLeft();
+    const {getByLabelText} = render(<>{chatHeaderComponent}</>);
+    const menuButton = getByLabelText('Menu');
+    expect(getByLabelText('Menu-Image')).toBeTruthy();
+
+    fireEvent.press(menuButton);
+  });
+
 });
