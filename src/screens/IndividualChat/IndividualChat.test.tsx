@@ -1,15 +1,19 @@
-import { NavigationContainer, useNavigation, useRoute } from '@react-navigation/native';
-import { configureStore } from '@reduxjs/toolkit';
-import { render, screen, waitFor } from '@testing-library/react-native';
-import { Provider } from 'react-redux';
-import { useQuery, useRealm } from '../../contexts/RealmContext';
-import { useGroupedMessages } from '../../hooks/groupMessageByDate';
-import { updateMessageStatusInRealm } from '../../realm-database/operations/updateMessageStatus';
-import { themeReducer } from '../../redux/reducers/theme.reducer';
-import { userReducer } from '../../redux/reducers/user.reducer';
-import { MessageStatus } from '../../types/message';
-import { getSocket } from '../../utils/socket';
-import { IndividualChat } from './IndividualChat';
+import {
+  NavigationContainer,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
+import {configureStore} from '@reduxjs/toolkit';
+import {render, screen, waitFor} from '@testing-library/react-native';
+import {Provider} from 'react-redux';
+import {useQuery, useRealm} from '../../contexts/RealmContext';
+import {useGroupedMessages} from '../../hooks/groupMessageByDate';
+import {updateMessageStatusInRealm} from '../../realm-database/operations/updateMessageStatus';
+import {themeReducer} from '../../redux/reducers/theme.reducer';
+import {userReducer} from '../../redux/reducers/user.reducer';
+import {MessageStatus} from '../../types/message';
+import {getSocket} from '../../utils/socket';
+import {IndividualChat} from './IndividualChat';
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
   setItem: jest.fn(),
@@ -70,6 +74,28 @@ jest.mock('../../hooks/groupMessageByDate', () => ({
   useGroupedMessages: jest.fn(),
 }));
 
+const mockClearChatInRealm = jest.fn();
+const mockBlockContactInRealm = jest.fn();
+
+jest.mock('../../realm-database/operations/blockContact', () => ({
+  blockContactInRealm: mockBlockContactInRealm,
+}));
+jest.mock('../../realm-database/operations/clearChat', () => ({
+  clearChatInRealm: mockClearChatInRealm,
+}));
+const mockDispatch = jest.fn();
+
+const mockUser = {
+  firstName: 'Anjali',
+  email: 'anjali@gmail.com',
+  mobileNumber: '',
+};
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useSelector: () => mockUser,
+  useDispatch: () => mockDispatch,
+}));
+
 describe('IndividualChat', () => {
   let store: ReturnType<typeof configureStore>;
   const sentAt = new Date().toISOString();
@@ -94,10 +120,10 @@ describe('IndividualChat', () => {
     },
   };
   const timestamp = {
-  id: 'timestamp-id',
-  dateKey: new Date().toISOString(),
-  type: 'timestamp',
-};
+    id: 'timestamp-id',
+    dateKey: new Date().toISOString(),
+    type: 'timestamp',
+  };
   const renderComponent = () =>
     render(
       <NavigationContainer>
@@ -134,7 +160,7 @@ describe('IndividualChat', () => {
     });
   });
   test('should render messages from the FlatList', () => {
-   (useGroupedMessages as jest.Mock).mockReturnValue({
+    (useGroupedMessages as jest.Mock).mockReturnValue({
       sections: [],
       flattenedMessages: [timestamp, seenMessage, unseenMessage],
     });
@@ -143,7 +169,7 @@ describe('IndividualChat', () => {
     expect(screen.getByText('Unread message')).toBeTruthy();
   });
   test('should not render messages when there are no messages', () => {
-   (useGroupedMessages as jest.Mock).mockReturnValue({
+    (useGroupedMessages as jest.Mock).mockReturnValue({
       sections: [],
       flattenedMessages: [timestamp],
     });
@@ -151,7 +177,7 @@ describe('IndividualChat', () => {
     expect(queryByText('Hello Anji')).toBeNull();
   });
   test('should render the InputChatBox', () => {
-   (useGroupedMessages as jest.Mock).mockReturnValue({
+    (useGroupedMessages as jest.Mock).mockReturnValue({
       sections: [],
       flattenedMessages: [timestamp, seenMessage, unseenMessage],
     });
@@ -160,7 +186,7 @@ describe('IndividualChat', () => {
     expect(input).toBeTruthy();
   });
   test('should render the menu icon (send icon)', () => {
-   (useGroupedMessages as jest.Mock).mockReturnValue({
+    (useGroupedMessages as jest.Mock).mockReturnValue({
       sections: [],
       flattenedMessages: [timestamp, seenMessage, unseenMessage],
     });
@@ -178,12 +204,12 @@ describe('IndividualChat', () => {
     expect(navigation.setOptions).toHaveBeenCalledTimes(2);
   });
   test('should not emit messageRead if socket is not connected', async () => {
-        (getSocket as jest.Mock).mockReturnValue({
+    (getSocket as jest.Mock).mockReturnValue({
       connected: false,
       emit: mockEmit,
     });
     (useGroupedMessages as jest.Mock).mockReturnValue({
-      sections: [{ data: [unseenMessage] }],
+      sections: [{data: [unseenMessage]}],
       flattenedMessages: [timestamp, unseenMessage],
     });
     renderComponent();
@@ -201,7 +227,7 @@ describe('IndividualChat', () => {
         profilePic: 'pic-url',
       },
     });
-   (useGroupedMessages as jest.Mock).mockReturnValue({
+    (useGroupedMessages as jest.Mock).mockReturnValue({
       sections: [],
       flattenedMessages: [timestamp, seenMessage, unseenMessage],
     });
@@ -215,8 +241,8 @@ describe('IndividualChat', () => {
       connected: true,
       emit: mockEmit,
     });
-   (useGroupedMessages as jest.Mock).mockReturnValue({
-      sections: [{ data: [unseenMessage] }],
+    (useGroupedMessages as jest.Mock).mockReturnValue({
+      sections: [{data: [unseenMessage]}],
       flattenedMessages: [timestamp, seenMessage, unseenMessage],
     });
     (updateMessageStatusInRealm as jest.Mock).mockReturnValue({});
@@ -268,12 +294,12 @@ describe('IndividualChat', () => {
       isAccountDeleted: true,
       publicKey: null,
     });
-   (useGroupedMessages as jest.Mock).mockReturnValue({
+    (useGroupedMessages as jest.Mock).mockReturnValue({
       sections: [],
       flattenedMessages: [timestamp, seenMessage, unseenMessage],
     });
 
-    const { getByText } = renderComponent();
+    const {getByText} = renderComponent();
 
     expect(getByText(/This user has deleted their account/i)).toBeTruthy();
   });
@@ -286,14 +312,12 @@ describe('IndividualChat', () => {
       publicKey: null,
     });
 
-   (useGroupedMessages as jest.Mock).mockReturnValue({
+    (useGroupedMessages as jest.Mock).mockReturnValue({
       sections: [],
       flattenedMessages: [timestamp, seenMessage, unseenMessage],
     });
-    const { getByText } = renderComponent();
+    const {getByText} = renderComponent();
 
     expect(getByText(/This user has deleted their account/i)).toBeTruthy();
   });
-
 });
-
