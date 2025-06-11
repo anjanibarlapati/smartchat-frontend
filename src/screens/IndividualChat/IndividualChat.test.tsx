@@ -7,10 +7,9 @@ import { useGroupedMessages } from '../../hooks/groupMessageByDate';
 import { updateMessageStatusInRealm } from '../../realm-database/operations/updateMessageStatus';
 import { themeReducer } from '../../redux/reducers/theme.reducer';
 import { userReducer } from '../../redux/reducers/user.reducer';
-
+import { MessageStatus } from '../../types/message';
 import { getSocket } from '../../utils/socket';
 import { IndividualChat } from './IndividualChat';
-import { MessageStatus } from '../../types/message';
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
   setItem: jest.fn(),
