@@ -4,11 +4,12 @@ import { Chat } from '../realm-database/schemas/Chat';
 import { Contact } from '../realm-database/schemas/Contact';
 import { Message } from '../realm-database/schemas/Message';
 import { HomeChats } from './homechats';
+import { MessageStatus } from '../types/message';
 
 
 export const useUnreadChats = (): HomeChats[] => {
   const chats = useQuery(Chat);
-  const messages = useQuery(Message).filtered('isSender == false AND status != "seen"');
+  const messages = useQuery(Message).filtered('isSender == false AND status != $0', MessageStatus.SEEN,);
   const contacts = useQuery(Contact);
 
 
@@ -39,7 +40,7 @@ export const useUnreadChats = (): HomeChats[] => {
           name: contact ? contact.name : chat.chatId,
           originalNumber: contact ? contact.originalNumber : chat.chatId,
           mobileNumber: contact ? contact.mobileNumber : chat.chatId,
-          profilePicture: contact ? contact.profilePicture : '',
+          profilePicture: contact ? contact.profilePicture : null,
         },
       });
     }

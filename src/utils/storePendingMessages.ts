@@ -3,6 +3,7 @@ import {Message} from '../realm-database/schemas/Message';
 import {encryptMessage} from './encryptMessage';
 import {getTokens} from './getTokens';
 import {unsendMessages} from './unsendMessages';
+import { MessageStatus } from '../types/message';
 
 export type MessageToSend = {
   receiverMobileNumber: string;
@@ -17,7 +18,7 @@ export const storePendingMessages = async (
 ) => {
   const pendingMessages = realm
     .objects<Message>('Message')
-    .filtered("status == 'pending' AND isSender == true ");
+    .filtered('status == $0 AND isSender == true', MessageStatus.PENDING,);
 
   if (pendingMessages.length === 0) {
     return;
@@ -44,7 +45,7 @@ export const storePendingMessages = async (
   if (response.ok) {
     realm.write(() => {
       pendingMessages.forEach(msg => {
-        msg.status = 'sent';
+        msg.status = MessageStatus.SENT;
       });
     });
   }

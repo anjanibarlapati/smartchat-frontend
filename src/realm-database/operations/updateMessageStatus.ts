@@ -1,3 +1,4 @@
+import { MessageStatus } from '../../types/message';
 import { STATUS_ORDER } from '../../utils/constants';
 import { getRealmInstance } from '../connection';
 import { Message } from '../schemas/Message';
@@ -5,7 +6,7 @@ import { Message } from '../schemas/Message';
 type UpdateMessageStatusParams = {
   chatId: string;
   sentAt: string;
-  status: 'sent' | 'delivered' | 'seen';
+  status: MessageStatus
   updateAllBeforeSentAt?: boolean;
   messageIds?: string[];
 };

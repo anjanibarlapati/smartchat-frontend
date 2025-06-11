@@ -5,6 +5,7 @@ import { realmConfig, RealmResetProvider } from '../../contexts/RealmContext';
 import { store } from '../../redux/store';
 import { ChatCardProps } from '../../types/Chat';
 import { ChatCard } from './ChatCard';
+import { MessageStatus } from '../../types/message';
 
 const mockReplace = jest.fn();
 
@@ -29,7 +30,7 @@ const chatDetails: ChatCardProps = {
     message: 'How are you?',
     sentAt: new Date().toISOString(),
     isSender: true,
-    status: 'delivered',
+    status: MessageStatus.DELIVERED,
   },
   unreadCount: 2,
 };
@@ -70,7 +71,7 @@ describe('ChatCard Component', () => {
           message: 'How are you?',
           sentAt: new Date().toISOString(),
           isSender: true,
-          status: 'delivered',
+          status: MessageStatus.DELIVERED,
         },
     };
     const { queryByText } = renderChatCard(<ChatCard {...props} />);

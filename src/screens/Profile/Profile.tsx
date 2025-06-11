@@ -145,7 +145,7 @@ export const Profile = (): React.JSX.Element => {
       if(response.ok) {
           const updatedUser = {
               ...userDetails,
-              profilePicture: '',
+              profilePicture: null,
           };
           dispatch(setUserProperty({
               property: 'profilePicture',
@@ -154,7 +154,7 @@ export const Profile = (): React.JSX.Element => {
           await EncryptedStorage.setItem('User Data', JSON.stringify(updatedUser));
           showAlert('Successfully Removed Profile', 'success');
       }
-      setProfilePicUrl('');
+      setProfilePicUrl(null);
       setVisibleProfilePicModal(false);
     } catch(error) {
       showAlert('Something went wrong while removing profile picture. Please try again', 'error');
@@ -197,7 +197,7 @@ export const Profile = (): React.JSX.Element => {
         <View style={styles.profileImg}>
           <Image
             source={
-              profilePicUrl?.trim()
+              profilePicUrl
                 ? {uri: profilePicUrl}
                 : require('../../../assets/images/profileImage.png')
             }
@@ -294,7 +294,7 @@ export const Profile = (): React.JSX.Element => {
             close={() => {
               setVisibleProfilePicModal(false);
             }}
-            profilePicture={userDetails.profilePicture || null}
+            profilePicture={userDetails.profilePicture}
             setProfilePic={setUploadImage}
             remove={handleRemoveProfile}
           />

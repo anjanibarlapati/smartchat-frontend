@@ -12,6 +12,7 @@ import { addNewMessageInRealm } from '../../realm-database/operations/addNewMess
 import { store } from '../../redux/store';
 import { InputChatBox } from './InputChatBox';
 import { sendMessage } from './InputChatBox.service';
+import { MessageStatus } from '../../types/message';
 
 
 jest.mock('react-native-encrypted-storage', () => ({
@@ -141,7 +142,7 @@ describe('InputChatBox', () => {
     expect(addNewMessageInRealm).toHaveBeenCalledWith(
       mockRealmInstance,
       '',
-      expect.objectContaining({status: 'seen'}),
+      expect.objectContaining({status: MessageStatus.SEEN}),
     );
   });
   test('Should store message as pending when offline', async () => {
@@ -162,7 +163,7 @@ describe('InputChatBox', () => {
       '6303974914',
       expect.objectContaining({
         message: 'Pending message',
-        status: 'pending',
+        status: MessageStatus.PENDING,
       }),
     );
 
@@ -189,7 +190,7 @@ describe('InputChatBox', () => {
       '9502147010',
       expect.objectContaining({
         message: 'Online message',
-        status: 'sent',
+        status: MessageStatus.SENT,
       }),
     );
 

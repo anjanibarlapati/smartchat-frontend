@@ -4,6 +4,7 @@ import { Chat } from '../realm-database/schemas/Chat';
 import { Contact } from '../realm-database/schemas/Contact';
 import { Message as RealmMessage } from '../realm-database/schemas/Message';
 import { useHomeChats } from './homechats';
+import { MessageStatus } from '../types/message';
 
 jest.mock('../contexts/RealmContext', () => ({
   useQuery: jest.fn(),
@@ -23,11 +24,12 @@ function createRealmCollection<T extends Record<string, any>>(
 
   collection.filtered = ((
     query: string,
-    ...args: unknown[]
+    ...args: any[]
   ): RealmCollection<T> => {
-    if (query === 'isSender == false AND status != "seen"') {
+    if (query === 'isSender == false AND status != $0') {
+      const statusToExclude = args[0];
       return createRealmCollection(
-        collection.filter((m: T) => !m.isSender && m.status !== 'seen'),
+        collection.filter((m: T) => !m.isSender && m.status !== statusToExclude)
       );
     }
 
@@ -62,34 +64,35 @@ function createRealmCollection<T extends Record<string, any>>(
 
   return collection;
 }
-describe('should render useHomeChats', () => {
+
+describe('useHomeChats hook', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should return sorted chat list with unread count and contact info', () => {
-    const chats = [{chatId: 'chat-1'}, {chatId: 'chat-2'}];
+  it('returns sorted chat list with correct unread count and contact info', () => {
+    const chats = [{ chatId: 'chat-1' }, { chatId: 'chat-2' }];
     const messages = [
       {
-        chat: {chatId: 'chat-1'},
+        chat: { chatId: 'chat-1' },
         message: 'Hello',
         sentAt: '2023-01-01T10:00:00Z',
         isSender: false,
-        status: 'delivered',
+        status: MessageStatus.DELIVERED,
       },
       {
-        chat: {chatId: 'chat-1'},
+        chat: { chatId: 'chat-1' },
         message: 'How are you?',
         sentAt: '2023-01-01T12:00:00Z',
         isSender: false,
-        status: 'seen',
+        status: MessageStatus.SEEN,
       },
       {
-        chat: {chatId: 'chat-2'},
+        chat: { chatId: 'chat-2' },
         message: 'Hi',
         sentAt: '2023-01-02T09:00:00Z',
         isSender: true,
-        status: 'delivered',
+        status: MessageStatus.DELIVERED,
       },
     ];
     const contacts = [
@@ -126,17 +129,18 @@ describe('should render useHomeChats', () => {
     expect(result.current[0].lastMessage.message).toBe('Hi');
     expect(result.current[1].lastMessage.message).toBe('How are you?');
     expect(result.current[1].unreadCount).toBe(1);
+    expect(result.current[0].contact.name).toBe('Bob');
   });
 
-  it('should use fallback contact info if not found', () => {
-    const chats = [{chatId: 'chat-3'}];
+  it('uses fallback contact info when contact not found', () => {
+    const chats = [{ chatId: 'chat-3' }];
     const messages = [
       {
-        chat: {chatId: 'chat-3'},
+        chat: { chatId: 'chat-3' },
         message: 'Hey',
         sentAt: '2023-01-01T08:00:00Z',
         isSender: false,
-        status: 'delivered',
+        status: MessageStatus.DELIVERED,
       },
     ];
 
@@ -156,18 +160,12 @@ describe('should render useHomeChats', () => {
     const {result} = renderHook(() => useHomeChats());
 
     expect(result.current[0].contact.name).toBe('chat-3');
-    expect(result.current[0].contact.profilePicture).toBe('');
+    expect(result.current[0].contact.profilePicture).toBe(null);
   });
 
-  it('should skip chat with no messages', () => {
-    const chats = [{chatId: 'chat-4'}];
-    const messages: Array<{
-      chat: {chatId: string};
-      message: string;
-      sentAt: string;
-      isSender: boolean;
-      status: string;
-    }> = [];
+  it('skips chat if it has no messages', () => {
+    const chats = [{ chatId: 'chat-4' }];
+    const messages: any[] = [];
     const contacts = [
       {
         mobileNumber: 'chat-4',

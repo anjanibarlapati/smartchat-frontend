@@ -31,6 +31,7 @@ import {
 import { getSocket } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './IndividualChat.styles';
+import { MessageStatus } from '../../types/message';
 export type IndividualChatRouteProp = RouteProp<
   HomeStackParamList,
   'IndividualChat'
@@ -51,8 +52,7 @@ export const IndividualChat = () => {
   const realm = useRealm();
   const chat = realm.objectForPrimaryKey<Chat>('Chat', mobileNumber);
   const flatListRef = useRef<FlatList>(null);
-  const {sections: groupedMessages, flattenedMessages} =
-    useGroupedMessages(mobileNumber);
+  const {sections: groupedMessages, flattenedMessages} = useGroupedMessages(mobileNumber);
   useEffect(() => {
     if (!chat) {
       realm.write(() => {
@@ -92,7 +92,7 @@ export const IndividualChat = () => {
       updateMessageStatusInRealm({
         chatId: mobileNumber,
         sentAt: latestUnseen.sentAt,
-        status: 'seen',
+        status: MessageStatus.SEEN,
         updateAllBeforeSentAt: true,
       });
     }

@@ -4,7 +4,7 @@ import { useQuery } from '../contexts/RealmContext';
 import { Chat } from '../realm-database/schemas/Chat';
 import { Contact } from '../realm-database/schemas/Contact';
 import { Message as RealmMessage } from '../realm-database/schemas/Message';
-import { Message } from '../types/message';
+import { Message, MessageStatus } from '../types/message';
 
 
 export type HomeChats = {
@@ -14,7 +14,7 @@ export type HomeChats = {
     name: string;
     originalNumber: string;
     mobileNumber: string;
-    profilePicture: string;
+    profilePicture: string | null;
   }
 };
 
@@ -33,7 +33,7 @@ export const useHomeChats = (): HomeChats[] => {
       const contact = contacts.filtered('mobileNumber == $0', chat.chatId)[0];
 
       const unreadCount = chatMessages
-        .filtered('isSender == false AND status != "seen"')
+        .filtered('isSender == false AND status != $0', MessageStatus.SEEN,)
         .length;
 
       const latestMessage = chatMessages[0];
@@ -49,7 +49,7 @@ export const useHomeChats = (): HomeChats[] => {
           name: contact ? contact.name : chat.chatId,
           originalNumber: contact ? contact.originalNumber : chat.chatId,
           mobileNumber: contact ? contact.mobileNumber : chat.chatId,
-          profilePicture: contact ? contact.profilePicture : '',
+          profilePicture: contact ? contact.profilePicture : null,
         },
       });
     }

@@ -19,8 +19,8 @@ describe('Clear all contacts in realm db', () => {
   });
 
   it('should clear all contacts from Realm', () => {
-    const mockContcts = [{ id: '1', name: 'Anjani', originalNumber: '8639523822', mobileNUmber:'+91 86395 23822', profilePicture:'' },
-          {id: '1', name: 'Anjaniiii', originalNumber: '8639523823', mobileNUmber:'+91 86395 23823', profilePicture:'' },
+    const mockContcts = [{ id: '1', name: 'Anjani', originalNumber: '8639523822', mobileNUmber:'+91 86395 23822', profilePicture:null },
+          {id: '1', name: 'Anjaniiii', originalNumber: '8639523823', mobileNUmber:'+91 86395 23823', profilePicture:null },
         ];
 
     mockObjects.mockReturnValue(mockContcts);

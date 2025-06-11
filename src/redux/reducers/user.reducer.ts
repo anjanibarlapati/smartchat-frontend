@@ -6,7 +6,7 @@ const initialUserState: User = {
     lastName: '',
     email: '',
     mobileNumber: '',
-    profilePicture: '',
+    profilePicture: null,
   };
 
   export const userSlice = createSlice({
@@ -18,7 +18,11 @@ const initialUserState: User = {
         action: PayloadAction<{ property: keyof User; value: string }>
       ) => {
        const { property, value } = action.payload;
-        state[property] = value;
+       if(property === 'profilePicture' && value === '') {
+          state[property] = null;
+       } else{
+          state[property] = value;
+       }
       },
       setUserDetails: (state, action: PayloadAction<User>) => {
         return action.payload;

@@ -57,7 +57,7 @@ describe('Contact Card Component', () => {
   test('Should render empty image when profile picture', () => {
     const {getByLabelText, getByText} = renderContactCard({
       ...contact,
-      profilePicture: '',
+      profilePicture: null,
     });
     expect(getByLabelText('profile-image').props.source).toEqual(
       require('../../../assets/images/profileImage.png'),
@@ -102,7 +102,7 @@ describe('Contact Card Component', () => {
     const contactWithEmptyPic = {
       ...contact,
       doesHaveAccount: true,
-      profilePicture: '',
+      profilePicture: null,
     };
     const {getByLabelText} = renderContactCard(contactWithEmptyPic);
     const contactCard = getByLabelText(/contact-card/i);
@@ -111,7 +111,7 @@ describe('Contact Card Component', () => {
       name: contact.name,
       originalNumber: contact.originalNumber,
       mobileNumber: contact.mobileNumber,
-      profilePic: '',
+      profilePic: null,
     });
   });
   test('Should apply styles based on the width of the screen', () => {

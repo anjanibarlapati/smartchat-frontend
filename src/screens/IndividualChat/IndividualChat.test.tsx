@@ -8,6 +8,7 @@ import { themeReducer } from '../../redux/reducers/theme.reducer';
 import { userReducer } from '../../redux/reducers/user.reducer';
 import { getSocket } from '../../utils/socket';
 import { IndividualChat } from './IndividualChat';
+import { MessageStatus } from '../../types/message';
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
   setItem: jest.fn(),
@@ -72,7 +73,7 @@ describe('IndividualChat', () => {
     message: 'Unread message',
     sentAt,
     isSender: false,
-    status: 'delivered',
+    status: MessageStatus.DELIVERED,
     chat: {
       chatId: '+91 86395 23822',
     },
@@ -82,7 +83,7 @@ describe('IndividualChat', () => {
     message: 'Hello Anji',
     sentAt,
     isSender: true,
-    status: 'seen',
+    status: MessageStatus.SEEN,
     chat: {
       chatId: '+91 86395 23833',
     },

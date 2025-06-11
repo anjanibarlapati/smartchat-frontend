@@ -8,7 +8,7 @@ import { getStyles } from './ChatHeader.styles';
 interface ChatHeaderProps {
     name: string,
     originalNumber: string,
-    profilePic?: string | null
+    profilePic: string | null
 }
 
 export const ChatHeader = ({name, originalNumber, profilePic}: ChatHeaderProps) => {

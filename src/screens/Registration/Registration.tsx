@@ -36,7 +36,7 @@ const { width, height } = useWindowDimensions();
     alertVisible, alertMessage, alertType, showAlert, hideAlert,
   } = useAlertModal();
   const [showProfilePicSelectModal, setShowProfilePicSelectModal] = useState(false);
-  const [profilePic, setProfilePic] = useState<UploadImage | null | string>(null);
+  const [profilePic, setProfilePic] = useState<UploadImage | null>(null);
   const [isLoading, setLoading] = useState(false);
   const [user, setUser] = useState<InputUser>({
     firstName: '',
@@ -45,6 +45,7 @@ const { width, height } = useWindowDimensions();
     password: '',
     mobileNumber: '',
     confirmPassword: '',
+    profilePic: null,
   });
   const dispatch: Dispatch = useDispatch();
   const [inputErrors, setInputErrors] = useState<InputUser>({
@@ -54,6 +55,7 @@ const { width, height } = useWindowDimensions();
     password: '',
     confirmPassword: '',
     mobileNumber: '',
+    profilePic: null,
   });
 
   const handleChange = (field: string, value: string) => {
@@ -123,6 +125,7 @@ const { width, height } = useWindowDimensions();
       password: '',
       mobileNumber: '',
       confirmPassword: '',
+      profilePic: null,
     });
     setProfilePic(null);
     setInputErrors({
@@ -132,6 +135,7 @@ const { width, height } = useWindowDimensions();
       password: '',
       mobileNumber: '',
       confirmPassword: '',
+      profilePic: null,
     });
   };
   const handleRegister = async () => {
@@ -221,11 +225,7 @@ const { width, height } = useWindowDimensions();
           <Image
             style={styles.img}
             source={
-              profilePic
-                ? typeof profilePic === 'string'
-                  ? {uri: profilePic}
-                  : {uri: profilePic.uri}
-                : require('../../../assets/images/profileImage.png')
+              profilePic ? {uri: profilePic.uri} : require('../../../assets/images/profileImage.png')
             }
             accessibilityLabel="profile-image"
             resizeMode="cover"

@@ -4,6 +4,7 @@ import { BSON } from 'realm';
 import { useQuery } from '../contexts/RealmContext';
 import { Chat } from '../realm-database/schemas/Chat';
 import { Message, Message as MessageSchema } from '../realm-database/schemas/Message';
+import { MessageStatus } from '../types/message';
 
 export interface GroupedMessageSection {
   title: string;
@@ -23,7 +24,7 @@ export interface FlattenedChatMessage {
   message: string;
   sentAt: Date;
   isSender: boolean;
-  status: 'sent' | 'delivered' | 'seen';
+  status: MessageStatus,
   chat: Chat;
 }
 
@@ -78,7 +79,7 @@ export const useGroupedMessages = (
           message: msg.message,
           sentAt: new Date(msg.sentAt),
           isSender: msg.isSender,
-          status: msg.status as 'sent' | 'delivered' | 'seen',
+          status: msg.status,
           chat: msg.chat,
         });
       });

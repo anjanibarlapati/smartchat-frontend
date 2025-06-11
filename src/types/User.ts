@@ -3,6 +3,6 @@ export type User = {
     lastName: string,
     email: string,
     mobileNumber: string,
-    profilePicture?: string,
+    profilePicture: string | null,
     password?: string
 }

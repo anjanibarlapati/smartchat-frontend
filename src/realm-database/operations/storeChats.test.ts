@@ -1,5 +1,5 @@
 import Realm from 'realm';
-import { Messages } from '../../types/message';
+import { Messages, MessageStatus } from '../../types/message';
 import { storeChats } from './storeChats';
 
 jest.mock('realm', () => {
@@ -22,7 +22,7 @@ describe('Add chats with their message in realm db', () => {
             message: 'Anjani',
             sentAt: '2025-06-01T00:00:00Z',
             isSender: true,
-            status: 'sent',
+            status: MessageStatus.SENT,
         },
     ],
   };
@@ -52,7 +52,7 @@ describe('Add chats with their message in realm db', () => {
    expect(mockCreate).toHaveBeenCalledWith('Message', expect.objectContaining({
       message: 'Anjani',
       isSender: true,
-      status: 'sent',
+      status: MessageStatus.SENT,
     }));
   });
     it('Should not create a chat if it already exists and store messages', () => {
@@ -65,7 +65,7 @@ describe('Add chats with their message in realm db', () => {
     expect(mockCreate).toHaveBeenCalledWith('Message', expect.objectContaining({
       message: 'Anjani',
       isSender: true,
-      status: 'sent',
+      status: MessageStatus.SENT,
     }));
   });
 

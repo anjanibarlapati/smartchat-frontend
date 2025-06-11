@@ -1,3 +1,4 @@
+import { MessageStatus } from '../../types/message';
 import { getRealmInstance } from '../connection';
 import { updateMessageStatusInRealm } from './updateMessageStatus';
 
@@ -20,7 +21,7 @@ describe('updateMessageStatusInRealm', () => {
 
   const chatId = '8639523822';
   const sentAt = '2025-06-03T00:00:00Z';
-  const status = 'seen';
+  const status = MessageStatus.SEEN;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -42,7 +43,7 @@ describe('updateMessageStatusInRealm', () => {
   });
 
   it('should update a single message status if found', async () => {
-    const message = { sentAt, status: 'sent' };
+    const message = { sentAt, status: MessageStatus.SENT };
     mockMessages.push(message);
 
     const filteredForSentAt = jest.fn().mockReturnValue([message]);
@@ -78,9 +79,9 @@ describe('updateMessageStatusInRealm', () => {
   });
 
   it('should update messages sent in socket payload before sentAt if updateAllBeforeSentAt is true for sender', async () => {
-    const message1 = { sentAt: '2025-05-30T00:00:00Z', status: 'sent' };
-    const message2 = { sentAt: '2025-06-01T00:00:00Z', status: 'delivered' };
-    const newer = { sentAt: '2025-06-02T00:00:00Z', status: 'sent' };
+    const message1 = { sentAt: '2025-05-30T00:00:00Z', status: MessageStatus.SENT };
+    const message2 = { sentAt: '2025-06-01T00:00:00Z', status: MessageStatus.DELIVERED};
+    const newer = { sentAt: '2025-06-02T00:00:00Z', status:  MessageStatus.SENT };
 
     const messageIds = [message1.sentAt, message2.sentAt, newer.sentAt];
 
@@ -90,25 +91,25 @@ describe('updateMessageStatusInRealm', () => {
 
     expect(message1.status).toBe(status);
     expect(message2.status).toBe(status);
-    expect(newer.status).toBe('seen');
+    expect(newer.status).toBe( MessageStatus.SEEN);
   });
 
    it('should not update status if it is blocked message', async () => {
-    const message1 = { sentAt: '2025-05-30T00:00:00Z', status: 'sent' };
-    const message2 = { sentAt: '2025-06-01T00:00:00Z', status: 'delivered' };
-    const newer = { sentAt: '2025-06-02T00:00:00Z', status: 'sent', isSender: false};
+    const message1 = { sentAt: '2025-05-30T00:00:00Z', status: MessageStatus.SENT };
+    const message2 = { sentAt: '2025-06-01T00:00:00Z', status: MessageStatus.DELIVERED};
+    const newer = { sentAt: '2025-06-02T00:00:00Z', status: MessageStatus.SENT, isSender: false};
     mockMessages.push(message1, message2);
      const messageIdss = [message1.sentAt, message2.sentAt];
     await updateMessageStatusInRealm({ chatId, sentAt, status, updateAllBeforeSentAt: true, messageIds: messageIdss });
     expect(message1.status).toBe(status);
     expect(message2.status).toBe(status);
-    expect(newer.status).toBe('sent');
+    expect(newer.status).toBe( MessageStatus.SENT);
   });
 
     it('should not update any message sent in socket payload before sentAt if updateAllBeforeSentAt is true for sender', async () => {
-    const message1 = { sentAt: '2025-05-30T00:00:00Z', status: 'sent' };
-    const message2 = { sentAt: '2025-06-01T00:00:00Z', status: 'delivered' };
-    const newer = { sentAt: '2025-06-02T00:00:00Z', status: 'sent' };
+    const message1 = { sentAt: '2025-05-30T00:00:00Z', status: MessageStatus.SENT };
+    const message2 = { sentAt: '2025-06-01T00:00:00Z', status: MessageStatus.DELIVERED };
+    const newer = { sentAt: '2025-06-02T00:00:00Z', status: MessageStatus.SENT };
 
     const messageIds = [message1.sentAt, message2.sentAt, newer.sentAt];
 
@@ -118,13 +119,13 @@ describe('updateMessageStatusInRealm', () => {
 
     expect(message1.status).toBe(status);
     expect(message2.status).toBe(status);
-    expect(newer.status).toBe('seen');
+    expect(newer.status).toBe(MessageStatus.SEEN);
   });
 
   it('should update all messages if all messages are seen already', async () => {
-    const message1 = { sentAt: '2025-05-30T00:00:00Z', status: 'seen', isSender: false };
-    const message2 = { sentAt: '2025-06-01T00:00:00Z', status: 'seen', isSender: false };
-    const newer = { sentAt: '2025-06-02T00:00:00Z', status: 'seen', isSender: false };
+    const message1 = { sentAt: '2025-05-30T00:00:00Z', status: MessageStatus.SEEN, isSender: false };
+    const message2 = { sentAt: '2025-06-01T00:00:00Z', status: MessageStatus.SEEN, isSender: false };
+    const newer = { sentAt: '2025-06-02T00:00:00Z', status: MessageStatus.SEEN, isSender: false };
     mockMessages.push(message1, message2, newer);
     await updateMessageStatusInRealm({ chatId, sentAt, status, updateAllBeforeSentAt: true });
     expect(message1.status).toBe(status);

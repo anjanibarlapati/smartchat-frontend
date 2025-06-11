@@ -1,5 +1,5 @@
 import Realm from 'realm';
-import { Message } from '../../types/message';
+import { Message, MessageStatus } from '../../types/message';
 import { addNewMessageInRealm } from './addNewMessage';
 
 jest.mock('realm', () => {
@@ -20,7 +20,7 @@ describe('Add new message in realm db', () => {
     message: 'Hello Anjani',
     sentAt: new Date().toISOString(),
     isSender: true,
-    status: 'sent',
+    status: MessageStatus.SENT,
   };
 
   beforeEach(() => {
@@ -57,7 +57,7 @@ describe('Add new message in realm db', () => {
     message: message.message,
     sentAt: message.sentAt,
     isSender: true,
-    status: 'sent',
+    status: MessageStatus.SENT,
     chat: mockChat,
     }));
   });

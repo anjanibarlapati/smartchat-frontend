@@ -7,6 +7,7 @@ import { updateUserAccountStatusInRealm } from '../realm-database/operations/upd
 import { store } from '../redux/store';
 import { decryptMessage } from './decryptMessage';
 import { socketConnection, socketDisconnect } from './socket';
+import { MessageStatus } from '../types/message';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -94,7 +95,7 @@ describe('Socket Utility (with Realm instance mocking)', () => {
       message: 'encryptedMsg',
       nonce: 'nonce123',
       sentAt: '2024-01-01T12:00:00Z',
-      status: 'delivered',
+      status: MessageStatus.DELIVERED,
     };
 
     await socketConnection(mobileNumber);
@@ -126,7 +127,7 @@ describe('Socket Utility (with Realm instance mocking)', () => {
       message: 'Anjani',
       nonce: 'nonce',
       sentAt: '2025-06-01T12:00:00Z',
-      status: 'delivered',
+      status: MessageStatus.DELIVERED,
     };
 
     const mockError = new Error('Decryption failed');
@@ -152,7 +153,7 @@ describe('Socket Utility (with Realm instance mocking)', () => {
     const deliveryData = {
       sentAt: '2024-01-01T12:00:00Z',
       receiverMobileNumber: mobileNumber,
-      status: 'delivered',
+      status: MessageStatus.DELIVERED,
     };
 
     await socketConnection(mobileNumber);
@@ -162,7 +163,7 @@ describe('Socket Utility (with Realm instance mocking)', () => {
     expect(updateMessageStatusInRealm).toHaveBeenCalledWith({
       chatId: mobileNumber,
       sentAt: deliveryData.sentAt,
-      status: 'delivered',
+      status: MessageStatus.DELIVERED,
     });
   });
 
@@ -170,7 +171,7 @@ describe('Socket Utility (with Realm instance mocking)', () => {
     const readData = {
       chatId: '123',
       sentAt: '2024-01-01T12:00:00Z',
-      status: 'seen',
+      status: MessageStatus.SEEN,
       updatedCount: 2,
     };
 
@@ -181,7 +182,7 @@ describe('Socket Utility (with Realm instance mocking)', () => {
     expect(updateMessageStatusInRealm).toHaveBeenCalledWith({
       chatId: '123',
       sentAt: readData.sentAt,
-      status: 'seen',
+      status: MessageStatus.SEEN,
       updateAllBeforeSentAt: true,
     });
   });

@@ -1,5 +1,6 @@
 import Realm from 'realm';
 import { clearChatInRealm } from './clearChat';
+import { MessageStatus } from '../../types/message';
 
 jest.mock('realm');
 
@@ -11,7 +12,7 @@ describe('Clear chat in realm db', () => {
             message: 'Anjani',
             sentAt: '2023-01-01T00:00:00Z',
             isSender: true,
-            status: 'sent',
+            status: MessageStatus.SENT,
         },
     ],
   };

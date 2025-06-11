@@ -12,7 +12,7 @@ export const insertContactsInRealm = (realm: Realm, contacts: Contact[] ) => {
             originalNumber: contact.originalNumber,
             mobileNumber: contact.mobileNumber,
             doesHaveAccount: !!contact.doesHaveAccount,
-            profilePicture: contact.profilePicture ? contact.profilePicture : '',
+            profilePicture: contact.profilePicture,
           },
         );
       });

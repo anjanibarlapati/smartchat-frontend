@@ -23,7 +23,7 @@ describe('Tests related to the ChatHeader component', () => {
     const renderChatHeader = () => {
         return render(
             <Provider store={store}>
-                <ChatHeader name={contact.name} originalNumber={contact.originalNumber} />
+                <ChatHeader name={contact.name} originalNumber={contact.originalNumber} profilePic={null}/>
             </Provider>
         );
     };

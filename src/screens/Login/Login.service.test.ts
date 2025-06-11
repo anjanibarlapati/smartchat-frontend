@@ -1,5 +1,5 @@
 import { Credentials } from '../../types/Credentials';
-import { Chat } from '../../types/message';
+import { Chat, MessageStatus } from '../../types/message';
 import { BASE_URL } from '../../utils/constants';
 import { decryptMessage } from '../../utils/decryptMessage';
 import { fetchChats, formatMessages, login } from './Login.service';
@@ -143,7 +143,7 @@ describe('Format messages of a user', ()=> {
                     nonce: 'nonce',
                     sentAt: '2023-01-01T00:00:00Z',
                     isSender: true,
-                    status: 'sent',
+                    status: MessageStatus.SENT,
                 },
                 ],
             },
@@ -157,7 +157,7 @@ describe('Format messages of a user', ()=> {
                 message: 'Anjani',
                 sentAt: '2023-01-01T00:00:00Z',
                 isSender: true,
-                status: 'sent',
+                status: MessageStatus.SENT,
                 },
             ],
         });

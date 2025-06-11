@@ -38,7 +38,7 @@ describe('insertContactsInRealm', () => {
         originalNumber: '9999999999',
         mobileNumber: '+91 99999 99999',
         doesHaveAccount: false,
-        profilePicture: '',
+        profilePicture: null,
       },
     ];
 
@@ -58,7 +58,7 @@ describe('insertContactsInRealm', () => {
       originalNumber: '9999999999',
       mobileNumber: '+91 99999 99999',
       doesHaveAccount: false,
-      profilePicture: '',
+      profilePicture: null,
     }));
 
   });

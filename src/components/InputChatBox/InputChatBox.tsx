@@ -13,7 +13,7 @@ import {useAppTheme} from '../../hooks/appTheme';
 import {useAlertModal} from '../../hooks/useAlertModal';
 import {addNewMessageInRealm} from '../../realm-database/operations/addNewMessage';
 import {storeState} from '../../redux/store';
-import {Message} from '../../types/message';
+import {Message, MessageStatus} from '../../types/message';
 import {Theme} from '../../utils/themes';
 import {CustomAlert} from '../CustomAlert/CustomAlert';
 import {sendMessage} from './InputChatBox.service';
@@ -43,14 +43,14 @@ export function InputChatBox({
         message: message.trim(),
         sentAt: sentAt,
         isSender: true,
-        status: 'sent',
+        status: MessageStatus.SENT,
       };
       if (receiverMobileNumber === user.mobileNumber) {
-        newMessage.status = 'seen';
+        newMessage.status = MessageStatus.SEEN;
       }
       const netState = await NetInfo.fetch();
       if (!netState.isConnected) {
-        newMessage.status = 'pending';
+        newMessage.status = MessageStatus.PENDING;
         addNewMessageInRealm(realm, receiverMobileNumber, newMessage);
         return;
       }

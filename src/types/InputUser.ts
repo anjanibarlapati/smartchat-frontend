@@ -5,5 +5,5 @@ export type InputUser = {
     password: string,
     mobileNumber: string,
     confirmPassword: string,
-    profilePic?: string
+    profilePic: string | null
 }

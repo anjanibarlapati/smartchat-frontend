@@ -4,6 +4,7 @@ import { Chat } from '../realm-database/schemas/Chat';
 import { Contact } from '../realm-database/schemas/Contact';
 import { Message } from '../realm-database/schemas/Message';
 import { useUnreadChats } from './unreadChats';
+import { MessageStatus } from '../types/message';
 
 jest.mock('../contexts/RealmContext', () => ({
   useQuery: jest.fn(),
@@ -16,78 +17,68 @@ type RealmCollection<T> = T[] & {
   sorted: (field: keyof T, descending: boolean) => RealmCollection<T>;
 };
 
-function createRealmCollection<T extends Record<string, any>>(
-  items: T[],
-): RealmCollection<T> {
+function createRealmCollection<T extends Record<string, any>>(items: T[]): RealmCollection<T> {
   const collection = [...items] as RealmCollection<T>;
 
-  collection.filtered = ((
-    query: string,
-    ...args: unknown[]
-  ): RealmCollection<T> => {
-    if (query === 'isSender == false AND status != "seen"') {
-      return createRealmCollection(
-        collection.filter((m: T) => !m.isSender && m.status !== 'seen'),
-      );
+  collection.filtered = (query: string, ...args: any[]): RealmCollection<T> => {
+    if (query === 'isSender == false AND status != $0') {
+      const excludeStatus = args[0];
+      return createRealmCollection(collection.filter((m: T) => !m.isSender && m.status !== excludeStatus));
     }
 
     if (query === 'chat.chatId == $0') {
       const chatId = args[0];
-      return createRealmCollection(
-        collection.filter((m: T) => m.chat?.chatId === chatId),
-      );
+      return createRealmCollection(collection.filter((m: T) => m.chat?.chatId === chatId));
     }
 
     if (query === 'mobileNumber == $0') {
-      const mobile = args[0];
-      return createRealmCollection(
-        collection.filter((c: T) => c.mobileNumber === mobile),
-      );
+      const mobileNumber = args[0];
+      return createRealmCollection(collection.filter((c: T) => c.mobileNumber === mobileNumber));
     }
 
     return createRealmCollection([]);
-  }) as RealmCollection<T>['filtered'];
+  };
 
-  collection.sorted = ((
-    field: keyof T,
-    descending: boolean,
-  ): RealmCollection<T> => {
+  collection.sorted = (field: keyof T, descending: boolean): RealmCollection<T> => {
     const sorted = [...collection].sort((a, b) => {
-      const aVal = new Date(a[field] as string).getTime();
-      const bVal = new Date(b[field] as string).getTime();
-      return descending ? bVal - aVal : aVal - bVal;
+      const aTime = new Date(a[field] as string).getTime();
+      const bTime = new Date(b[field] as string).getTime();
+      return descending ? bTime - aTime : aTime - bTime;
     });
     return createRealmCollection(sorted);
-  }) as RealmCollection<T>['sorted'];
+  };
 
   return collection;
 }
 
-describe('should render useUnreadChats', () => {
-  afterEach(() => jest.clearAllMocks());
-  it('should return unread chats with latest message and contact', () => {
-    const chats = [{chatId: '1'}, {chatId: '2'}];
+describe('useUnreadChats', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('returns unread chats with latest message and contact info', () => {
+    const chats = [{ chatId: '1' }, { chatId: '2' }];
     const messages = [
       {
-        chat: {chatId: '1'},
+        chat: { chatId: '1' },
         message: 'Hi',
         sentAt: '2023-01-02T10:00:00Z',
         isSender: false,
-        status: 'delivered',
+        status: MessageStatus.DELIVERED,
       },
       {
-        chat: {chatId: '1'},
+        chat: { chatId: '1' },
         message: 'Seen msg',
         sentAt: '2023-01-01T10:00:00Z',
         isSender: false,
-        status: 'seen',
+        status: MessageStatus.SEEN,
       },
       {
-        chat: {chatId: '2'},
+        chat: { chatId: '2' },
         message: 'Hey',
         sentAt: '2023-01-03T08:00:00Z',
         isSender: false,
-        status: 'delivered',
+        status: MessageStatus.DELIVERED,
       },
     ];
     const contacts = [
@@ -104,19 +95,16 @@ describe('should render useUnreadChats', () => {
         profilePicture: 'b.jpg',
       },
     ];
-    mockUseQuery.mockImplementation(schema => {
-      if (schema === Chat) {
-        return createRealmCollection(chats);
-      }
-      if (schema === Message) {
-        return createRealmCollection(messages);
-      }
-      if (schema === Contact) {
-        return createRealmCollection(contacts);
-      }
+
+    mockUseQuery.mockImplementation((schema) => {
+      if (schema === Chat) {return createRealmCollection(chats);}
+      if (schema === Message) {return createRealmCollection(messages);}
+      if (schema === Contact) {return createRealmCollection(contacts);}
+      return createRealmCollection([]);
     });
 
-    const {result} = renderHook(() => useUnreadChats());
+    const { result } = renderHook(() => useUnreadChats());
+
     expect(result.current).toHaveLength(2);
     expect(result.current[0].contact.name).toBe('Bob');
     expect(result.current[1].contact.name).toBe('Alice');
@@ -124,64 +112,59 @@ describe('should render useUnreadChats', () => {
     expect(result.current[1].unreadCount).toBe(1);
     expect(result.current[0].lastMessage.message).toBe('Hey');
   });
-  it('should exclude chats with no unread messages', () => {
-    const chats = [{chatId: '1'}];
+
+  it('excludes chats with only seen messages', () => {
+    const chats = [{ chatId: '1' }];
     const messages = [
       {
-        chat: {chatId: '1'},
+        chat: { chatId: '1' },
         message: 'Seen',
         sentAt: '2023-01-02T10:00:00Z',
         isSender: false,
-        status: 'seen',
+        status: MessageStatus.SEEN,
       },
     ];
-    mockUseQuery.mockImplementation(schema => {
-      if (schema === Chat) {
-        return createRealmCollection(chats);
-      }
-      if (schema === Message) {
-        return createRealmCollection(messages);
-      }
-      if (schema === Contact) {
-        return createRealmCollection([]);
-      }
+
+    mockUseQuery.mockImplementation((schema) => {
+      if (schema === Chat) {return createRealmCollection(chats);}
+      if (schema === Message) {return createRealmCollection(messages);}
+      if (schema === Contact) {return createRealmCollection([]);}
+      return createRealmCollection([]);
     });
 
-    const {result} = renderHook(() => useUnreadChats());
+    const { result } = renderHook(() => useUnreadChats());
     expect(result.current).toHaveLength(0);
   });
-  it('should use fallback contact info if contact is missing', () => {
-    const chats = [{chatId: '999'}];
+
+  it('uses fallback contact info if contact is missing', () => {
+    const chats = [{ chatId: '999' }];
     const messages = [
       {
-        chat: {chatId: '999'},
+        chat: { chatId: '999' },
         message: 'Yo',
         sentAt: '2023-01-02T10:00:00Z',
         isSender: false,
-        status: 'delivered',
+        status: MessageStatus.DELIVERED,
       },
     ];
 
-    mockUseQuery.mockImplementation(schema => {
-      if (schema === Chat) {
-        return createRealmCollection(chats);
-      }
-      if (schema === Message) {
-        return createRealmCollection(messages);
-      }
-      if (schema === Contact) {
-        return createRealmCollection([]);
-      }
+    mockUseQuery.mockImplementation((schema) => {
+      if (schema === Chat) {return createRealmCollection(chats);}
+      if (schema === Message) {return createRealmCollection(messages);}
+      if (schema === Contact) {return createRealmCollection([]);}
+      return createRealmCollection([]);
     });
 
-    const {result} = renderHook(() => useUnreadChats());
+    const { result } = renderHook(() => useUnreadChats());
 
+    expect(result.current).toHaveLength(1);
     expect(result.current[0].contact.name).toBe('999');
-    expect(result.current[0].contact.profilePicture).toBe('');
+    expect(result.current[0].contact.profilePicture).toBe(null);
   });
-  it('should return empty array when there are no chats', () => {
+
+  it('returns empty array when no chats exist', () => {
     mockUseQuery.mockImplementation(() => createRealmCollection([]));
-    const {result} = renderHook(() => useUnreadChats());
+    const { result } = renderHook(() => useUnreadChats());
     expect(result.current).toEqual([]);
   });
 });

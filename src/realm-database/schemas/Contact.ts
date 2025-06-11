@@ -5,7 +5,7 @@ export class Contact extends Realm.Object<Contact> {
   name!: string;
   originalNumber!: string;
   mobileNumber!: string;
-  profilePicture!: string;
+  profilePicture!: string | null;
   doesHaveAccount!: boolean;
 
   static schema: Realm.ObjectSchema = {
@@ -16,7 +16,7 @@ export class Contact extends Realm.Object<Contact> {
       name: 'string',
       originalNumber: 'string',
       mobileNumber: 'string',
-      profilePicture: 'string',
+      profilePicture: 'string?',
       doesHaveAccount: 'bool',
     },
   };

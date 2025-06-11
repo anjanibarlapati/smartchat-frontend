@@ -2,7 +2,7 @@ export interface Message {
   message: string;
   sentAt: string;
   isSender: boolean;
-  status: 'sent' | 'delivered' | 'seen' | 'pending';
+  status: MessageStatus;
 }
 export type DBMessage = Message & {
     nonce: string,
@@ -12,7 +12,7 @@ export type UserMessage = {
   message: string;
   nonce: string;
   sentAt: string;
-  status: 'sent' | 'delivered' | 'seen' | 'pending';
+  status: MessageStatus,
 };
 
 export type UserChatData = Record<string, UserMessage[]>;
@@ -30,5 +30,5 @@ export enum MessageStatus {
   SENT = 'sent',
   DELIVERED = 'delivered',
   SEEN = 'seen',
-  NOTSENT = 'pending'
+  PENDING = 'pending'
 }

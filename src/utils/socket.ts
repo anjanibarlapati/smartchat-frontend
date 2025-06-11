@@ -7,7 +7,7 @@ import { updateMessageStatusInRealm } from '../realm-database/operations/updateM
 import { updateUserAccountStatusInRealm } from '../realm-database/operations/updateUserAccountStatus';
 import { clearSuccessMessage } from '../redux/reducers/auth.reducer';
 import { store } from '../redux/store';
-import { Message } from '../types/message';
+import { Message, MessageStatus } from '../types/message';
 import { BASE_URL } from './constants';
 import { decryptMessage } from './decryptMessage';
 
@@ -31,7 +31,6 @@ export const socketConnection = async (mobileNumber: string) => {
 
       socket.on('newMessage', async data => {
         try{
-
           const actualMessage = await decryptMessage(
             data.chatId,
             data.message,
@@ -52,13 +51,13 @@ export const socketConnection = async (mobileNumber: string) => {
       });
 
       socket.on('messageDelivered', async data => {
-        const { sentAt, receiverMobileNumber, status, messageIds, messagesCountToupdate } = data;
-        updateMessageStatusInRealm( {chatId: receiverMobileNumber, sentAt: sentAt, status: status, updateAllBeforeSentAt: messagesCountToupdate, messageIds: messageIds});
+        const { sentAt, receiverMobileNumber, messageIds, messagesCountToupdate } = data;
+        updateMessageStatusInRealm( {chatId: receiverMobileNumber, sentAt: sentAt, status: MessageStatus.DELIVERED, updateAllBeforeSentAt: messagesCountToupdate, messageIds: messageIds});
       });
 
       socket.on('messageRead', data => {
-        const { sentAt, chatId, status, updatedCount, messageIds } = data;
-        updateMessageStatusInRealm( {chatId: chatId, sentAt: sentAt, messageIds: messageIds, status: status, updateAllBeforeSentAt: updatedCount > 1});
+        const { sentAt, chatId, updatedCount, messageIds } = data;
+        updateMessageStatusInRealm( {chatId: chatId, sentAt: sentAt, messageIds: messageIds, status: MessageStatus.SEEN, updateAllBeforeSentAt: updatedCount > 1});
       });
 
       socket.on('isAccountDeleted', data => {

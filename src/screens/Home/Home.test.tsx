@@ -9,6 +9,7 @@ import { authReducer } from '../../redux/reducers/auth.reducer';
 import { themeReducer } from '../../redux/reducers/theme.reducer';
 import { store } from '../../redux/store';
 import { Home } from './Home';
+import { MessageStatus } from '../../types/message';
 
 jest.mock('../../hooks/homechats', () => ({
   useHomeChats: jest.fn(),
@@ -122,7 +123,7 @@ describe('Home Screen', () => {
           message: 'Hello Anjani',
           sentAt: '2025-06-03T10:00:00Z',
           isSender: false,
-          status: 'delivered',
+          status: MessageStatus.DELIVERED,
         },
         unreadCount: 3,
         contact: {
@@ -137,7 +138,7 @@ describe('Home Screen', () => {
           message: 'Anjuu',
           sentAt: '2025-06-04T10:00:00Z',
           isSender: false,
-          status: 'delivered',
+          status: MessageStatus.DELIVERED,
         },
         unreadCount: 0,
         contact: {

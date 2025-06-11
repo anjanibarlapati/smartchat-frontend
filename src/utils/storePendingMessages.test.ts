@@ -1,3 +1,4 @@
+import { MessageStatus } from '../types/message';
 import {encryptMessage} from './encryptMessage';
 import {getTokens} from './getTokens';
 import {storePendingMessages} from './storePendingMessages';
@@ -24,14 +25,14 @@ describe('check for storing pending messages', () => {
     {
       message: 'Hii',
       sentAt: '2025-06-01T12:00:00Z',
-      status: 'pending',
+      status: MessageStatus.PENDING,
       isSender: true,
       chat: {chatId: '+91 95021 47010'},
     },
     {
       message: 'hello',
       sentAt: '2025-06-01T12:01:00Z',
-      status: 'pending',
+      status: MessageStatus.PENDING,
       isSender: true,
       chat: {chatId: '+91 98765 43210'},
     },
@@ -110,7 +111,7 @@ describe('check for storing pending messages', () => {
       {
         message: 'No chat message',
         sentAt: '2025-06-01T12:02:00Z',
-        status: 'pending',
+        status: MessageStatus.PENDING,
         isSender: true,
         chat: undefined,
       },

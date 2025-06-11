@@ -3,11 +3,12 @@ import { Provider } from 'react-redux';
 import { store } from '../../redux/store';
 import { MessageProps } from '../../types/MessageProps';
 import { MessageBox } from './MessageBox';
+import { MessageStatus } from '../../types/message';
 
 const renderMessageBox = ({
   message = '',
   timestamp = '',
-  status = 'sent',
+  status = MessageStatus.SENT,
   isSender = false,
 }: Partial<MessageProps> = {}) => {
   return render(
@@ -27,7 +28,7 @@ describe('MessageBox Component Check', () => {
     renderMessageBox({
       message: 'Hello, Mamatha!',
       timestamp: '12:45 PM',
-      status: 'sent',
+      status: MessageStatus.SENT,
       isSender: true,
     });
 
@@ -39,7 +40,7 @@ describe('MessageBox Component Check', () => {
     renderMessageBox({
       message: 'Hi!',
       timestamp: '1:00 PM',
-      status: 'seen',
+      status: MessageStatus.SEEN,
       isSender: false,
     });
 
@@ -53,7 +54,7 @@ describe('MessageBox Component Check', () => {
     renderMessageBox({
       message: 'Test Sent',
       timestamp: '1:01 PM',
-      status: 'sent',
+      status: MessageStatus.SENT,
       isSender: true,
     });
 
@@ -66,7 +67,7 @@ describe('MessageBox Component Check', () => {
     renderMessageBox({
       message: 'Test Delivered',
       timestamp: '1:02 PM',
-      status: 'delivered',
+      status: MessageStatus.DELIVERED,
       isSender: true,
     });
 
@@ -79,7 +80,7 @@ describe('MessageBox Component Check', () => {
     renderMessageBox({
       message: 'Test Seen',
       timestamp: '1:03 PM',
-      status: 'seen',
+      status: MessageStatus.SEEN,
       isSender: true,
     });
 
@@ -91,7 +92,7 @@ describe('MessageBox Component Check', () => {
     renderMessageBox({
       message: 'Test pending',
       timestamp: '1:03 PM',
-      status: 'pending',
+      status: MessageStatus.PENDING,
       isSender: true,
     });
 
@@ -103,7 +104,7 @@ describe('MessageBox Component Check', () => {
     const {getByLabelText} = renderMessageBox({
       message: 'Hello, Mamatha!',
       timestamp: '12:45 PM',
-      status: 'sent',
+      status: MessageStatus.SENT,
       isSender: true,
     });
     const messageBoxContainer = getByLabelText('messageBox-container').parent;
@@ -114,7 +115,7 @@ describe('MessageBox Component Check', () => {
     renderMessageBox({
       message: 'Hello, Mamatha!',
       timestamp: '12:45 PM',
-      status: 'sent',
+      status: MessageStatus.SENT,
       isSender: true,
     });
     const messageBoxContainerr = screen.getByLabelText(

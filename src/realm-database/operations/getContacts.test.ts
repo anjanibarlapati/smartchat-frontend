@@ -23,7 +23,7 @@ describe('getContactsFromRealm', () => {
         name: 'Anjani',
         originalNumber: '8639523822',
         mobileNumber: '+91 86395 23822',
-        profilePicture: '',
+        profilePicture: null,
         doesHaveAccount: true,
       },
       {
@@ -31,7 +31,7 @@ describe('getContactsFromRealm', () => {
         name: 'Anjaniii',
         originalNumber: '8639523823',
         mobileNumber: '+91 86395 23823',
-        profilePicture: '',
+        profilePicture: null,
         doesHaveAccount: false,
       },
     ];
@@ -48,7 +48,7 @@ describe('getContactsFromRealm', () => {
         name: 'Anjani',
         originalNumber: '8639523822',
         mobileNumber: '+91 86395 23822',
-        profilePicture: '',
+        profilePicture: null,
         doesHaveAccount: true,
       },
       {
@@ -56,7 +56,7 @@ describe('getContactsFromRealm', () => {
         name: 'Anjaniii',
         originalNumber: '8639523823',
         mobileNumber: '+91 86395 23823',
-        profilePicture: '',
+        profilePicture: null,
         doesHaveAccount: false,
       },
     ]);

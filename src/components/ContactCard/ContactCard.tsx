@@ -19,7 +19,7 @@ function ContactCard ({contact}: {contact: Contact}):React.JSX.Element {
         <TouchableOpacity style={styles.body} accessibilityLabel="contact-card"
             onPress={()=> {
                 contact.doesHaveAccount ?
-                navigation.replace('IndividualChat', {name: contact.name, originalNumber: contact.originalNumber, mobileNumber: contact.mobileNumber, profilePic: contact.profilePicture ? contact.profilePicture : ''})
+                navigation.replace('IndividualChat', {name: contact.name, originalNumber: contact.originalNumber, mobileNumber: contact.mobileNumber, profilePic: contact.profilePicture})
                 : sendSmsInvite(contact.originalNumber);}
             }
         >

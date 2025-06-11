@@ -5,6 +5,7 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { useUnreadChats } from '../../hooks/unreadChats';
 import { store } from '../../redux/store';
 import { Unread } from './Unread';
+import { MessageStatus } from '../../types/message';
 
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
@@ -78,7 +79,7 @@ describe('Unread Screen', () => {
           message: 'Hello Anjani',
           sentAt: '2025-06-03T10:00:00Z',
           isSender: false,
-          status: 'delivered',
+          status: MessageStatus.DELIVERED,
         },
         unreadCount: 3,
         contact: {

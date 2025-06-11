@@ -6,14 +6,14 @@ import { getStyles } from './MessageBox.styles';
 
  export const getTickIcon = (status: string) => {
     switch (status) {
+      case 'pending':
+        return require('../../../assets/images/pending.png');
       case 'sent':
         return require('../../../assets/images/singleTick.png');
       case 'delivered':
         return require('../../../assets/images/doubleTick.png');
       case 'seen':
         return require('../../../assets/images/readTick.png');
-      case 'pending':
-        return require('../../../assets/images/pending.png');
     }
   };
 

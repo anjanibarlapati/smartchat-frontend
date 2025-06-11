@@ -1,6 +1,8 @@
+import { MessageStatus } from './message';
+
 export type MessageProps = {
   message: string;
   timestamp: string;
-  status: 'sent' | 'delivered' | 'seen' | 'pending';
+  status: MessageStatus,
   isSender: boolean;
 };

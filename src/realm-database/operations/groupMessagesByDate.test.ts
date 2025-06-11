@@ -1,4 +1,4 @@
-import { Message } from '../../types/message';
+import { Message, MessageStatus } from '../../types/message';
 import { groupMessagesByDate } from './groupMessagesByDate';
 
 describe('groupMessagesByDate', () => {
@@ -7,25 +7,25 @@ describe('groupMessagesByDate', () => {
       message: 'Hello!',
       sentAt: '2025-06-04T08:00:00.000Z',
       isSender: true,
-      status: 'sent',
+      status: MessageStatus.SENT,
     },
     {
       message: 'Hi there!',
       sentAt: '2025-06-04T08:00:00.000Z',
       isSender: false,
-      status: 'delivered',
+      status: MessageStatus.DELIVERED,
     },
     {
       message: 'Good morning',
       sentAt: '2025-06-03T10:15:00.000Z',
       isSender: true,
-      status: 'seen',
+      status: MessageStatus.SEEN,
     },
     {
       message: 'Check this out',
       sentAt: '2025-06-02T09:30:00.000Z',
       isSender: false,
-      status: 'sent',
+      status: MessageStatus.SENT,
     },
   ];
 
