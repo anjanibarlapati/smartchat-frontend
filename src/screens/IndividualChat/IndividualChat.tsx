@@ -65,6 +65,9 @@ export const IndividualChat = () => {
     }
   }, [chat, mobileNumber, realm]);
   useEffect(() => {
+    if(mobileNumber === user.mobileNumber) {
+      return;
+    }
     const socket = getSocket();
     if (!socket?.connected) {
       return;
@@ -82,7 +85,7 @@ export const IndividualChat = () => {
     const allMessages = groupedMessages.flatMap(section => section.data);
     const latestUnseen = [...allMessages]
       .reverse()
-      .find(msg => !msg.isSender && msg.status !== 'seen');
+      .find(msg => !msg.isSender && msg.status !== MessageStatus.SEEN);
 
     if (latestUnseen) {
       socket.emit('messageRead', {
