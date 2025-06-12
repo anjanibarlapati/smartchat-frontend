@@ -27,6 +27,8 @@ export async function sendLocalNotification(title: string, body: string) {
       android: {
         channelId: 'messages',
         pressAction: { id: 'default' },
+        smallIcon: 'ic_launcher_round',
+        color: '#008080',
       },
     });
   } catch (err) {
@@ -51,6 +53,8 @@ export async function scheduleNotification(
         android: {
           channelId: 'messages',
           pressAction: { id: 'default' },
+          smallIcon: 'ic_launcher_round',
+          color: '#008080',
         },
       },
       trigger
