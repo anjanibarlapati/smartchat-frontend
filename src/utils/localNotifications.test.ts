@@ -48,6 +48,8 @@ describe('sendLocalNotification', () => {
       android: {
         channelId: 'messages',
         pressAction: { id: 'default' },
+        smallIcon: 'ic_launcher_round',
+        color: '#008080',
       },
     });
   });
