@@ -123,7 +123,28 @@ describe('Registration Screen check', () => {
       expect(queryByText('Password is required')).toBeTruthy();
     });
   });
-  it('shows error when passwords do not match', async () => {
+  it('Should show validation when password when it doesn`t meet the require conditions ', async () => {
+    const {getByLabelText, getByPlaceholderText, getByText, queryByText} =
+      renderRegistrationScreen();
+
+    fireEvent.changeText(getByPlaceholderText('First Name *'), 'Anjali');
+    fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Gogu');
+    fireEvent.changeText(getByPlaceholderText('Email'), 'anju415@.com');
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 7702153247');
+    fireEvent.changeText(getByPlaceholderText('Password *'), 'anjali');
+
+    await act(async () => {
+      fireEvent.press(getByText('Register'));
+    });
+    await waitFor(() => {
+      expect(
+        queryByText(
+          'Password must be at least 8 characters long and include 1 uppercase, 1 lowercase, 1 number, and 1 special character',
+        ),
+      ).toBeTruthy();
+    });
+  });
+  it(' Should show error when passwords do not match', async () => {
     const {getByLabelText, getByPlaceholderText, getByText, queryByText} =
       renderRegistrationScreen();
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Mamatha');
