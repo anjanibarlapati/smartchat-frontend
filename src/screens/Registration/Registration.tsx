@@ -1,42 +1,50 @@
-import { useNavigation } from '@react-navigation/native';
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import React, { useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {parsePhoneNumberFromString} from 'libphonenumber-js';
+import React, {useState} from 'react';
+import {
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
-import { useDispatch } from 'react-redux';
-import { Dispatch } from 'redux';
+import {useDispatch} from 'react-redux';
+import {Dispatch} from 'redux';
 import Button from '../../components/Button/Button';
-import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
 import InputField from '../../components/InputField/InputField';
 import LoadingIndicator from '../../components/Loading/Loading';
-import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
-import { useAppTheme } from '../../hooks/appTheme';
-import { useAlertModal } from '../../hooks/useAlertModal';
-import { setSuccessMessage } from '../../redux/reducers/auth.reducer';
-import { setUserDetails } from '../../redux/reducers/user.reducer';
-import { InputUser } from '../../types/InputUser';
-import { RegistrationScreenNavigationProps } from '../../types/Navigations';
-import { UploadImage } from '../../types/UploadImage';
-import { generateKeyPair, storeKeys } from '../../utils/keyPairs';
-import { decryptPrivateKey, encryptPrivateKey } from '../../utils/privateKey';
-import { socketConnection } from '../../utils/socket';
-import { Theme } from '../../utils/themes';
-import { register } from './Registration.service';
-import { getStyles } from './Registration.styles';
-import { generateAndUploadFcmToken } from '../../utils/fcmService';
-
+import {ProfilePicturePickerModal} from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
+import {useAppTheme} from '../../hooks/appTheme';
+import {useAlertModal} from '../../hooks/useAlertModal';
+import {setSuccessMessage} from '../../redux/reducers/auth.reducer';
+import {setUserDetails} from '../../redux/reducers/user.reducer';
+import {InputUser} from '../../types/InputUser';
+import {RegistrationScreenNavigationProps} from '../../types/Navigations';
+import {UploadImage} from '../../types/UploadImage';
+import {generateKeyPair, storeKeys} from '../../utils/keyPairs';
+import {decryptPrivateKey, encryptPrivateKey} from '../../utils/privateKey';
+import {socketConnection} from '../../utils/socket';
+import {Theme} from '../../utils/themes';
+import {register} from './Registration.service';
+import {getStyles} from './Registration.styles';
+import {generateAndUploadFcmToken} from '../../utils/fcmService';
 
 const Registration = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();
-const { width, height } = useWindowDimensions();
+  const {width, height} = useWindowDimensions();
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme, width, height);
 
-  const {
-    alertVisible, alertMessage, alertType, showAlert, hideAlert,
-  } = useAlertModal();
-  const [showProfilePicSelectModal, setShowProfilePicSelectModal] = useState(false);
+  const {alertVisible, alertMessage, alertType, showAlert, hideAlert} =
+    useAlertModal();
+  const [showProfilePicSelectModal, setShowProfilePicSelectModal] =
+    useState(false);
   const [profilePic, setProfilePic] = useState<UploadImage | null>(null);
   const [isLoading, setLoading] = useState(false);
   const [user, setUser] = useState<InputUser>({
@@ -110,12 +118,21 @@ const { width, height } = useWindowDimensions();
     if (!user.password) {
       setErrorMessage('password', 'Password is required');
       isValid = false;
+    } else {
+      const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!passwordRegex.test(user.password)) {
+        setErrorMessage(
+          'password',
+          'Password must be at least 8 characters long and include 1 uppercase, 1 lowercase, 1 number, and 1 special character',
+        );
+        isValid = false;
+      } else if (user.password !== user.confirmPassword) {
+        setErrorMessage('confirmPassword', 'Passwords do not match');
+        isValid = false;
+      }
+      return isValid;
     }
-    if (user.password !== user.confirmPassword) {
-      setErrorMessage('confirmPassword', 'Passwords do not match');
-      isValid = false;
-    }
-    return isValid;
   };
 
   const clearFields = () => {
@@ -157,10 +174,13 @@ const { width, height } = useWindowDimensions();
       setLoading(true);
       const response = await register(formData);
       const result = await response.json();
-      if(response.ok) {
+      if (response.ok) {
         clearFields();
         const keyPair = await generateKeyPair();
-        const encryptedPrivateKey = await encryptPrivateKey(keyPair.privateKey, result.userId);
+        const encryptedPrivateKey = await encryptPrivateKey(
+          keyPair.privateKey,
+          result.userId,
+        );
         const keysResponse = await storeKeys(
           result.user.mobileNumber,
           keyPair.publicKey,
@@ -169,7 +189,12 @@ const { width, height } = useWindowDimensions();
         );
 
         if (keysResponse.ok) {
-          const privateKey = await decryptPrivateKey(encryptedPrivateKey.salt, encryptedPrivateKey.nonce, encryptedPrivateKey.privateKey, result.userId);
+          const privateKey = await decryptPrivateKey(
+            encryptedPrivateKey.salt,
+            encryptedPrivateKey.nonce,
+            encryptedPrivateKey.privateKey,
+            result.userId,
+          );
           await EncryptedStorage.setItem(
             'privateKey',
             JSON.stringify({
@@ -185,7 +210,9 @@ const { width, height } = useWindowDimensions();
           }),
         );
         dispatch(setUserDetails(result.user));
-        dispatch(setSuccessMessage('You\'ve successfully logged in to SmartChat!'));
+        dispatch(
+          setSuccessMessage("You've successfully logged in to SmartChat!"),
+        );
         await EncryptedStorage.setItem(
           'User Data',
           JSON.stringify(result.user),
@@ -199,7 +226,7 @@ const { width, height } = useWindowDimensions();
         return;
       }
       showAlert(result.message, 'warning');
-    } catch(error) {
+    } catch (error) {
       showAlert('Something went wrong. Please try again', 'error');
       clearFields();
     } finally {
@@ -218,7 +245,8 @@ const { width, height } = useWindowDimensions();
       keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
       style={styles.container}>
       <ScrollView
-        contentContainerStyle={styles.body} accessibilityLabel="body-container"
+        contentContainerStyle={styles.body}
+        accessibilityLabel="body-container"
         keyboardShouldPersistTaps="handled">
         <TouchableOpacity
           onPress={() => {
@@ -227,7 +255,9 @@ const { width, height } = useWindowDimensions();
           <Image
             style={styles.img}
             source={
-              profilePic ? {uri: profilePic.uri} : require('../../../assets/images/profileImage.png')
+              profilePic
+                ? {uri: profilePic.uri}
+                : require('../../../assets/images/profileImage.png')
             }
             accessibilityLabel="profile-image"
             resizeMode="cover"
@@ -318,7 +348,12 @@ const { width, height } = useWindowDimensions();
           remove={removePicture}
         />
       </ScrollView>
-      <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+      <CustomAlert
+        visible={alertVisible}
+        message={alertMessage}
+        type={alertType}
+        onClose={hideAlert}
+      />
     </KeyboardAvoidingView>
   );
 };
