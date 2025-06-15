@@ -50,7 +50,7 @@ jest.mock('../utils/fcmService', () => ({
   },
 }));
 
-describe('useFCMListener', () => {
+describe('Tests related to the useFcmListener hook', () => {
   let unsubscribeFn: jest.Mock;
 
   beforeEach(() => {
@@ -58,7 +58,7 @@ describe('useFCMListener', () => {
     unsubscribeFn = jest.fn();
   });
 
-  it('should handle and display incoming FCM message when not in active chat', async () => {
+  it('Should handle and display incoming FCM message when not in active chat', async () => {
     const mockRemoteMessage = {
       data: {
         sender: '1234567890',
@@ -96,7 +96,7 @@ describe('useFCMListener', () => {
     expect(unsubscribeFn).toHaveBeenCalled();
   });
 
-  it('should not send notification if user is in active chat with sender', async () => {
+  it('Should not send notification if user is in active chat with sender', async () => {
     const store = require('../redux/store').store;
     store.getState.mockReturnValue({
       activeChat: { currentChatMobileNumber: '1234567890' },
@@ -130,7 +130,7 @@ describe('useFCMListener', () => {
     expect(unsubscribeFn).toHaveBeenCalled();
   });
 
-  it('should return early if user data is not found in storage', async () => {
+  it('Should return early if user data is not found in storage', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
 
     (messaging.onMessage as jest.Mock).mockImplementation((cb) => {
@@ -151,7 +151,7 @@ describe('useFCMListener', () => {
     expect(unsubscribeFn).toHaveBeenCalled();
   });
 
-  it('should fallback to sender number if contact is not found', async () => {
+  it('Should fallback to sender number if contact is not found', async () => {
     const mockRemoteMessage = {
       data: {
         sender: '0987654321',

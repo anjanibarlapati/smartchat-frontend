@@ -1,8 +1,8 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
 import Sodium from 'react-native-libsodium';
+import Realm from 'realm';
 import { getRealmInstance } from '../realm-database/connection';
 import { getUserPublicKey } from './getUserPrivateKey';
-import Realm from 'realm';
 
 export const decryptMessage = async (
   senderMobileNumber: string,
