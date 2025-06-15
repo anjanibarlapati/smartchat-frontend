@@ -3,6 +3,10 @@ import i18next from 'i18next';
 import React from 'react';
 import App from './App';
 
+jest.mock('../hooks/useFcmListener', () => ({
+  useFCMListener: jest.fn(),
+}));
+
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),
