@@ -19,7 +19,7 @@ export async function initNotifications() {
   }
 }
 
-export async function sendLocalNotification(title: string, body: string) {
+export async function sendLocalNotification(title: string, body: string, profilePic?: string) {
   try {
     await notifee.displayNotification({
       title,
@@ -29,6 +29,7 @@ export async function sendLocalNotification(title: string, body: string) {
         pressAction: { id: 'default' },
         smallIcon: 'ic_launcher_round',
         color: '#008080',
+        largeIcon: profilePic,
       },
     });
   } catch (err) {

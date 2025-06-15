@@ -2,7 +2,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AlertModal } from '../../components/AlertModal/AlertModal';
 import { ChatHeader } from '../../components/ChatHeader/ChatHeader';
 import { blockUserChat } from '../../components/ChatOptionsModal/blockChat.service';
@@ -23,7 +23,9 @@ import { clearChatInRealm } from '../../realm-database/operations/clearChat';
 import { unblockContactInRealm } from '../../realm-database/operations/unblockContact';
 import { updateMessageStatusInRealm } from '../../realm-database/operations/updateMessageStatus';
 import { Chat } from '../../realm-database/schemas/Chat';
+import { resetActiveChat, setActiveChat } from '../../redux/reducers/activeChat.reducer';
 import { storeState } from '../../redux/store';
+import { MessageStatus } from '../../types/message';
 import {
   HomeScreenNavigationProps,
   HomeStackParamList,
@@ -31,7 +33,6 @@ import {
 import { getSocket } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './IndividualChat.styles';
-import { MessageStatus } from '../../types/message';
 export type IndividualChatRouteProp = RouteProp<
   HomeStackParamList,
   'IndividualChat'
@@ -53,6 +54,7 @@ export const IndividualChat = () => {
   const chat = realm.objectForPrimaryKey<Chat>('Chat', mobileNumber);
   const flatListRef = useRef<FlatList>(null);
   const {sections: groupedMessages, flattenedMessages} = useGroupedMessages(mobileNumber);
+  const dispatch = useDispatch();
   useEffect(() => {
     if (!chat) {
       realm.write(() => {
@@ -64,6 +66,14 @@ export const IndividualChat = () => {
       });
     }
   }, [chat, mobileNumber, realm]);
+
+  useEffect(() => {
+    dispatch(setActiveChat(mobileNumber));
+    return () => {
+      dispatch(resetActiveChat());
+    };
+  }, [dispatch, mobileNumber]);
+
   useEffect(() => {
     if(mobileNumber === user.mobileNumber) {
       return;

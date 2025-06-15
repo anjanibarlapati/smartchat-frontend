@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - local-notifications
   pull_request:
     branches:
       - main

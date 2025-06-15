@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { CustomAlert } from '../components/CustomAlert/CustomAlert.tsx';
 import { useRealm } from '../contexts/RealmContext.tsx';
 import { useAlertModal } from '../hooks/useAlertModal.ts';
+import { useFCMListener } from '../hooks/useFcmListener.ts';
 import { setSuccessMessage } from '../redux/reducers/auth.reducer.ts';
 import { resetUser, setUserDetails } from '../redux/reducers/user.reducer.ts';
 import Login from '../screens/Login/Login.tsx';
@@ -33,6 +34,8 @@ export function AppNavigator(): React.JSX.Element {
     const {
         alertVisible, alertMessage, alertType, showAlert, hideAlert,
       } = useAlertModal();
+
+    useFCMListener();
 
     useEffect(() => {
       const loadUser = async () => {
