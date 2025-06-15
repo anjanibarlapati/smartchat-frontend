@@ -19,7 +19,7 @@ export async function initNotifications() {
   }
 }
 
-export async function sendLocalNotification(title: string, body: string) {
+export async function sendLocalNotification(title: string, body: string, profilePic?: string) {
   try {
     await notifee.displayNotification({
       title,
@@ -27,6 +27,7 @@ export async function sendLocalNotification(title: string, body: string) {
       android: {
         channelId: 'messages',
         pressAction: { id: 'default' },
+        largeIcon: profilePic,
       },
     });
   } catch (err) {
