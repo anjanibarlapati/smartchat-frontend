@@ -4,7 +4,7 @@ import { messaging } from '../utils/fcmService';
 import { getTokens } from '../utils/getTokens';
 import { decryptMessage } from '../utils/decryptMessage';
 import { sendLocalNotification } from '../utils/localNotifications';
-import { useFCMListener } from './useFCMListener';
+import { useFCMListener } from './useFcmListener';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
