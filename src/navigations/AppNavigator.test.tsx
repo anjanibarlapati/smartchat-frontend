@@ -11,6 +11,10 @@ import { checkAccessToken } from '../utils/checkToken';
 import { socketConnection } from '../utils/socket.ts';
 import { AppNavigator } from './AppNavigator';
 
+jest.mock('../hooks/useFcmListener', () => ({
+  useFCMListener: jest.fn(),
+}));
+
 jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn(),
 }));
@@ -18,6 +22,18 @@ jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
   setItem: jest.fn(),
   clear: jest.fn(),
+}));
+
+jest.mock('@notifee/react-native', () => ({
+  __esModule: true,
+  default: {
+    requestPermission: jest.fn(),
+    createChannel: jest.fn(),
+    displayNotification: jest.fn(),
+    createTriggerNotification: jest.fn(),
+  },
+  AndroidImportance: { HIGH: 'high' },
+  TriggerType: { TIMESTAMP: 'timestamp' },
 }));
 
 
