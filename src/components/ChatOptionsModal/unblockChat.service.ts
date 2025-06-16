@@ -1,7 +1,7 @@
 import { BASE_URL } from '../../utils/constants';
 import { getTokens } from '../../utils/getTokens';
 
-export const unblockUserChat = async(senderMobileNumber: string, receiverMobileNumber: string) => {
+export const unblockUserChat = async(senderMobileNumber: string, receiverMobileNumber: string,  unblockedAt?:Date) => {
     try{
      const tokens = await getTokens(senderMobileNumber);
     const response = await fetch(`${BASE_URL}user/unblock/chat`, {
@@ -13,6 +13,7 @@ export const unblockUserChat = async(senderMobileNumber: string, receiverMobileN
         body: JSON.stringify({
             senderMobileNumber: senderMobileNumber,
             receiverMobileNumber: receiverMobileNumber,
+            time: unblockedAt,
         }),
     });
     return response;
