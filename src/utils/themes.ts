@@ -1,3 +1,4 @@
+
 export const LightTheme = {
   primaryBackground: '#ffffff',
   secondaryBackground: '#B2D8D8',
@@ -21,6 +22,10 @@ export const LightTheme = {
   receiverMessageBox:'lightgray',
   timestamp : 'rgb(98, 98, 98)',
   alertButtonBackground: 'rgb(215, 41, 41)',
+   changePasswordModalBackground:'white',
+   changePasswordModalTitleColor: 'black',
+   changePasswordModalPlaceholderColor: 'rgb(176, 169, 169)',
+   ChangePasswordModalInputColor:'black',
   images: {
     camera: require('../../assets/icons/camera-icon.png'),
     gallery: require('../../assets/icons/gallery-icon.png'),
@@ -66,6 +71,10 @@ export const DarkTheme = {
   receiverMessageBox: 'gray',
   timestamp :'white',
   alertButtonBackground: 'rgba(231, 44, 44, 0.84)',
+  changePasswordModalBackground: 'rgb(31, 42, 49)',
+  changePasswordModalTitleColor: 'white',
+  changePasswordModalPlaceholderColor: 'rgb(126, 122, 122)',
+  ChangePasswordModalInputColor:'white',
   images: {
     camera: require('../../assets/icons/camera-icon-dark-theme.png'),
     gallery: require('../../assets/icons/gallery-icon-dark-theme.png'),

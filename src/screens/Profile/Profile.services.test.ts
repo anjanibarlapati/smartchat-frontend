@@ -1,4 +1,4 @@
-import { deleteAccount, logout, removeProfilePic, updateProfileDetails, updateProfilePic } from './Profile.services';
+import { deleteAccount, logout, removeProfilePic, updatePassword, updateProfileDetails, updateProfilePic } from './Profile.services';
 
 global.fetch = jest.fn();
 
@@ -8,15 +8,22 @@ describe('Tests related to Profile screen handlers', () => {
         jest.resetAllMocks();
     });
 
-    it('should call fetch when updateProfileDetails method invokes', async () => {
+    it('Should call fetch when updateProfileDetails method invokes', async () => {
         (global.fetch as jest.Mock).mockResolvedValue({
             ok: true,
         });
         await updateProfileDetails('firstName', 'Varun', '9392990600', 'sample-access-token');
         expect(fetch).toHaveBeenCalled();
     });
+    it('Should call fetch when updatepassword method invokes', async() =>{
+        (global.fetch as jest.Mock).mockResolvedValue({
+            ok: true,
+        });
+        await updatePassword('+91 63039 74914', 'Mamatha@123', 'Mamatha@12', 'sample-access-token');
+        expect(fetch).toHaveBeenCalled();
+    });
 
-    it('should call fetch when removeProfilePic method invokes', async () => {
+    it('Should call fetch when removeProfilePic method invokes', async () => {
         (global.fetch as jest.Mock).mockResolvedValue({
             ok: true,
         });
@@ -24,7 +31,7 @@ describe('Tests related to Profile screen handlers', () => {
         expect(fetch).toHaveBeenCalled();
     });
 
-    it('should call fetch when deleteAccount method invokes', async () => {
+    it('Should call fetch when deleteAccount method invokes', async () => {
         (global.fetch as jest.Mock).mockResolvedValue({
             ok: true,
         });
@@ -32,7 +39,7 @@ describe('Tests related to Profile screen handlers', () => {
         expect(fetch).toHaveBeenCalled();
     });
 
-    it('should call fetch when updated method invokes', async () => {
+    it('Should call fetch when updated method invokes', async () => {
         (global.fetch as jest.Mock).mockResolvedValue({
             ok: true,
         });

@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {
   act,
   fireEvent,
@@ -6,12 +6,12 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import { Alert } from 'react-native';
+import {Alert} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Provider } from 'react-redux';
-import { store } from '../../redux/store';
-import { generateKeyPair, storeKeys } from '../../utils/keyPairs';
-import { decryptPrivateKey, encryptPrivateKey } from '../../utils/privateKey';
+import {Provider} from 'react-redux';
+import {store} from '../../redux/store';
+import {generateKeyPair, storeKeys} from '../../utils/keyPairs';
+import {decryptPrivateKey, encryptPrivateKey} from '../../utils/privateKey';
 import Registration from './Registration';
 import * as RegistrationHandler from './Registration.service';
 
@@ -123,14 +123,38 @@ describe('Registration Screen check', () => {
       expect(queryByText('Password is required')).toBeTruthy();
     });
   });
-  it('shows error when passwords do not match', async () => {
+  it('Should show validation when password when it doesn`t meet the require conditions ', async () => {
+    const {getByLabelText, getByPlaceholderText, getByText, queryByText} =
+      renderRegistrationScreen();
+
+    fireEvent.changeText(getByPlaceholderText('First Name *'), 'Anjali');
+    fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Gogu');
+    fireEvent.changeText(getByPlaceholderText('Email'), 'anju415@.com');
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 7702153247');
+    fireEvent.changeText(getByPlaceholderText('Password *'), 'anjali');
+
+    await act(async () => {
+      fireEvent.press(getByText('Register'));
+    });
+    await waitFor(() => {
+      expect(
+        queryByText(
+          'Password must be at least 8 characters long and include 1 uppercase, 1 lowercase, 1 number, and 1 special character',
+        ),
+      ).toBeTruthy();
+    });
+  });
+  it(' Should show error when passwords do not match', async () => {
     const {getByLabelText, getByPlaceholderText, getByText, queryByText} =
       renderRegistrationScreen();
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Mamatha');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Niya;');
     fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
-    fireEvent.changeText(getByPlaceholderText('Password *'), 'pass123');
-    fireEvent.changeText(getByPlaceholderText('Confirm Password *'), '123');
+    fireEvent.changeText(getByPlaceholderText('Password *'), 'Anjaligogu18@');
+    fireEvent.changeText(
+      getByPlaceholderText('Confirm Password *'),
+      'Anjaligogu415#',
+    );
     await act(async () => {
       fireEvent.press(getByText('Register'));
     });
@@ -189,8 +213,11 @@ describe('Registration Screen check', () => {
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Barlapati');
     fireEvent.changeText(getByPlaceholderText('Email'), 'anju@gmail.com');
     fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
-    fireEvent.changeText(getByPlaceholderText('Password *'), '1234');
-    fireEvent.changeText(getByPlaceholderText('Confirm Password *'), '1234');
+    fireEvent.changeText(getByPlaceholderText('Password *'), 'Anjaligogu18@');
+    fireEvent.changeText(
+      getByPlaceholderText('Confirm Password *'),
+      'Anjaligogu18@',
+    );
     await act(async () => {
       fireEvent.press(getByText('Register'));
     });
@@ -199,7 +226,12 @@ describe('Registration Screen check', () => {
   it('Should give an alert on successful registration with message', async () => {
     const response = {
       ok: true,
-      json: async () => ({user: {}, userId: 'anjani123', access_token: 'access_token', refresh_token: 'refresh_token'}),
+      json: async () => ({
+        user: {},
+        userId: 'anjani123',
+        access_token: 'access_token',
+        refresh_token: 'refresh_token',
+      }),
     };
     (generateKeyPair as jest.Mock).mockResolvedValue({
       publicKey: 'mockPublicKey',
@@ -212,18 +244,23 @@ describe('Registration Screen check', () => {
       nonce: 'mockNonce',
       privateKey: 'mockEncryptedPrivateKey',
     });
-    (decryptPrivateKey as jest.Mock).mockResolvedValue('mockDecryptedPrivateKey');
+    (decryptPrivateKey as jest.Mock).mockResolvedValue(
+      'mockDecryptedPrivateKey',
+    );
     mockRegister.mockResolvedValue(response);
     (EncryptedStorage.setItem as jest.Mock).mockReturnValue(() => {});
     const {getByLabelText, getByPlaceholderText, getByText} =
-    renderRegistrationScreen();
+      renderRegistrationScreen();
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
     fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
     fireEvent.changeText(getByLabelText('phone-input'), '+91 12345 67890');
-    fireEvent.changeText(getByPlaceholderText('Password *'), '1234');
-    fireEvent.changeText(getByPlaceholderText('Confirm Password *'), '1234');
+    fireEvent.changeText(getByPlaceholderText('Password *'), 'Anjaligogu18@');
+    fireEvent.changeText(
+      getByPlaceholderText('Confirm Password *'),
+      'Anjaligogu18@',
+    );
 
     await act(async () => {
       fireEvent.press(getByText('Register'));
@@ -241,14 +278,17 @@ describe('Registration Screen check', () => {
     mockRegister.mockResolvedValue(response);
 
     const {getByLabelText, getByPlaceholderText, getByText} =
-    renderRegistrationScreen();
+      renderRegistrationScreen();
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
     fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
     fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
-    fireEvent.changeText(getByPlaceholderText('Password *'), '1234');
-    fireEvent.changeText(getByPlaceholderText('Confirm Password *'), '1234');
+    fireEvent.changeText(getByPlaceholderText('Password *'), 'Anjaligogu18@');
+    fireEvent.changeText(
+      getByPlaceholderText('Confirm Password *'),
+      'Anjaligogu18@',
+    );
     await act(async () => {
       fireEvent.press(getByText('Register'));
     });
@@ -261,13 +301,16 @@ describe('Registration Screen check', () => {
     mockRegister.mockRejectedValue(new Error('Internal server error'));
 
     const {getByLabelText, getByPlaceholderText, getByText} =
-    renderRegistrationScreen();
+      renderRegistrationScreen();
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
     fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
     fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
-    fireEvent.changeText(getByPlaceholderText('Password *'), '1234');
-    fireEvent.changeText(getByPlaceholderText('Confirm Password *'), '1234');
+    fireEvent.changeText(getByPlaceholderText('Password *'), 'Anjaligogu18@');
+    fireEvent.changeText(
+      getByPlaceholderText('Confirm Password *'),
+      'Anjaligogu18@',
+    );
     await act(async () => {
       fireEvent.press(getByText('Register'));
     });
@@ -311,7 +354,9 @@ describe('Registration Screen check', () => {
       nonce: 'mockNonce',
       privateKey: 'mockEncryptedPrivateKey',
     });
-    (decryptPrivateKey as jest.Mock).mockResolvedValue('mockDecryptedPrivateKey');
+    (decryptPrivateKey as jest.Mock).mockResolvedValue(
+      'mockDecryptedPrivateKey',
+    );
 
     (mockRegister as jest.Mock).mockResolvedValue(response);
 
@@ -322,8 +367,11 @@ describe('Registration Screen check', () => {
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
     fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
     fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
-    fireEvent.changeText(getByPlaceholderText('Password *'), '1234');
-    fireEvent.changeText(getByPlaceholderText('Confirm Password *'), '1234');
+    fireEvent.changeText(getByPlaceholderText('Password *'), 'Anjaligogu18@');
+    fireEvent.changeText(
+      getByPlaceholderText('Confirm Password *'),
+      'Anjaligogu18@',
+    );
 
     await act(async () => {
       fireEvent.press(getByText('Register'));
@@ -335,8 +383,12 @@ describe('Registration Screen check', () => {
       expect(storeKeys).toHaveBeenCalledWith(
         '1234567890',
         'mockPublicKey',
-        { salt: 'mockSalt', nonce: 'mockNonce', privateKey: 'mockEncryptedPrivateKey'},
-        'access_token'
+        {
+          salt: 'mockSalt',
+          nonce: 'mockNonce',
+          privateKey: 'mockEncryptedPrivateKey',
+        },
+        'access_token',
       );
 
       expect(EncryptedStorage.setItem).toHaveBeenCalledWith(

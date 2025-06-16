@@ -1,7 +1,7 @@
-import EncryptedStorage from 'react-native-encrypted-storage';
-import { Provider } from 'react-redux';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Provider } from 'react-redux';
 import { setUserProperty } from '../../redux/reducers/user.reducer';
 import { store } from '../../redux/store';
 import * as ProfileServices from '../../screens/Profile/Profile.services';
@@ -121,23 +121,6 @@ describe('Tests related to the Profile Info Tile component', () => {
             );
             expect(EncryptedStorage.setItem).toHaveBeenCalled();
             expect(screen.getByText('Updated first name successfully')).toBeTruthy();
-        });
-    });
-
-    it('Should update password, dispatch action, set encrypted storage on success and show alert', async () => {
-        (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'access-token' });
-        (ProfileServices.updateProfileDetails as jest.Mock).mockResolvedValue({ ok: true });
-        renderUI('Change Password', 'Varun', 'Change Password');
-        const passwordValue = screen.getByPlaceholderText('Varun');
-        fireEvent.changeText(passwordValue, 'Virat');
-        fireEvent.press(screen.getByLabelText('edit'));
-        await waitFor(() => {
-            expect(mockDispatch).toHaveBeenCalledWith(
-                setUserProperty({ property: 'password', value: 'Virat' })
-            );
-            expect(EncryptedStorage.setItem).toHaveBeenCalled();
-            expect(screen.getByText('Updated password successfully')).toBeTruthy();
-
         });
     });
     it('Should not update the user details if response is not ok', async () => {
