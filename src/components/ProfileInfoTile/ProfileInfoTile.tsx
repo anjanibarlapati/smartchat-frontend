@@ -21,7 +21,7 @@ interface ProfileInfoTileProps {
   editField: string;
   setEditField: React.Dispatch<React.SetStateAction<string>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-}
+  onPress?: () => void;}
 
 export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
 
@@ -36,6 +36,16 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
   const isEdit = props.editField === props.label;
   const setLoading = props.setLoading;
   const {resetRealm} = useRealmReset();
+
+  const handleEdit = (label: string) =>{
+    if(label !== 'Change Password') {
+      props.setEditField(label);
+      setValue('');
+    }
+    if(label === 'Change Password' && props.onPress) {
+      props.onPress();
+    }
+  };
 
   const updateDetails = async() => {
     if(!newValue.trim() || newValue.trim() === props.value) {
@@ -79,11 +89,8 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
           'User Data',
           JSON.stringify(updatedUser),
         );
-        if(props.label === 'Change Password') {
-          showAlert('Updated password successfully', 'success');
-        } else {
-          showAlert(`Updated ${props.label.toLowerCase()} successfully`, 'success');
-        }
+        showAlert(`Updated ${props.label.toLowerCase()} successfully`, 'success');
+
       }
       props.setEditField('');
     } catch (error) {
@@ -104,18 +111,23 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
       <View style={styles.fieldBox}>
         <View style={styles.detailBox}>
           <Text style={styles.headerText}>{props.label}</Text>
-          {!isEdit ? (
+          {!isEdit &&
+          (
             <Text
               style={styles.valueText}
               ellipsizeMode="tail"
               numberOfLines={1}>
               {props.value}
             </Text>
-          ) : (
+          )}
+          { isEdit && props.label !== 'Change Password' && (
             <View style={styles.editTileBox}>
               <TextInput
                 value={newValue}
                 onChangeText={value => {
+                  if(props.label === 'Email'){
+                    value = value.trim().toLowerCase();
+                  }
                   setValue(value);
                 }}
                 placeholder={props.value}
@@ -152,10 +164,7 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
         </View>
         {props.label !== 'Contact' && !isEdit && (
           <TouchableOpacity
-            onPress={() => {
-              props.setEditField(props.label);
-              setValue('');
-            }}>
+            onPress={()=>handleEdit(props.label)}>
             <Image
               source={require('../../../assets/icons/edit-text-icon.png')}
               style={styles.editTextIcon}
