@@ -1,6 +1,7 @@
 import Realm from 'realm';
-import {SyncActionType} from '../../utils/syncAction';
-import {addUserAction} from '../operations/addUserAction';
+import { SyncActionType } from '../../utils/syncPendingActions';
+import { addUserAction } from './addUserAction';
+
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
