@@ -77,6 +77,27 @@
   "Updated first name successfully": "Updated first name successfully",
   "Updated last name successfully": "Updated last name successfully",
   "Updated email successfully": "Updated email successfully",
-  "Updated password successfully": "Updated password successfully"
+  "Updated password successfully": "Updated password successfully",
+  "This user has deleted their account.\n You can no longer send messages": "This user has deleted their account.\n You can no longer send messages",
+  "You have blocked this contact. Unblock to send or receive messages.":"You have blocked this contact. Unblock to send or receive messages.",
+  "Are you sure you want to unblock this chat?":"Are you sure you want to unblock this chat?",
+  "Are you sure you want to block this chat?":"Are you sure you want to block this chat?",
+  "Unable to Clear Chat":"Unable to Clear Chat",
+  "Profile upload failed. Please try again later":"Profile upload failed. Please try again later",
+  "Something went wrong while signing out. Please try again":"Something went wrong while signing out. Please try again",
+  "Successfully Removed Profile":"Successfully Removed Profile",
+  "Something went wrong while removing profile picture. Please try again":"Something went wrong while removing profile picture. Please try again",
+  "Failed to delete account":"Failed to delete account",
+  "Something went wrong while deleting account. Please try again":"Something went wrong while deleting account. Please try again",
+  "OK":"OK",
+  "Unable to send message":"Unable to send message",
+  "Type a message": "Type a message",
+  "Please give a different value": "Please give a different value",
+   "Something went wrong while updating. Please try again": "Something went wrong while updating. Please try again",
+  "You've successfully logged in to SmartChat!": "You've successfully logged in to SmartChat!",
+  "You have been logged out due to another device login.": "You have been logged out due to another device login.",
+  "Start conversations with your closed ones": "Start conversations with your closed ones",
+  "Password must be at least 8 characters long and include 1 uppercase, 1 lowercase, 1 number, and 1 special character": "Password must be at least 8 characters long and include 1 uppercase, 1 lowercase, 1 number, and 1 special character"
+  
 
 }
