@@ -6,9 +6,11 @@ import { useQuery, useRealm } from '../../contexts/RealmContext';
 import { updateMessageStatusInRealm } from '../../realm-database/operations/updateMessageStatus';
 import { themeReducer } from '../../redux/reducers/theme.reducer';
 import { userReducer } from '../../redux/reducers/user.reducer';
+import { MessageStatus } from '../../types/message';
 import { getSocket } from '../../utils/socket';
 import { IndividualChat } from './IndividualChat';
-import { MessageStatus } from '../../types/message';
+
+
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
   setItem: jest.fn(),
@@ -16,9 +18,14 @@ jest.mock('react-native-encrypted-storage', () => ({
 jest.mock('react-native-localize', () => ({
   getCountry: jest.fn(() => 'IN'),
 }));
+
 jest.mock('@react-native-community/netinfo', () => ({
-  fetch: jest.fn(),
+  __esModule: true,
+  default: {
+    fetch: jest.fn(() => Promise.resolve({ isConnected: true })),
+  },
 }));
+
 
 jest.mock('../../realm-database/operations/updateMessageStatus', () => ({
   updateMessageStatusInRealm: jest.fn(),
@@ -32,6 +39,15 @@ jest.mock('../../contexts/RealmContext', () => ({
   useQuery: jest.fn(),
   useRealm: jest.fn(),
 }));
+
+jest.mock('../../realm-database/operations/clearChat', () => ({
+  clearChatInRealm: jest.fn(),
+}));
+
+jest.mock('../../realm-database/operations/addUserAction', () => ({
+  addUserAction: jest.fn(),
+}));
+
 
 let mockEmit: jest.Mock = jest.fn();
 jest.mock('../../utils/socket', () => ({
@@ -123,26 +139,30 @@ describe('IndividualChat', () => {
       },
     });
   });
-  test('should render messages from the FlatList', () => {
+  test('should render messages from the FlatList', async() => {
     (useQuery as jest.Mock).mockReturnValue({
       filtered: jest.fn().mockReturnValue({
         sorted: jest.fn().mockReturnValue([seenMessage, unseenMessage]),
       }),
     });
     renderComponent();
+     await waitFor(() => {
     expect(screen.getByText('Hello Anji')).toBeTruthy();
     expect(screen.getByText('Unread message')).toBeTruthy();
+     });
   });
-  test('should not render messages when there are no messages', () => {
+  test('should not render messages when there are no messages', async() => {
     (useQuery as jest.Mock).mockReturnValue({
       filtered: jest.fn().mockReturnValue({
         sorted: jest.fn().mockReturnValue([]),
       }),
     });
     const {queryByText} = renderComponent();
-    expect(queryByText('Hello Anji')).toBeNull();
+      await waitFor(() => {
+        expect(queryByText('Hello Anji')).toBeNull();
+     });
   });
-  test('should render the InputChatBox', () => {
+  test('should render the InputChatBox', async() => {
     (useQuery as jest.Mock).mockReturnValue({
       filtered: jest.fn().mockReturnValue({
         sorted: jest.fn().mockReturnValue([seenMessage]),
@@ -150,9 +170,11 @@ describe('IndividualChat', () => {
     });
     renderComponent();
     const input = screen.getByPlaceholderText('Type a message');
-    expect(input).toBeTruthy();
+       await waitFor(() => {
+        expect(input).toBeTruthy();
+       });
   });
-  test('should render the menu icon (send icon)', () => {
+  test('should render the menu icon (send icon)', async() => {
     (useQuery as jest.Mock).mockReturnValue({
       filtered: jest.fn().mockReturnValue({
         sorted: jest.fn().mockReturnValue([seenMessage]),
@@ -160,9 +182,11 @@ describe('IndividualChat', () => {
     });
     renderComponent();
     const icon = screen.getByLabelText('send-icon');
+       await waitFor(() => {
     expect(icon).toBeTruthy();
+        });
   });
-  test('should call navigation.setOptions twice', () => {
+  test('should call navigation.setOptions twice', async() => {
     (useQuery as jest.Mock).mockReturnValue({
       filtered: jest.fn().mockReturnValue({
         sorted: jest.fn().mockReturnValue([seenMessage]),
@@ -170,7 +194,9 @@ describe('IndividualChat', () => {
     });
     renderComponent();
     const navigation = useNavigation();
+     await waitFor(() => {
     expect(navigation.setOptions).toHaveBeenCalledTimes(2);
+            });
   });
   test('should not emit messageRead if socket is not connected', async () => {
     (getSocket as jest.Mock).mockReturnValue({
@@ -213,9 +239,10 @@ describe('IndividualChat', () => {
       });
     });
   });
-  test('should create a new Chat if chat does not exist in Realm', () => {
+  test('should create a new Chat if chat does not exist in Realm', async() => {
     mockRealm.objectForPrimaryKey.mockReturnValue(undefined);
     renderComponent();
+         await waitFor(() => {
     expect(mockRealm.write).toHaveBeenCalled();
     expect(mockRealm.create).toHaveBeenCalledWith('Chat', {
       chatId: '+91 86395 23822',
@@ -223,7 +250,8 @@ describe('IndividualChat', () => {
       publicKey: null,
     });
   });
-  test('should render blocked message box when chat is blocked', () => {
+  });
+  test('should render blocked message box when chat is blocked', async() => {
     mockRealm.objectForPrimaryKey.mockReturnValue({
       chatId: '+91 86395 23822',
       isBlocked: true,
@@ -236,10 +264,12 @@ describe('IndividualChat', () => {
       }),
     });
     const {getByText} = renderComponent();
-    expect(getByText(/You have blocked this contact/i)).toBeTruthy();
+     await waitFor(() => {
+      expect(getByText(/You have blocked this contact/i)).toBeTruthy();
+      });
   });
 
-  test('renders account deleted message box when other user account is deleted', () => {
+  test('renders account deleted message box when other user account is deleted', async() => {
     mockRealm.objectForPrimaryKey.mockReturnValue({
       chatId: '+91 86395 23822',
       isBlocked: false,
@@ -253,11 +283,12 @@ describe('IndividualChat', () => {
     });
 
     const { getByText } = renderComponent();
-
-    expect(getByText(/This user has deleted their account/i)).toBeTruthy();
+         await waitFor(() => {
+           expect(getByText(/This user has deleted their account/i)).toBeTruthy();
+         });
   });
 
-  test('renders account deleted message box when other user account is deleted and blocks the chat', () => {
+  test('renders account deleted message box when other user account is deleted and blocks the chat', async() => {
     mockRealm.objectForPrimaryKey.mockReturnValue({
       chatId: '+91 86395 23822',
       isBlocked: true,
@@ -272,9 +303,11 @@ describe('IndividualChat', () => {
     });
 
     const { getByText } = renderComponent();
-
+        await waitFor(() => {
     expect(getByText(/This user has deleted their account/i)).toBeTruthy();
+        });
   });
-
 });
+
+
 
