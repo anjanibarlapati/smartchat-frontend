@@ -92,7 +92,12 @@
   "OK":"OK",
   "Unable to send message":"Unable to send message",
   "Type a message": "Type a message",
-  "Please give a different value": "Please give a different value"
+  "Please give a different value": "Please give a different value",
+   "Something went wrong while updating. Please try again": "Something went wrong while updating. Please try again",
+  "You've successfully logged in to SmartChat!": "You've successfully logged in to SmartChat!",
+  "You have been logged out due to another device login.": "You have been logged out due to another device login.",
+  "Start conversations with your closed ones": "Start conversations with your closed ones",
+  "Password must be at least 8 characters long and include 1 uppercase, 1 lowercase, 1 number, and 1 special character": "Password must be at least 8 characters long and include 1 uppercase, 1 lowercase, 1 number, and 1 special character"
   
 
 }

@@ -92,8 +92,10 @@
   "OK": "సరే",
   "Unable to send message": "సందేశాన్ని పంపడం సాధ్యం కాలేదు",
   "Type a message": "సందేశాన్ని టైప్ చేయండి",
-  "Please give a different value": "దయచేసి వేరే విలువను ఇవ్వండి"
-  
-
-
+  "Please give a different value": "దయచేసి వేరే విలువను ఇవ్వండి",
+  "Something went wrong while updating. Please try again": "నవీకరించేటప్పుడు ఏదో తప్పు జరిగింది. దయచేసి మళ్ళీ ప్రయత్నించండి",
+  "You've successfully logged in to SmartChat!": "మీరు స్మార్ట్‌చాట్‌లో విజయవంతంగా లాగిన్ అయ్యారు!",
+  "You have been logged out due to another device login.": "మరొక పరికరం లాగిన్ కారణంగా మీరు లాగ్ అవుట్ అయ్యారు.",
+  "Start conversations with your closed ones": "మీ సన్నిహితులతో సంభాషణలు ప్రారంభించండి",
+  "Password must be at least 8 characters long and include 1 uppercase, 1 lowercase, 1 number, and 1 special character": "పాస్‌వర్డ్ కనీసం 8 అక్షరాల పొడవు ఉండాలి మరియు 1 పెద్ద అక్షరం, 1 చిన్న అక్షరం, 1 సంఖ్య మరియు 1 ప్రత్యేక అక్షరం కలిగి ఉండాలి"
 }
