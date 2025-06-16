@@ -1,16 +1,17 @@
+import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
-import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AlertModal } from '../../components/AlertModal/AlertModal';
+import { ChangePasswordModal } from '../../components/ChangePasswordModal/ChangePasswordModal';
 import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
 import LoadingIndicator from '../../components/Loading/Loading';
 import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTile';
 import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
+import { useRealmReset } from '../../contexts/RealmContext';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal';
-import { useRealmReset } from '../../contexts/RealmContext';
 import { setUserProperty } from '../../redux/reducers/user.reducer';
 import { storeState } from '../../redux/store';
 import { RootStackParamList } from '../../types/Navigations';
@@ -43,6 +44,9 @@ export const Profile = (): React.JSX.Element => {
     null,
   );
   const [visibleProfilePicModal, setVisibleProfilePicModal] = useState(false);
+
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+
   const imageUploaded = useRef(false);
   const {resetRealm} = useRealmReset();
 
@@ -186,6 +190,7 @@ export const Profile = (): React.JSX.Element => {
     }
   };
 
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -258,6 +263,7 @@ export const Profile = (): React.JSX.Element => {
             editField={editField}
             setEditField={setEditField}
             setLoading={setLoading}
+            onPress={() => setShowChangePasswordModal(true)}
           />
           <TouchableOpacity
             style={styles.box}
@@ -326,7 +332,13 @@ export const Profile = (): React.JSX.Element => {
           />
         </View>
       </ScrollView>
+      <ChangePasswordModal
+        visible={showChangePasswordModal}
+        onClose={() => setShowChangePasswordModal(false)}
+      />
+
       <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+
     </KeyboardAvoidingView>
   );
 };
