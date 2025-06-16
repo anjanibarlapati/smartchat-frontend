@@ -1,9 +1,9 @@
+import Realm from 'realm';
 import { blockUserChat } from '../components/ChatOptionsModal/blockChat.service';
 import { clearUserChat } from '../components/ChatOptionsModal/clearChat.service';
 import { unblockUserChat } from '../components/ChatOptionsModal/unblockChat.service';
-import { UserAction } from '../realm-database/schemas/syncAction';
+import { UserAction } from '../realm-database/schemas/UserAction';
 import { getSocket } from './socket';
-import Realm from 'realm';
 
 
 type SyncPayLoad = {
@@ -47,7 +47,6 @@ export const syncPendingActions = async (realm: Realm) => {
                     if (senderMobileNumber && receiverMobileNumber) {
                         response = await clearUserChat(senderMobileNumber, receiverMobileNumber, clearedChatAt);
                     }
-                    isActionSynced = true;
                     break;
                 }
 
@@ -57,7 +56,6 @@ export const syncPendingActions = async (realm: Realm) => {
                     if (senderMobileNumber && receiverMobileNumber) {
                         response = await blockUserChat({ senderMobileNumber, receiverMobileNumber, blockedAt });
                     }
-                       isActionSynced = true;
                     break;
                 }
 
@@ -66,12 +64,11 @@ export const syncPendingActions = async (realm: Realm) => {
                     if (senderMobileNumber && receiverMobileNumber) {
                         response = await unblockUserChat(senderMobileNumber, receiverMobileNumber, unblockedAt);
                     }
-                         isActionSynced = true;
                     break;
                 }
                    default:
-                       isActionSynced = true;
-                        break;
+                      isActionSynced = true;
+                      break;
             }
             realm.write(() => {
                 if((response && response.ok) || type === SyncActionType.MESSAGE_SEEN){
