@@ -77,6 +77,23 @@
   "Updated first name successfully": "మొదటి పేరును విజయవంతంగా నవీకరించారు",
   "Updated last name successfully": "చివరి పేరును విజయవంతంగా నవీకరించారు",
   "Updated email successfully": "ఇమెయిల్‌ను విజయవంతంగా నవీకరించారు",
-  "Updated password successfully": "పాస్‌వర్డ్‌ను విజయవంతంగా నవీకరించారు"
+  "Updated password successfully": "పాస్‌వర్డ్‌ను విజయవంతంగా నవీకరించారు",
+  "This user has deleted their account.\n You can no longer send messages":"ఈ వినియోగదారు వారి ఖాతాను తొలగించారు.\n మీరు ఇకపై సందేశాలను పంపలేరు.",
+  "You have blocked this contact. Unblock to send or receive messages.":"మీరు ఈ పరిచయాన్ని బ్లాక్ చేసారు. సందేశాలను పంపడానికి లేదా స్వీకరించడానికి అన్‌బ్లాక్ చేయండి.",
+  "Are you sure you want to unblock this chat?":"మీరు ఈ చాట్‌ను అన్‌బ్లాక్ చేయాలనుకుంటున్నారా?",
+  "Are you sure you want to block this chat?":"మీరు ఈ చాట్‌ను బ్లాక్ చేయాలనుకుంటున్నారా?",
+  "Unable to Clear Chat":"చాట్‌ను క్లియర్ చేయడం సాధ్యం కాలేదు",
+  "Profile upload failed. Please try again later":"ప్రొఫైల్ అప్‌లోడ్ విఫలమైంది. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.",
+  "Something went wrong while signing out. Please try again":"సైన్ అవుట్ చేస్తున్నప్పుడు ఏదో తప్పు జరిగింది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
+  "Successfully Removed Profile":"ప్రొఫైల్ విజయవంతంగా తొలగించబడింది",
+  "Something went wrong while removing profile picture. Please try again":"ప్రొఫైల్ చిత్రాన్ని తీసివేసేటప్పుడు ఏదో తప్పు జరిగింది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
+  "Failed to delete account":"ఖాతాను తొలగించడంలో విఫలమైంది",
+  "Something went wrong while deleting account. Please try again":"ఖాతాను తొలగిస్తున్నప్పుడు ఏదో తప్పు జరిగింది. దయచేసి మళ్ళీ ప్రయత్నించండి",
+  "OK": "సరే",
+  "Unable to send message": "సందేశాన్ని పంపడం సాధ్యం కాలేదు",
+  "Type a message": "సందేశాన్ని టైప్ చేయండి",
+  "Please give a different value": "దయచేసి వేరే విలువను ఇవ్వండి"
+  
+
 
 }
