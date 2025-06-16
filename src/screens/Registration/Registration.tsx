@@ -68,6 +68,9 @@ const Registration = () => {
   });
 
   const handleChange = (field: string, value: string) => {
+    if(field === 'email') {
+      value = value.trim().toLowerCase();
+    }
     setUser(prevValues => ({
       ...prevValues,
       [field]: value,
