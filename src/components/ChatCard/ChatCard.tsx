@@ -41,7 +41,7 @@ export const ChatCard = ({
             <View style={styles.messageContainer}>
               {message.isSender && <Image
                   accessibilityLabel="tick-icon"
-                  source={getTickIcon(message.status)}
+                  source={getTickIcon(message.status, theme)}
                   style={styles.tickIcon}
               />}
               <Text
