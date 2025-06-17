@@ -1,5 +1,5 @@
 import { HandleIncomingFCM } from './fcmBackgroundHandler';
-import { sendLocalNotification } from './localNotifications';
+import { handleIncomingMessageNotification } from './handleIncomingNotification';
 
 jest.mock('@react-native-firebase/app', () => ({
   getApp: jest.fn(() => ({})),
@@ -15,50 +15,43 @@ jest.mock('./fcmService', () => ({
   },
 }));
 
-jest.mock('./localNotifications', () => ({
-  sendLocalNotification: jest.fn(),
+jest.mock('./handleIncomingNotification', () => ({
+  handleIncomingMessageNotification: jest.fn(),
 }));
 
 describe('Tests related to the background notifications', () => {
+  const mockRemoteMessage = {
+    data: {
+      sender: 'varun',
+      message: 'message',
+      nonce: 'nonce',
+      profilePic: 'my-image-s3-bucker.com',
+    },
+  } as any;
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('Should call sendLocalNotification with message body from remoteMessage', async () => {
-    const mockRemoteMessage = {
-      notification: {
-        title: 'Smart chat',
-        body: 'You have new messages',
-      },
-    } as any;
+  it('Should call handleIncomingMessageNotification with correct data from remoteMessage', async () => {
     await HandleIncomingFCM(mockRemoteMessage);
-    expect(sendLocalNotification).toHaveBeenCalledWith('Smart Chat', 'You have new messages');
+    expect(handleIncomingMessageNotification).toHaveBeenCalledWith({
+      sender: 'varun',
+      message: 'message',
+      nonce: 'nonce',
+      profilePic: 'my-image-s3-bucker.com',
+      from: 'background',
+    });
   });
 
-  it('Should use default message if body is undefined', async () => {
-    const mockRemoteMessage = {
-      notification: {
-        title: 'Smart chat',
-        body: undefined,
-      },
-    } as any;
+  it('Should handle error if handleIncomingMessageNotification throws', async () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    (handleIncomingMessageNotification as jest.Mock).mockRejectedValueOnce(new Error('Error occurred'));
     await HandleIncomingFCM(mockRemoteMessage);
-    expect(sendLocalNotification).toHaveBeenCalledWith('Smart Chat', 'You have a new message');
-  });
-
-  it('Should log the error if sendLocalNotification throws any error', async () => {
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    (sendLocalNotification as jest.Mock).mockRejectedValue(new Error('Notification Error'));
-
-    const mockRemoteMessage = {
-      notification: {
-        title: 'Smart chat',
-        body: 'You have new messages',
-      },
-    } as any;
-
-    await HandleIncomingFCM(mockRemoteMessage);
-    expect(consoleErrorSpy).toHaveBeenCalledWith('FCM background handler error:', expect.any(Error));
-    consoleErrorSpy.mockRestore();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'FCM background handler error:',
+      expect.any(Error)
+    );
+    consoleSpy.mockRestore();
   });
 });
