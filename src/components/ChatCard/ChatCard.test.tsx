@@ -7,11 +7,11 @@ import { ChatCardProps } from '../../types/Chat';
 import { ChatCard } from './ChatCard';
 import { MessageStatus } from '../../types/message';
 
-const mockReplace = jest.fn();
+const mockNavigate = jest.fn();
 
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({
-    replace: mockReplace,
+    navigate: mockNavigate,
   }),
 }));
 
@@ -129,7 +129,7 @@ describe('ChatCard Component', () => {
     const { getByText } = renderChatCard(<ChatCard {...chatDetails} />);
     fireEvent.press(getByText('Rekha Korepu'));
 
-    expect(mockReplace).toHaveBeenCalledWith('IndividualChat', {
+    expect(mockNavigate).toHaveBeenCalledWith('IndividualChat', {
       name: chatDetails.contact.name,
       originalNumber: chatDetails.contact.originalNumber,
       mobileNumber: chatDetails.contact.mobileNumber,
