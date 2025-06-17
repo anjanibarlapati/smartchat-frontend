@@ -19,7 +19,7 @@ export const ChatCard = ({
   const navigation = useNavigation<HomeScreenNavigationProps>();
 
   return (
-    <TouchableOpacity style={styles.cardContainer} onPress={()=>navigation.replace('IndividualChat', {name: contact.name, originalNumber: contact.originalNumber, mobileNumber: contact.mobileNumber, profilePic: contact.profilePicture})}>
+    <TouchableOpacity style={styles.cardContainer} onPress={()=>navigation.navigate('IndividualChat', {name: contact.name, originalNumber: contact.originalNumber, mobileNumber: contact.mobileNumber, profilePic: contact.profilePicture})}>
       <Image
             style={styles.profileImage}
             source={
