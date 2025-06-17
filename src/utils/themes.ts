@@ -44,6 +44,10 @@ export const LightTheme = {
     contactsAddcon: require('../../assets/icons/contacts-add-icon.png'),
     homeImageIcon:require('../../assets/images/homeImageLight.png'),
     unreadImageIcon:require('../../assets/images/unreadImageLight.png'),
+    singleTick : require('../../assets/images/singleTick.png'),
+    doubleTick : require('../../assets/images/doubleTick.png'),
+    readTick : require('../../assets/images/readTick.png'),
+    pendingTick : require('../../assets/images/pending.png'),
   },
 };
 
@@ -93,6 +97,10 @@ export const DarkTheme = {
     contactsAddcon: require('../../assets/icons/contacts-add-icon-dark-theme.png'),
     homeImageIcon:require('../../assets/images/homeImageDark.png'),
    unreadImageIcon:require('../../assets/images/unreadImageDark.png'),
+   singleTick : require('../../assets/images/singleTickDarkTheme.png'),
+    doubleTick : require('../../assets/images/doubleTickDarkTheme.png'),
+    readTick : require('../../assets/images/seenTick.png'),
+    pendingTick : require('../../assets/images/pendingIconDarkTheme.png'),
   },
 };
 
