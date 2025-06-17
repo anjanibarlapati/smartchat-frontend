@@ -554,4 +554,23 @@ describe('Tests related to the Profile Screen', () => {
     expect(screen.getByPlaceholderText('New Password')).toBeTruthy();
     expect(screen.getByPlaceholderText('Confirm Password')).toBeTruthy();
   });
+    it('Should close change password modal when cancel button pressed', async () => {
+    jest
+      .spyOn(require('react-native'), 'useWindowDimensions')
+      .mockReturnValue({width: 200, height: 100});
+
+    const {getByText, queryByText} = render(
+      <NavigationContainer>
+        <Provider store={store}>
+          <Profile />
+        </Provider>
+      </NavigationContainer>,
+    );
+
+    expect(getByText('Change Password')).toBeTruthy();
+
+    await waitFor(() => {
+      expect(queryByText('Cancel')).toBeNull();
+    });
+  });
 });
