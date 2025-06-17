@@ -4,16 +4,16 @@ import { MessageProps } from '../../types/MessageProps';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './MessageBox.styles';
 
- export const getTickIcon = (status: string) => {
+ export const getTickIcon = (status: string, theme: Theme) => {
     switch (status) {
       case 'pending':
-        return require('../../../assets/images/pending.png');
+        return theme.images.pendingTick;
       case 'sent':
-        return require('../../../assets/images/singleTick.png');
+        return theme.images.singleTick;
       case 'delivered':
-        return require('../../../assets/images/doubleTick.png');
+        return theme.images.doubleTick;
       case 'seen':
-        return require('../../../assets/images/readTick.png');
+        return theme.images.readTick;
     }
   };
 
@@ -40,7 +40,7 @@ export const MessageBox = ({
         {isSender &&
           <Image
             accessibilityLabel="tick-icon"
-            source={getTickIcon(status)}
+            source={getTickIcon(status, theme)}
             style={styles.tickIcon}
           />
         }
