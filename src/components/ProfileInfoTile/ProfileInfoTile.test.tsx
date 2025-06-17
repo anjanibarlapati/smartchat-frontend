@@ -243,4 +243,27 @@ describe('Tests related to the Profile Info Tile component', () => {
       expect(screen.getByText('Invalid email format')).toBeTruthy();
     });
   });
+   it('Should call onPress when Change Password is clicked', () => {
+    const mockOnPress = jest.fn();
+
+    render(
+      <NavigationContainer>
+        <Provider store={store}>
+          <ProfileInfoTile
+            label="Change Password"
+            value=""
+            editField=""
+            setEditField={jest.fn()}
+            setLoading={jest.fn()}
+            image={require('../../../assets/icons/user-icon.png')}
+            onPress={mockOnPress}
+          />
+        </Provider>
+      </NavigationContainer>,
+    );
+    const editIcon = screen.getByLabelText('edit-text');
+    fireEvent.press(editIcon);
+
+    expect(mockOnPress).toHaveBeenCalled();
+  });
 });
