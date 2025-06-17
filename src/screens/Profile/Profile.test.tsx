@@ -1,17 +1,19 @@
-import EncryptedStorage from 'react-native-encrypted-storage';
-import {Provider} from 'react-redux';
-import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import {
   fireEvent,
   render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import {store} from '../../redux/store';
-import {User} from '../../types/User';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { Provider } from 'react-redux';
+import { ChangePasswordModal } from '../../components/ChangePasswordModal/ChangePasswordModal';
+import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTile';
+import { store } from '../../redux/store';
+import { User } from '../../types/User';
 import * as tokenUtil from '../../utils/getTokens';
-import {openPhotoLibrary} from '../../utils/openPhotoLibrary';
-import {Profile} from './Profile';
+import { openPhotoLibrary } from '../../utils/openPhotoLibrary';
+import { Profile } from './Profile';
 import * as ProfileServices from './Profile.services';
 
 jest.mock('react-native-encrypted-storage', () => ({
