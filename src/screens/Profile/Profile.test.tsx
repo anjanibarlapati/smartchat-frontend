@@ -514,4 +514,44 @@ describe('Tests related to the Profile Screen', () => {
       screen.getByLabelText('ProfilePicture').parent?.parent?.parent;
     expect(profilePicturee?.props.style.borderRadius).toBe(50);
   });
+
+  it('Should open change password modal when change Paddword pressed', async () => {
+    jest
+      .spyOn(require('react-native'), 'useWindowDimensions')
+      .mockReturnValue({width: 200, height: 100});
+    RenderProfileScreen();
+    const mockOnPress = jest.fn();
+
+    render(
+      <NavigationContainer>
+        <Provider store={store}>
+          <ProfileInfoTile
+            label="Change Password"
+            value=""
+            editField=""
+            setEditField={jest.fn()}
+            setLoading={jest.fn()}
+            image={require('../../../assets/icons/password.png')}
+            onPress={mockOnPress}
+          />
+        </Provider>
+      </NavigationContainer>,
+    );
+    const editIcon = screen.getByLabelText('edit-text');
+    fireEvent.press(editIcon);
+    const onClose = jest.fn();
+    render(
+      <Provider store={store}>
+        <ChangePasswordModal visible={true} onClose={onClose} />,
+      </Provider>,
+    );
+
+    fireEvent.press(screen.getByLabelText('change-password-modal'));
+
+    expect(mockOnPress).toHaveBeenCalled();
+    expect(screen.getByText('Change Password')).toBeTruthy();
+    expect(screen.getByPlaceholderText('Old Password')).toBeTruthy();
+    expect(screen.getByPlaceholderText('New Password')).toBeTruthy();
+    expect(screen.getByPlaceholderText('Confirm Password')).toBeTruthy();
+  });
 });
