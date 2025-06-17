@@ -1,14 +1,18 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Provider } from 'react-redux';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { store } from '../../redux/store';
-import { User } from '../../types/User';
+import {Provider} from 'react-redux';
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
+import {store} from '../../redux/store';
+import {User} from '../../types/User';
 import * as tokenUtil from '../../utils/getTokens';
-import { openPhotoLibrary } from '../../utils/openPhotoLibrary';
-import { Profile } from './Profile';
+import {openPhotoLibrary} from '../../utils/openPhotoLibrary';
+import {Profile} from './Profile';
 import * as ProfileServices from './Profile.services';
-
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
@@ -59,7 +63,6 @@ jest.mock('react-redux', () => ({
   useSelector: () => mockUser,
   useDispatch: () => mockDispatch,
 }));
-
 
 describe('Tests related to the Profile Screen', () => {
   const RenderProfileScreen = () => {
@@ -222,7 +225,9 @@ describe('Tests related to the Profile Screen', () => {
   });
 
   it('Should display an alert when error occurs while signing out', async () => {
-    (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
+    (tokenUtil.getTokens as jest.Mock).mockResolvedValue({
+      access_token: 'RGUKT BASAR',
+    });
     (EncryptedStorage.clear as jest.Mock).mockRejectedValue(
       new Error('Failed'),
     );
@@ -245,7 +250,9 @@ describe('Tests related to the Profile Screen', () => {
   });
 
   it('Should clear encrypted storage and stack and navigate to welcome screen upon clicking on sign out', async () => {
-    (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
+    (tokenUtil.getTokens as jest.Mock).mockResolvedValue({
+      access_token: 'RGUKT BASAR',
+    });
     (ProfileServices.logout as jest.Mock).mockResolvedValue({ok: true});
     RenderProfileScreen();
     await waitFor(async () => {
@@ -259,34 +266,39 @@ describe('Tests related to the Profile Screen', () => {
     });
   });
 
-      it('Should navigate to Welcome screen, if tokens are invalid', async() => {
-        (tokenUtil.getTokens as jest.Mock).mockResolvedValue(null);
-        RenderProfileScreen();
-        await waitFor(async() => {
-            fireEvent.press(await screen.findByText('Sign out'));
-        });
-        await waitFor(async() => {
-            fireEvent.press(await screen.findByText('Yes'));
-        });
-        await waitFor(() => {
-            expect(EncryptedStorage.clear).toHaveBeenCalled();
-        });
+  it('Should navigate to Welcome screen, if tokens are invalid', async () => {
+    (tokenUtil.getTokens as jest.Mock).mockResolvedValue(null);
+    RenderProfileScreen();
+    await waitFor(async () => {
+      fireEvent.press(await screen.findByText('Sign out'));
     });
+    await waitFor(async () => {
+      fireEvent.press(await screen.findByText('Yes'));
+    });
+    await waitFor(() => {
+      expect(EncryptedStorage.clear).toHaveBeenCalled();
+    });
+  });
 
-    it('Should give an alert if response is not ok during logout', async() => {
-        (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
-        (ProfileServices.logout as jest.Mock).mockResolvedValue({ok: false, json: async () => ({ message: 'Something went wrong' })});
-        RenderProfileScreen();
-        await waitFor(async() => {
-            fireEvent.press(await screen.findByText('Sign out'));
-        });
-        await waitFor(async() => {
-            fireEvent.press(await screen.findByText('Yes'));
-        });
-        await waitFor(() => {
-            expect(screen.getByText('Something went wrong')).toBeTruthy();
-        });
+  it('Should give an alert if response is not ok during logout', async () => {
+    (tokenUtil.getTokens as jest.Mock).mockResolvedValue({
+      access_token: 'RGUKT BASAR',
     });
+    (ProfileServices.logout as jest.Mock).mockResolvedValue({
+      ok: false,
+      json: async () => ({message: 'Something went wrong'}),
+    });
+    RenderProfileScreen();
+    await waitFor(async () => {
+      fireEvent.press(await screen.findByText('Sign out'));
+    });
+    await waitFor(async () => {
+      fireEvent.press(await screen.findByText('Yes'));
+    });
+    await waitFor(() => {
+      expect(screen.getByText('Something went wrong')).toBeTruthy();
+    });
+  });
 
   it('Should go back to profile screen when clicks on Cancel in signout modal', async () => {
     RenderProfileScreen();
