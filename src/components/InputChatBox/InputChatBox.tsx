@@ -3,7 +3,6 @@ import NetInfo from '@react-native-community/netinfo';
 import React, {useState} from 'react';
 import {
   Image,
-  KeyboardAvoidingView,
   TextInput,
   TouchableOpacity,
   View,
@@ -70,7 +69,7 @@ export function InputChatBox({
   };
 
   return (
-    <KeyboardAvoidingView>
+    <View>
       <View style={styles.wrapper}>
         <View style={styles.container}>
           <TextInput
@@ -97,6 +96,6 @@ export function InputChatBox({
         type={alertType}
         onClose={hideAlert}
       />
-    </KeyboardAvoidingView>
+    </View>
   );
 }
