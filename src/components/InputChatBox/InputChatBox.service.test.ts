@@ -6,7 +6,17 @@ import { sendMessage } from './InputChatBox.service';
 jest.mock('../../utils/getTokens');
 jest.mock('../../utils/encryptMessage');
 jest.mock('../../utils/socket');
-
+jest.mock('@notifee/react-native', () => ({
+  __esModule: true,
+  default: {
+    requestPermission: jest.fn(),
+    createChannel: jest.fn(),
+    displayNotification: jest.fn(),
+    createTriggerNotification: jest.fn(),
+  },
+  AndroidImportance: { HIGH: 'high' },
+  TriggerType: { TIMESTAMP: 'timestamp' },
+}));
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),

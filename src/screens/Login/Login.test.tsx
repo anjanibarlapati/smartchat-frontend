@@ -25,6 +25,18 @@ const renderLoginScreen = () => {
   );
 };
 
+jest.mock('@notifee/react-native', () => ({
+  __esModule: true,
+  default: {
+    requestPermission: jest.fn(),
+    createChannel: jest.fn(),
+    displayNotification: jest.fn(),
+    createTriggerNotification: jest.fn(),
+  },
+  AndroidImportance: { HIGH: 'high' },
+  TriggerType: { TIMESTAMP: 'timestamp' },
+}));
+
 jest.mock('realm', () => ({
   BSON: {
     ObjectId: jest.fn(() => 'mocked-object-id'),
