@@ -1,14 +1,16 @@
+import { createRealmContext } from '@realm/react';
 import { createContext, ReactNode, useContext, useState } from 'react';
 import Realm from 'realm';
-import { createRealmContext } from '@realm/react';
 import { deleteAllRealmData } from '../realm-database/connection';
 import { Chat } from '../realm-database/schemas/Chat';
 import { Contact } from '../realm-database/schemas/Contact';
 import { Message } from '../realm-database/schemas/Message';
+import { UserAction } from '../realm-database/schemas/UserAction';
+
 
 
 export const realmConfig: Realm.Configuration = {
-  schema: [Chat, Message, Contact],
+  schema: [Chat, Message, Contact, UserAction],
   schemaVersion: 1,
   deleteRealmIfMigrationNeeded: true,
 };

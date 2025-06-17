@@ -4,11 +4,13 @@ import { getTokens } from '../../utils/getTokens';
 type BlockChatProps = {
   senderMobileNumber: string;
   receiverMobileNumber: string;
+  blockedAt? : Date;
 };
 
 export const blockUserChat = async ({
   senderMobileNumber,
   receiverMobileNumber,
+  blockedAt,
 }: BlockChatProps) => {
   const token = await getTokens(senderMobileNumber);
 
@@ -21,6 +23,7 @@ export const blockUserChat = async ({
     body: JSON.stringify({
       senderMobileNumber,
       receiverMobileNumber,
+      time: blockedAt,
     }),
   });
 

@@ -19,6 +19,7 @@ import { checkAccessToken } from '../utils/checkToken.ts';
 import { socketConnection } from '../utils/socket.ts';
 import { storeMessages } from '../utils/storeMessages.ts';
 import { storePendingMessages } from '../utils/storePendingMessages.ts';
+import { syncPendingActions } from '../utils/syncPendingActions.ts';
 import { Tabs } from './tabs/Tabs.tsx';
 
 
@@ -55,9 +56,10 @@ export function AppNavigator(): React.JSX.Element {
             await socketConnection(user.mobileNumber);
             dispatch(setUserDetails(user));
             dispatch(setSuccessMessage('loggedIn'));
-            if(netState.isConnected){
+            if(netState.isConnected ){
                 await storeMessages(user.mobileNumber,realm);
                 await storePendingMessages(user.mobileNumber, realm);
+                await syncPendingActions(realm);
              }
             setIsUserStored(true);
           }
