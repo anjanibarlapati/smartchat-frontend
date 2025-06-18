@@ -55,7 +55,7 @@ export const ChatOptionsModal = ({
               <TouchableOpacity onPress={() => {onClearChat();}}>
                 <Text style={styles.text}>Clear Chat</Text>
               </TouchableOpacity>
-              {user.mobileNumber !== receiverMobileNumber && <TouchableOpacity onPress={() => {onBlockAndUnblock();}}>
+              {user.mobileNumber !== receiverMobileNumber && !chat?.isAccountDeleted && <TouchableOpacity onPress={() => {onBlockAndUnblock();}}>
                   <Text style={styles.text}>
                     {chat?.isBlocked ? 'Unblock' : 'Block'}
                   </Text>
