@@ -15,6 +15,18 @@ import {decryptPrivateKey, encryptPrivateKey} from '../../utils/privateKey';
 import Registration from './Registration';
 import * as RegistrationHandler from './Registration.service';
 
+jest.mock('@notifee/react-native', () => ({
+  __esModule: true,
+  default: {
+    requestPermission: jest.fn(),
+    createChannel: jest.fn(),
+    displayNotification: jest.fn(),
+    createTriggerNotification: jest.fn(),
+  },
+  AndroidImportance: { HIGH: 'high' },
+  TriggerType: { TIMESTAMP: 'timestamp' },
+}));
+
 jest.mock('../../utils/openCamera', () => ({
   openCamera: jest.fn(),
 }));

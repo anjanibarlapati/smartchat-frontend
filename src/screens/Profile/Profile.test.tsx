@@ -9,6 +9,17 @@ import { openPhotoLibrary } from '../../utils/openPhotoLibrary';
 import { Profile } from './Profile';
 import * as ProfileServices from './Profile.services';
 
+jest.mock('@notifee/react-native', () => ({
+  __esModule: true,
+  default: {
+    requestPermission: jest.fn(),
+    createChannel: jest.fn(),
+    displayNotification: jest.fn(),
+    createTriggerNotification: jest.fn(),
+  },
+  AndroidImportance: { HIGH: 'high' },
+  TriggerType: { TIMESTAMP: 'timestamp' },
+}));
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),

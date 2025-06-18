@@ -1,6 +1,7 @@
+import { Platform } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { io, Socket } from 'socket.io-client';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
+import { io, Socket } from 'socket.io-client';
 import { getRealmInstance } from '../realm-database/connection';
 import { addNewMessageInRealm } from '../realm-database/operations/addNewMessage';
 import { updateMessageStatusInRealm } from '../realm-database/operations/updateMessageStatus';
@@ -10,6 +11,7 @@ import { store } from '../redux/store';
 import { Message, MessageStatus } from '../types/message';
 import { BASE_URL } from './constants';
 import { decryptMessage } from './decryptMessage';
+import { handleIncomingMessageNotification } from './handleIncomingNotification';
 
 let socket: Socket<DefaultEventsMap, DefaultEventsMap> | null = null;
 
@@ -47,6 +49,12 @@ export const socketConnection = async (mobileNumber: string) => {
           addNewMessageInRealm(realm, data.chatId, structuredMessage);
         } catch (error) {
           console.error('Error in newMessage handler:', error);
+        }
+      });
+
+      socket.on('triggerLocalNotification', async (data) => {
+        if(Platform.OS === 'ios') {
+          await handleIncomingMessageNotification({...data, from: 'socket'});
         }
       });
 

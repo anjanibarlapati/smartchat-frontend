@@ -29,7 +29,15 @@ export async function sendLocalNotification(title: string, body: string, profile
         pressAction: { id: 'default' },
         smallIcon: 'ic_launcher_round',
         color: '#008080',
-        largeIcon: profilePic,
+        ...(profilePic ? { largeIcon: profilePic } : { largeIcon: require('../../assets/images/profileImage.png')}),
+        circularLargeIcon: true,
+      },
+      ios: {
+        attachments: [
+          {
+            url: profilePic ?? require('../../assets/images/profileImage.png'),
+          },
+        ],
       },
     });
   } catch (err) {

@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { io } from 'socket.io-client';
 import { getRealmInstance } from '../realm-database/connection';
@@ -5,9 +6,26 @@ import { addNewMessageInRealm } from '../realm-database/operations/addNewMessage
 import { updateMessageStatusInRealm } from '../realm-database/operations/updateMessageStatus';
 import { updateUserAccountStatusInRealm } from '../realm-database/operations/updateUserAccountStatus';
 import { store } from '../redux/store';
-import { decryptMessage } from './decryptMessage';
-import { socketConnection, socketDisconnect } from './socket';
 import { MessageStatus } from '../types/message';
+import { decryptMessage } from './decryptMessage';
+import { handleIncomingMessageNotification } from './handleIncomingNotification';
+import { socketConnection, socketDisconnect } from './socket';
+
+jest.mock('@notifee/react-native', () => ({
+  __esModule: true,
+  default: {
+    requestPermission: jest.fn(),
+    createChannel: jest.fn(),
+    displayNotification: jest.fn(),
+    createTriggerNotification: jest.fn(),
+  },
+  AndroidImportance: { HIGH: 'high' },
+  TriggerType: { TIMESTAMP: 'timestamp' },
+}));
+
+jest.mock('./handleIncomingNotification', () => ({
+  handleIncomingMessageNotification: jest.fn(),
+}));
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -228,5 +246,40 @@ describe('Socket Utility (with Realm instance mocking)', () => {
     await expect(socketConnection(mobileNumber)).rejects.toThrow(
       'Unable to establish socket connection'
     );
+  });
+
+  it('Should handle triggerLocalNotification and call handleIncomingMessageNotification on iOS', async () => {
+    Object.defineProperty(Platform, 'OS', {
+      value: 'ios',
+    });
+    const notificationData = {
+      sender: '9393929292',
+      message: 'msg',
+      nonce: 'nonce',
+      sentAt: '2025-06-17T00:00:00Z',
+    };
+    await socketConnection(mobileNumber);
+    const handler = mockOn.mock.calls.find(call => call[0] === 'triggerLocalNotification')?.[1];
+    await handler?.(notificationData);
+    expect(handleIncomingMessageNotification).toHaveBeenCalledWith({
+      ...notificationData,
+      from: 'socket',
+    });
+  });
+
+  it('Should not call handleIncomingMessageNotification if platform is not iOS', async () => {
+    Object.defineProperty(Platform, 'OS', {
+      value: 'android',
+    });
+    const notificationData = {
+      sender: '9393929292',
+      message: 'msg',
+      nonce: 'nonce',
+      sentAt: '2025-06-17T00:00:00Z',
+    };
+    await socketConnection(mobileNumber);
+    const handler = mockOn.mock.calls.find(call => call[0] === 'triggerLocalNotification')?.[1];
+    await handler?.(notificationData);
+    expect(handleIncomingMessageNotification).not.toHaveBeenCalled();
   });
 });

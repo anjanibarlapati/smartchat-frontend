@@ -6,6 +6,18 @@ import { NavigationContainer } from '@react-navigation/native';
 import { RealmProvider } from '@realm/react';
 import { fireEvent, render } from '@testing-library/react-native';
 
+jest.mock('@notifee/react-native', () => ({
+  __esModule: true,
+  default: {
+    requestPermission: jest.fn(),
+    createChannel: jest.fn(),
+    displayNotification: jest.fn(),
+    createTriggerNotification: jest.fn(),
+  },
+  AndroidImportance: { HIGH: 'high' },
+  TriggerType: { TIMESTAMP: 'timestamp' },
+}));
+
 jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn(),
 }));
