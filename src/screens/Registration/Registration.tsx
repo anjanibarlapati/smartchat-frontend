@@ -64,7 +64,8 @@ const Registration = () => {
     mobileNumber: '',
     profilePic: null,
   });
-
+  const [phoneInputKey, setPhoneInputKey] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
   const handleChange = (field: string, value: string) => {
     if (field === 'email') {
       value = value.trim().toLowerCase();
@@ -156,6 +157,7 @@ const Registration = () => {
       confirmPassword: '',
       profilePic: null,
     });
+    setPhoneInputKey(prevKey => prevKey + 1);
   };
   const handleRegister = async () => {
     if (!validateFields()) {
@@ -227,6 +229,7 @@ const Registration = () => {
         return;
       }
       showAlert(result.message, 'warning');
+      clearFields();
     } catch (error) {
       showAlert('Something went wrong. Please try again', 'error');
       clearFields();
@@ -291,6 +294,7 @@ const Registration = () => {
           />
           <View style={styles.phoneInputWrapper}>
             <PhoneInput
+              key={phoneInputKey}
               initialCountry="in"
               textProps={{
                 placeholder: 'Mobile Number *',
@@ -312,17 +316,27 @@ const Registration = () => {
               handleChange('password', text);
             }}
             placeholder="Password"
-            secureTextEntry
+            secureTextEntry={!showPassword}
             error={inputErrors.password}
             required
           />
+          <View style={styles.showPasswordView}>
+            <TouchableOpacity onPress={() => setShowPassword(prev => !prev)}>
+              <Image
+                style={styles.eyeImage}
+                source={
+                  showPassword ? theme.images.eyeoffIcon : theme.images.eyeIcon
+                }
+              />
+            </TouchableOpacity>
+          </View>
           <InputField
             value={user.confirmPassword}
             onChangeText={text => {
               handleChange('confirmPassword', text);
             }}
             placeholder="Confirm Password"
-            secureTextEntry
+            secureTextEntry={!showPassword}
             error={inputErrors.confirmPassword}
             required
           />

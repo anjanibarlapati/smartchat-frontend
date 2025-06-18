@@ -72,4 +72,15 @@ export const getStyles = (theme: Theme, width: number) => StyleSheet.create({
     marginTop: 5,
     fontFamily: 'Nunito-Regular',
   },
+  showPasswordView :{
+    position: 'absolute',
+    right:'16%',
+    top:'68%',
+  },
+  eyeImage:{
+    width:20,
+    height:20,
+    tintColor:'gray',
+
+  },
 });
