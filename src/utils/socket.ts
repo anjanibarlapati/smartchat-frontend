@@ -1,6 +1,6 @@
-import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { Platform } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { io, Socket } from 'socket.io-client';
 import { getRealmInstance } from '../realm-database/connection';
 import { addNewMessageInRealm } from '../realm-database/operations/addNewMessage';
