@@ -48,6 +48,8 @@ export const LightTheme = {
     doubleTick : require('../../assets/images/doubleTick.png'),
     readTick : require('../../assets/images/readTick.png'),
     pendingTick : require('../../assets/images/pending.png'),
+    eyeIcon: require('../../assets/images/eyeIcon.png'),
+    eyeoffIcon : require('../../assets/images/eyeoffIcon.png'),
   },
 };
 
@@ -101,6 +103,8 @@ export const DarkTheme = {
     doubleTick : require('../../assets/images/doubleTickDarkTheme.png'),
     readTick : require('../../assets/images/seenTick.png'),
     pendingTick : require('../../assets/images/pendingIconDarkTheme.png'),
+    eyeIcon: require('../../assets/images/eyeIcon.png'),
+    eyeoffIcon : require('../../assets/images/eyeoffIcon.png'),
   },
 };
 
