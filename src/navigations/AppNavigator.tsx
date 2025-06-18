@@ -1,10 +1,10 @@
 import NetInfo from '@react-native-community/netinfo';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import SplashScreen from 'react-native-splash-screen';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { CustomAlert } from '../components/CustomAlert/CustomAlert.tsx';
 import { useRealm } from '../contexts/RealmContext.tsx';
 import { useAlertModal } from '../hooks/useAlertModal.ts';
@@ -21,7 +21,8 @@ import { storeMessages } from '../utils/storeMessages.ts';
 import { storePendingMessages } from '../utils/storePendingMessages.ts';
 import { syncPendingActions } from '../utils/syncPendingActions.ts';
 import { Tabs } from './tabs/Tabs.tsx';
-
+import { storeState } from '../redux/store.ts';
+import { useSocketConnection } from '../hooks/useSocketConnection.ts';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -32,6 +33,11 @@ export function AppNavigator(): React.JSX.Element {
     const [isReady, setIsReady] = useState<boolean>(false);
      const realm = useRealm();
     const dispatch = useDispatch();
+    const userData = useSelector((state: storeState) => state.user);
+    const wasConnected = useRef<boolean>(false);
+    const isSocketConnected = useSocketConnection();
+
+
     const {
         alertVisible, alertMessage, alertType, showAlert, hideAlert,
       } = useAlertModal();
@@ -42,7 +48,7 @@ export function AppNavigator(): React.JSX.Element {
       const loadUser = async () => {
         try {
           const netState = await NetInfo.fetch();
-            if(netState.isConnected) {
+            if(!netState.isConnected) {
               const isAuthenticated = await checkAccessToken();
               if(!isAuthenticated) {
                 await EncryptedStorage.clear();
@@ -56,11 +62,6 @@ export function AppNavigator(): React.JSX.Element {
             await socketConnection(user.mobileNumber);
             dispatch(setUserDetails(user));
             dispatch(setSuccessMessage('loggedIn'));
-            if(netState.isConnected ){
-                await storeMessages(user.mobileNumber,realm);
-                await storePendingMessages(user.mobileNumber, realm);
-                await syncPendingActions(realm);
-             }
             setIsUserStored(true);
           }
         } catch (error) {
@@ -72,6 +73,30 @@ export function AppNavigator(): React.JSX.Element {
       };
       loadUser();
     }, [dispatch, realm, showAlert]);
+
+    useEffect(() => {
+    const callback = NetInfo.addEventListener(async state => {
+      if(!state.isConnected && wasConnected.current === true) {
+        wasConnected.current = false;
+      }
+              console.log(isSocketConnected, 'Socket is connected');
+
+      if (state.isConnected && userData.mobileNumber && wasConnected.current === false && isSocketConnected) {
+        console.log(isSocketConnected, 'Socket is connected');
+        wasConnected.current = true;
+        try {
+          await syncPendingActions(realm);
+          await storeMessages(userData.mobileNumber, realm);
+          console.log('Messages stored successfully');
+          await storePendingMessages(userData.mobileNumber, realm);
+        } catch (error) {
+          console.log('Failed syncing messages:', error);
+        }
+      }
+    });
+
+    return () => callback();
+  }, [realm, userData, isSocketConnected]);
 
     if(!isReady) {
       return <></>;
@@ -91,3 +116,4 @@ export function AppNavigator(): React.JSX.Element {
 
     );
 }
+
