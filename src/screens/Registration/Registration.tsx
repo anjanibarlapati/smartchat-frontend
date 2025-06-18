@@ -3,8 +3,6 @@ import {parsePhoneNumberFromString} from 'libphonenumber-js';
 import React, {useState} from 'react';
 import {
   Image,
-  // KeyboardAvoidingView,
-  // Platform,
   ScrollView,
   Text,
   TouchableOpacity,
