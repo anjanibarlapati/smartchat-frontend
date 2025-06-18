@@ -1,4 +1,4 @@
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import {
   act,
   fireEvent,
@@ -6,12 +6,12 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import {Alert, StyleSheet} from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Provider} from 'react-redux';
-import {store} from '../../redux/store';
-import {generateKeyPair, storeKeys} from '../../utils/keyPairs';
-import {decryptPrivateKey, encryptPrivateKey} from '../../utils/privateKey';
+import { Provider } from 'react-redux';
+import { store } from '../../redux/store';
+import { generateKeyPair, storeKeys } from '../../utils/keyPairs';
+import { decryptPrivateKey, encryptPrivateKey } from '../../utils/privateKey';
 import Registration from './Registration';
 import * as RegistrationHandler from './Registration.service';
 
