@@ -56,7 +56,7 @@ export const IndividualChat = () => {
   const realm = useRealm();
   const chat = realm.objectForPrimaryKey<Chat>('Chat', mobileNumber);
   const flatListRef = useRef<FlatList>(null);
-  const [isConnectedToInternet,setIsConnectedToInternet]= useState(false);
+  const [isConnectedToInternet,setIsConnectedToInternet] = useState(false);
   const {sections: groupedMessages, flattenedMessages} = useGroupedMessages(mobileNumber);
   const dispatch = useDispatch();
 
