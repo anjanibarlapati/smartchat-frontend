@@ -8,6 +8,8 @@ import { Badge } from '../Badge/Badge';
 import { getTickIcon } from '../MessageBox/MessageBox';
 import { TimeStamp } from '../TimeStamp/TimeStamp';
 import { getStyles } from './ChatCard.styles';
+import { useSelector } from 'react-redux';
+import { storeState } from '../../redux/store';
 
 export const ChatCard = ({
   contact,
@@ -17,6 +19,8 @@ export const ChatCard = ({
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme, unreadCount);
   const navigation = useNavigation<HomeScreenNavigationProps>();
+  const user = useSelector((state: storeState) => state.user);
+
 
   return (
     <TouchableOpacity style={styles.cardContainer} onPress={()=>navigation.navigate('IndividualChat', {name: contact.name, originalNumber: contact.originalNumber, mobileNumber: contact.mobileNumber, profilePic: contact.profilePicture})}>
@@ -33,7 +37,7 @@ export const ChatCard = ({
             numberOfLines={1}
             ellipsizeMode="tail"
             style={styles.personName}>
-            {contact.name}
+            {`${contact.name}${contact.mobileNumber === user.mobileNumber ? ' (You)' : ''}`}
           </Text>
           <TimeStamp from="chat-card" date={message.sentAt}/>
         </View>
