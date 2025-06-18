@@ -23,13 +23,15 @@ export const socketConnection = async (mobileNumber: string) => {
     socketDisconnect();
 
     if (tokenData.access_token) {
-      socket = io(BASE_URL, { transports: ['websocket'] });
+      socket = io(BASE_URL, { transports: ['websocket']});
 
       socket.on('connect', () => {
         socket?.emit('register', mobileNumber);
+        console.log('Socket connected with mobile number:', mobileNumber);
       });
 
       socket.on('newMessage', async data => {
+        // console.log('New message received:', data);
         try{
           const actualMessage = await decryptMessage(
             data.chatId,
@@ -51,13 +53,14 @@ export const socketConnection = async (mobileNumber: string) => {
       });
 
       socket.on('messageDelivered', async data => {
-        const { sentAt, receiverMobileNumber, messageIds, messagesCountToupdate } = data;
-        updateMessageStatusInRealm( {chatId: receiverMobileNumber, sentAt: sentAt, status: MessageStatus.DELIVERED, updateAllBeforeSentAt: messagesCountToupdate, messageIds: messageIds});
+        // console.log('Message delivered:', data);
+        const { receiverMobileNumber, messageIds } = data;
+        updateMessageStatusInRealm( {chatId: receiverMobileNumber, status: MessageStatus.DELIVERED, messageIds: messageIds});
       });
 
       socket.on('messageRead', data => {
-        const { sentAt, chatId, updatedCount, messageIds } = data;
-        updateMessageStatusInRealm( {chatId: chatId, sentAt: sentAt, messageIds: messageIds, status: MessageStatus.SEEN, updateAllBeforeSentAt: updatedCount > 1});
+        const { receiverMobileNumber, messageIds } = data;
+        updateMessageStatusInRealm( {chatId: receiverMobileNumber, messageIds: messageIds, status: MessageStatus.SEEN});
       });
 
       socket.on('isAccountDeleted', data => {
@@ -70,7 +73,7 @@ export const socketConnection = async (mobileNumber: string) => {
       });
 
       socket.on('disconnect', () => {
-        console.log('Socket disconnected');
+        console.log('Socket disconnected', new Date().toLocaleTimeString());
       });
     }
   } catch (error) {
