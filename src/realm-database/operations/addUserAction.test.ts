@@ -9,6 +9,18 @@ jest.mock('react-native-encrypted-storage', () => ({
   clear: jest.fn(),
 }));
 
+jest.mock('@notifee/react-native', () => ({
+  __esModule: true,
+  default: {
+    requestPermission: jest.fn(),
+    createChannel: jest.fn(),
+    displayNotification: jest.fn(),
+    createTriggerNotification: jest.fn(),
+  },
+  AndroidImportance: { HIGH: 'high' },
+  TriggerType: { TIMESTAMP: 'timestamp' },
+}));
+
 describe('Tests related to adding the user offline actions operation', () => {
   let mockRealm: Partial<Realm>;
   let mockWrite: jest.Mock;
