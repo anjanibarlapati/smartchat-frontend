@@ -3,8 +3,6 @@ import {parsePhoneNumberFromString} from 'libphonenumber-js';
 import React, {useState} from 'react';
 import {
   Image,
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -68,7 +66,7 @@ const Registration = () => {
   });
 
   const handleChange = (field: string, value: string) => {
-    if(field === 'email') {
+    if (field === 'email') {
       value = value.trim().toLowerCase();
     }
     setUser(prevValues => ({
@@ -243,12 +241,9 @@ const Registration = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
-      style={styles.container}>
+    <View style={styles.container}>
       <ScrollView
-        contentContainerStyle={styles.body}
+        contentContainerStyle={[styles.body, styles.scrollViewContent]}
         accessibilityLabel="body-container"
         keyboardShouldPersistTaps="handled">
         <TouchableOpacity
@@ -357,7 +352,7 @@ const Registration = () => {
         type={alertType}
         onClose={hideAlert}
       />
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
