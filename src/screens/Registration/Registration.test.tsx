@@ -6,7 +6,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import {Alert} from 'react-native';
+import {Alert, StyleSheet} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Provider} from 'react-redux';
 import {store} from '../../redux/store';
@@ -424,14 +424,18 @@ describe('Registration Screen check', () => {
   it('Should apply styles based on the width of the screen', () => {
     const {getByLabelText} = renderRegistrationScreen();
     const bodyContainer = getByLabelText('body-container').parent;
-    expect(bodyContainer?.props.contentContainerStyle.paddingHorizontal).toBe(
-      100,
+    const flattenedStyle = StyleSheet.flatten(
+      bodyContainer?.props.contentContainerStyle,
     );
+    expect(flattenedStyle.paddingHorizontal).toBe(100);
     jest
       .spyOn(require('react-native'), 'useWindowDimensions')
       .mockReturnValue({width: 10, height: 100});
     renderRegistrationScreen();
     const body = screen.getByLabelText('body-container').parent?.parent;
-    expect(body?.props.contentContainerStyle.paddingHorizontal).toBe(2);
+     const flattenedStyle2 = StyleSheet.flatten(
+      body?.props.contentContainerStyle,
+    );
+    expect(flattenedStyle2.paddingHorizontal).toBe(2);
   });
 });
