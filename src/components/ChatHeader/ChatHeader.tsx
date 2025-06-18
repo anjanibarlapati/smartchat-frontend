@@ -8,10 +8,11 @@ import { getStyles } from './ChatHeader.styles';
 interface ChatHeaderProps {
     name: string,
     originalNumber: string,
-    profilePic: string | null
+    profilePic: string | null,
+    isSelfChat: boolean
 }
 
-export const ChatHeader = ({name, originalNumber, profilePic}: ChatHeaderProps) => {
+export const ChatHeader = ({name, originalNumber, profilePic, isSelfChat}: ChatHeaderProps) => {
     const theme: Theme = useAppTheme();
     const styles = getStyles(theme);
     const navigation = useNavigation<HomeScreenNavigationProps>();
@@ -31,9 +32,9 @@ export const ChatHeader = ({name, originalNumber, profilePic}: ChatHeaderProps) 
                     numberOfLines={1}
                     ellipsizeMode="tail"
                     style={styles.nameText}>
-                    {name}
+                    {`${name}${isSelfChat ? ' (You)' : ''}`}
                 </Text>
-                <Text style={styles.numberText}>{originalNumber}</Text>
+                {name !== originalNumber && <Text style={styles.numberText}>{originalNumber}</Text>}
             </View>
         </View>
     </View>
