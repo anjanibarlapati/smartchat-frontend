@@ -1,4 +1,4 @@
-import { Text, TextInput, View} from 'react-native';
+import { Text, TextInput, useWindowDimensions, View} from 'react-native';
 import { getStyles } from './InputField.styles';
 import { Theme } from '../../utils/themes';
 import { useAppTheme } from '../../hooks/appTheme';
@@ -23,9 +23,9 @@ const InputField = ({
   required,
   keyboardType = 'default',
 }: InputFieldProps) => {
-
+  const { width } = useWindowDimensions();
   const theme: Theme = useAppTheme();
-  const styles = getStyles(theme);
+  const styles = getStyles(theme, width);
   return (
     <View style={styles.container}>
       <TextInput
