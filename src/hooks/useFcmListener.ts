@@ -9,7 +9,7 @@ import { getTokens } from '../utils/getTokens';
 import { sendLocalNotification } from '../utils/localNotifications';
 
 export const useFCMListener = () => {
-    const contacts = useQuery(Contact);
+  const contacts = useQuery(Contact);
   useEffect(() => {
     const unsubscribe = messaging.onMessage(async remoteMessage => {
       const userDetails = await EncryptedStorage.getItem('User Data');
