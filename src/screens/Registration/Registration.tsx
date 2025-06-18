@@ -41,11 +41,11 @@ const Registration = () => {
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme, width, height);
 
-  const {alertVisible, alertMessage, alertType, showAlert, hideAlert} =
-    useAlertModal();
-  const [showProfilePicSelectModal, setShowProfilePicSelectModal] =
-    useState(false);
-  const [profilePic, setProfilePic] = useState<UploadImage | null>(null);
+  const {
+    alertVisible, alertMessage, alertType, showAlert, hideAlert,
+  } = useAlertModal();
+  const [showProfilePicSelectModal, setShowProfilePicSelectModal] = useState(false);
+  const [profilePic, setProfilePic] = useState<UploadImage | null | string>(null);
   const [isLoading, setLoading] = useState(false);
   const [user, setUser] = useState<InputUser>({
     firstName: '',
@@ -259,7 +259,9 @@ const Registration = () => {
             style={styles.img}
             source={
               profilePic
-                ? {uri: profilePic.uri}
+                ? typeof profilePic === 'string'
+                  ? { uri: profilePic }
+                  : { uri: profilePic.uri }
                 : require('../../../assets/images/profileImage.png')
             }
             accessibilityLabel="profile-image"
@@ -304,6 +306,7 @@ const Registration = () => {
                 handleChange('mobileNumber', text)
               }
               style={styles.phoneInput}
+              textStyle={styles.phoneInputText}
               autoFormat
               accessibilityLabel="phone-input"
             />

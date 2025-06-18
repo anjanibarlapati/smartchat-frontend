@@ -23,7 +23,7 @@ export const getStyles = (theme: Theme, width: number, height: number) => StyleS
     gap: 1,
     marginTop: height < 600 ? '2%' : '5%',
     marginBottom: height < 600 ? '2%' : '5%',
-        width: width > 600 ? '80%' : '100%',
+    width: width > 600 ? '80%' : '100%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -61,11 +61,11 @@ export const getStyles = (theme: Theme, width: number, height: number) => StyleS
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
-    justifyContent: 'center',
+  },
+  phoneInputText:{
     fontFamily:'Nunito-Regular',
     fontSize: width > 600 ? 16 : 14,
     color: theme.primaryTextColor,
-
   },
   errorText: {
     color: theme.primaryErrorText,
