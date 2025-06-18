@@ -149,11 +149,10 @@ describe('Socket Utility (with Realm instance mocking)', () => {
   });
 
 
-  it('should handle messageDelivered and call updateMessageStatusInRealm', async () => {
+  it('should handle messageDelivered and call updateMessageStatusInRealm with messageIds', async () => {
     const deliveryData = {
-      sentAt: '2024-01-01T12:00:00Z',
       receiverMobileNumber: mobileNumber,
-      status: MessageStatus.DELIVERED,
+      messageIds: ['msg1', 'msg2'],
     };
 
     await socketConnection(mobileNumber);
@@ -162,17 +161,15 @@ describe('Socket Utility (with Realm instance mocking)', () => {
 
     expect(updateMessageStatusInRealm).toHaveBeenCalledWith({
       chatId: mobileNumber,
-      sentAt: deliveryData.sentAt,
       status: MessageStatus.DELIVERED,
+      messageIds: ['msg1', 'msg2'],
     });
   });
 
-  it('should handle messageRead and update multiple messages as seen', async () => {
+  it('should handle messageRead and call updateMessageStatusInRealm with messageIds', async () => {
     const readData = {
-      chatId: '123',
-      sentAt: '2024-01-01T12:00:00Z',
-      status: MessageStatus.SEEN,
-      updatedCount: 2,
+      receiverMobileNumber: '1234567890',
+      messageIds: ['msg3', 'msg4'],
     };
 
     await socketConnection(mobileNumber);
@@ -180,28 +177,27 @@ describe('Socket Utility (with Realm instance mocking)', () => {
     handler?.(readData);
 
     expect(updateMessageStatusInRealm).toHaveBeenCalledWith({
-      chatId: '123',
-      sentAt: readData.sentAt,
+      chatId: '1234567890',
+      messageIds: ['msg3', 'msg4'],
       status: MessageStatus.SEEN,
-      updateAllBeforeSentAt: true,
     });
   });
 
-    it('should handle isAccountDeleted and call updateUserAccountStatusInRealm', async () => {
-      const deliveryData = {
-        isAccountDeleted: true,
-        chatId: mobileNumber,
-      };
+  it('should handle isAccountDeleted and call updateUserAccountStatusInRealm', async () => {
+    const deliveryData = {
+      isAccountDeleted: true,
+      chatId: mobileNumber,
+    };
 
-      await socketConnection(mobileNumber);
-      const handler = mockOn.mock.calls.find(call => call[0] === 'isAccountDeleted')?.[1];
-      handler?.(deliveryData);
+    await socketConnection(mobileNumber);
+    const handler = mockOn.mock.calls.find(call => call[0] === 'isAccountDeleted')?.[1];
+    handler?.(deliveryData);
 
-      expect(updateUserAccountStatusInRealm).toHaveBeenCalledWith(
-        mobileNumber,
-        true,
-      );
-    });
+    expect(updateUserAccountStatusInRealm).toHaveBeenCalledWith(
+      mobileNumber,
+      true,
+    );
+  });
 
   it('should handle disconnect and log it', async () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
