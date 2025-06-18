@@ -179,6 +179,7 @@ const LoginScreen = () => {
                 handleChange('mobileNumber', text)
               }
               style={styles.phoneInput}
+              textStyle={styles.phoneInputText}
               autoFormat
               accessibilityLabel="phone-input"
             />

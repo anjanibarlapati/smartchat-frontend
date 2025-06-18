@@ -61,10 +61,11 @@ export const getStyles = (theme: Theme, width: number) => StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
-    justifyContent: 'center',
+  },
+  phoneInputText: {
     fontFamily: 'Nunito-Regular',
     fontSize: width > 600 ? 16 : 14,
-
+    color: theme.primaryTextColor,
   },
   errorText: {
     color: theme.primaryErrorText,
