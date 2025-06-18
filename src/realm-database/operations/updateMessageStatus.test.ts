@@ -2,12 +2,6 @@ import { MessageStatus } from '../../types/message';
 import { getRealmInstance } from '../connection';
 import { updateMessageStatusInRealm } from './updateMessageStatus';
 
-jest.mock('realm', () => ({
-  BSON: {
-    ObjectId: jest.fn(() => 'mocked-object-id'),
-  },
-}));
-
 jest.mock('../connection', () => ({
   getRealmInstance: jest.fn(),
 }));
@@ -20,19 +14,16 @@ describe('updateMessageStatusInRealm', () => {
   const mockMessages: any[] = [];
 
   const chatId = '8639523822';
-  const sentAt = '2025-06-03T00:00:00Z';
   const status = MessageStatus.SEEN;
 
   beforeEach(() => {
     jest.clearAllMocks();
-
     mockMessages.length = 0;
 
     mockSorted.mockImplementation(() => mockMessages);
-
-    mockFiltered.mockImplementation(() => ({
+    mockFiltered.mockReturnValue({
       sorted: mockSorted,
-    }));
+    });
 
     (getRealmInstance as jest.Mock).mockReturnValue({
       write: mockWrite,
@@ -42,109 +33,86 @@ describe('updateMessageStatusInRealm', () => {
     });
   });
 
-  it('should update a single message status if found', async () => {
-    const message = { sentAt, status: MessageStatus.SENT };
-    mockMessages.push(message);
+  it('should update status of matching messages if messageIds are given and isSender is true', async () => {
+    const m1 = { sentAt: '1', status: MessageStatus.SENT, isSender: true };
+    const m2 = { sentAt: '2', status: MessageStatus.DELIVERED, isSender: true };
+    const m3 = { sentAt: '3', status: MessageStatus.SEEN, isSender: true };
 
-    const filteredForSentAt = jest.fn().mockReturnValue([message]);
-    mockSorted.mockReturnValue({
-      filtered: filteredForSentAt,
-    });
+    mockMessages.push(m1, m2, m3);
+    const messageIds = ['1', '2', '3'];
 
-    await updateMessageStatusInRealm({ chatId, sentAt, status });
+    await updateMessageStatusInRealm({ chatId, status, messageIds });
 
-    expect(getRealmInstance).toHaveBeenCalled();
-    expect(mockWrite).toHaveBeenCalled();
-    expect(message.status).toBe(status);
-
-    expect(mockFiltered).toHaveBeenCalledWith('chat.chatId == $0', chatId);
-    expect(mockSorted).toHaveBeenCalledWith('sentAt');
-    expect(filteredForSentAt).toHaveBeenCalledWith('sentAt == $0', sentAt);
+    expect(m1.status).toBe(MessageStatus.SEEN);
+    expect(m2.status).toBe(MessageStatus.SEEN);
+    expect(m3.status).toBe(MessageStatus.SEEN);
   });
 
-  it('should not update if the specific message is not found', async () => {
-    const filteredForSentAt = jest.fn().mockReturnValue([]);
-    mockSorted.mockReturnValue({
-      filtered: filteredForSentAt,
-    });
+  it('should skip updating if message.isSender is false for messageIds', async () => {
+    const m1 = { sentAt: '1', status: MessageStatus.SENT, isSender: false };
+    const m2 = { sentAt: '2', status: MessageStatus.SENT, isSender: true };
 
-    await updateMessageStatusInRealm({ chatId, sentAt, status });
+    mockMessages.push(m1, m2);
+    const messageIds = ['1', '2'];
 
-    expect(getRealmInstance).toHaveBeenCalled();
-    expect(mockWrite).toHaveBeenCalled();
+    await updateMessageStatusInRealm({ chatId, status, messageIds });
 
-    expect(mockFiltered).toHaveBeenCalledWith('chat.chatId == $0', chatId);
-    expect(mockSorted).toHaveBeenCalledWith('sentAt');
-    expect(filteredForSentAt).toHaveBeenCalledWith('sentAt == $0', sentAt);
+    expect(m1.status).toBe(MessageStatus.SENT);
+    expect(m2.status).toBe(MessageStatus.SEEN);
   });
 
-  it('should update messages sent in socket payload before sentAt if updateAllBeforeSentAt is true for sender', async () => {
-    const message1 = { sentAt: '2025-05-30T00:00:00Z', status: MessageStatus.SENT };
-    const message2 = { sentAt: '2025-06-01T00:00:00Z', status: MessageStatus.DELIVERED};
-    const newer = { sentAt: '2025-06-02T00:00:00Z', status:  MessageStatus.SENT };
+  it('should update all received messages (isSender === false) if no messageIds are given', async () => {
+    const m1 = { sentAt: '1', status: MessageStatus.SENT, isSender: false };
+    const m2 = { sentAt: '2', status: MessageStatus.DELIVERED, isSender: false };
+    const m3 = { sentAt: '3', status: MessageStatus.SEEN, isSender: false };
 
-    const messageIds = [message1.sentAt, message2.sentAt, newer.sentAt];
+    mockMessages.push(m1, m2, m3);
 
-    mockMessages.push(message1, message2, newer);
+    await updateMessageStatusInRealm({ chatId, status });
 
-    await updateMessageStatusInRealm({ chatId, sentAt, status, updateAllBeforeSentAt: true, messageIds: messageIds });
-
-    expect(message1.status).toBe(status);
-    expect(message2.status).toBe(status);
-    expect(newer.status).toBe( MessageStatus.SEEN);
+    expect(m1.status).toBe(MessageStatus.SEEN);
+    expect(m2.status).toBe(MessageStatus.SEEN);
+    expect(m3.status).toBe(MessageStatus.SEEN);
   });
 
-   it('should not update status if it is blocked message', async () => {
-    const message1 = { sentAt: '2025-05-30T00:00:00Z', status: MessageStatus.SENT };
-    const message2 = { sentAt: '2025-06-01T00:00:00Z', status: MessageStatus.DELIVERED};
-    const newer = { sentAt: '2025-06-02T00:00:00Z', status: MessageStatus.SENT, isSender: false};
-    mockMessages.push(message1, message2);
-     const messageIdss = [message1.sentAt, message2.sentAt];
-    await updateMessageStatusInRealm({ chatId, sentAt, status, updateAllBeforeSentAt: true, messageIds: messageIdss });
-    expect(message1.status).toBe(status);
-    expect(message2.status).toBe(status);
-    expect(newer.status).toBe( MessageStatus.SENT);
+  it('should not update status if current status is equal or higher than new status', async () => {
+    const m1 = { sentAt: '1', status: MessageStatus.SEEN, isSender: true };
+
+    mockMessages.push(m1);
+
+    await updateMessageStatusInRealm({ chatId, status, messageIds: ['1'] });
+
+    expect(m1.status).toBe(MessageStatus.SEEN);
   });
 
-    it('should not update any message sent in socket payload before sentAt if updateAllBeforeSentAt is true for sender', async () => {
-    const message1 = { sentAt: '2025-05-30T00:00:00Z', status: MessageStatus.SENT };
-    const message2 = { sentAt: '2025-06-01T00:00:00Z', status: MessageStatus.DELIVERED };
-    const newer = { sentAt: '2025-06-02T00:00:00Z', status: MessageStatus.SENT };
+  it('should stop processing on first message with equal or higher status', async () => {
+    const m1 = { sentAt: '1', status: MessageStatus.SENT, isSender: true };
+    const m2 = { sentAt: '2', status: MessageStatus.SEEN, isSender: true };
+    const m3 = { sentAt: '3', status: MessageStatus.SENT, isSender: true };
 
-    const messageIds = [message1.sentAt, message2.sentAt, newer.sentAt];
+    mockMessages.push(m1, m2, m3);
 
-    mockMessages.push(message1, message2, newer);
+    await updateMessageStatusInRealm({ chatId, status, messageIds: ['1', '2', '3'] });
 
-    await updateMessageStatusInRealm({ chatId, sentAt, status, updateAllBeforeSentAt: true, messageIds: messageIds });
-
-    expect(message1.status).toBe(status);
-    expect(message2.status).toBe(status);
-    expect(newer.status).toBe(MessageStatus.SEEN);
+    expect(m1.status).toBe(MessageStatus.SEEN);
+    expect(m2.status).toBe(MessageStatus.SEEN);
+    expect(m3.status).toBe(MessageStatus.SENT);
   });
 
-  it('should update all messages if all messages are seen already', async () => {
-    const message1 = { sentAt: '2025-05-30T00:00:00Z', status: MessageStatus.SEEN, isSender: false };
-    const message2 = { sentAt: '2025-06-01T00:00:00Z', status: MessageStatus.SEEN, isSender: false };
-    const newer = { sentAt: '2025-06-02T00:00:00Z', status: MessageStatus.SEEN, isSender: false };
-    mockMessages.push(message1, message2, newer);
-    await updateMessageStatusInRealm({ chatId, sentAt, status, updateAllBeforeSentAt: true });
-    expect(message1.status).toBe(status);
-
-  });
-  it('should catch and log errors thrown during realm.write', async () => {
-    const error = new Error('Write failed');
+  it('should catch and log errors during realm write', async () => {
+    const error = new Error('write failed');
     (getRealmInstance as jest.Mock).mockReturnValue({
-      write: jest.fn(() => {
+      write: () => {
         throw error;
-      }),
+      },
       objects: jest.fn(),
     });
 
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    await updateMessageStatusInRealm({ chatId, sentAt, status });
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error while updating message status:', error);
+    await updateMessageStatusInRealm({ chatId, status });
 
-    consoleErrorSpy.mockRestore();
+    expect(consoleSpy).toHaveBeenCalledWith('Error while updating message status:', error);
+    consoleSpy.mockRestore();
   });
 });
