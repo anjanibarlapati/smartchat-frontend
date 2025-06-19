@@ -9,6 +9,7 @@ import { BottomTabParamList, tabBarIconProps } from '../../types/Navigations';
 import { Theme } from '../../utils/themes';
 import { HomeStack } from '../stacks/HomeStack';
 import { getStyles } from './Tabs.styles';
+import { useSocketEventHandlers } from '../../hooks/useSocketEventHandlers';
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -95,6 +96,8 @@ const getScreenOptions = (route: { name: string }, theme: Theme): BottomTabNavig
 
 export function Tabs(): React.JSX.Element {
   const theme: Theme = useAppTheme();
+  useSocketEventHandlers();
+
   return (
     <Tab.Navigator screenOptions={({ route }) => getScreenOptions(route, theme)}>
      <Tab.Screen

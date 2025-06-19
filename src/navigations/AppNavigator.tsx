@@ -23,6 +23,7 @@ import { syncPendingActions } from '../utils/syncPendingActions.ts';
 import { Tabs } from './tabs/Tabs.tsx';
 import { storeState } from '../redux/store.ts';
 import { useSocketConnection } from '../hooks/useSocketConnection.ts';
+import { syncMessagesStatusFromRemote } from '../utils/syncMessagesStatusFromRemote.ts';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -59,7 +60,7 @@ export function AppNavigator(): React.JSX.Element {
          const storedUser = await EncryptedStorage.getItem('User Data');
           if (storedUser) {
             const user = JSON.parse(storedUser);
-            await socketConnection(user.mobileNumber);
+            socketConnection(user.mobileNumber);
             dispatch(setUserDetails(user));
             dispatch(setSuccessMessage('loggedIn'));
             setIsUserStored(true);
@@ -75,28 +76,29 @@ export function AppNavigator(): React.JSX.Element {
     }, [dispatch, realm, showAlert]);
 
     useEffect(() => {
-    const callback = NetInfo.addEventListener(async state => {
+    const syncDataIfConnected = NetInfo.addEventListener(async state => {
+      console.log('Network state changed:', state.isConnected);
+      console.log(wasConnected.current);
       if(!state.isConnected && wasConnected.current === true) {
         wasConnected.current = false;
       }
-              console.log(isSocketConnected, 'Socket is connected');
-
       if (state.isConnected && userData.mobileNumber && wasConnected.current === false && isSocketConnected) {
-        console.log(isSocketConnected, 'Socket is connected');
         wasConnected.current = true;
         try {
+          console.log('Syncing data...');
           await syncPendingActions(realm);
           await storeMessages(userData.mobileNumber, realm);
-          console.log('Messages stored successfully');
           await storePendingMessages(userData.mobileNumber, realm);
+          await syncMessagesStatusFromRemote(userData.mobileNumber, realm);
         } catch (error) {
           console.log('Failed syncing messages:', error);
         }
       }
     });
-
-    return () => callback();
-  }, [realm, userData, isSocketConnected]);
+    return () => {
+      syncDataIfConnected();
+    };
+  }, [isSocketConnected, realm, userData]);
 
     if(!isReady) {
       return <></>;
