@@ -140,7 +140,7 @@ const LoginScreen = () => {
         );
         dispatch(setSuccessMessage('You\'ve successfully logged in to SmartChat!'));
         await generateAndUploadFcmToken(credentials.mobileNumber);
-        await socketConnection(result.user.mobileNumber);
+        socketConnection(result.user.mobileNumber);
         navigation.reset({
           index: 0,
           routes: [{name: 'Tabs'}],
