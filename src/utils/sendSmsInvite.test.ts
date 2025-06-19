@@ -152,5 +152,38 @@ describe('send SMS', () => {
       expect(Permissions.requestPermission).not.toHaveBeenCalled();
       expect(SendSMS.send).not.toHaveBeenCalled();
     });
+    it('Should handle Linking.openURL error for Android API 34+', async () => {
+      Platform.OS = 'android';
+      Platform.Version = '34';
+
+      const mockError = new Error('SMS error');
+      (Linking.openURL as jest.Mock).mockRejectedValue(mockError);
+
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      await sendSmsInvite(mobileNumber);
+
+      expect(consoleSpy).toHaveBeenCalledWith('SMS error:', mockError);
+      consoleSpy.mockRestore();
+    });
+     it('Should handle SendSMS error', async () => {
+      Platform.OS = 'android';
+      Platform.Version = '33';
+
+      (Permissions.requestPermission as jest.Mock).mockResolvedValue(true);
+
+      const errorObj = new Error('SMS failed');
+      (SendSMS.send as jest.Mock).mockImplementation((config, callback) => {
+        callback(false, false, errorObj);
+      });
+
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+
+      await sendSmsInvite(mobileNumber);
+
+      expect(consoleSpy).toHaveBeenCalledWith('Failed to send SMS');
+
+      consoleSpy.mockRestore();
+    });
   });
 });
