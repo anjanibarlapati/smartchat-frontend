@@ -40,6 +40,22 @@ describe('send SMS', () => {
       const result = await requestSmsPermission();
       expect(result).toBe(false);
     });
+     it('Should return false for Android API 34+', async () => {
+      Platform.OS = 'android';
+      Platform.Version = '34';
+
+      const result = await requestSmsPermission();
+      expect(result).toBe(false);
+      expect(Permissions.requestPermission).not.toHaveBeenCalled();
+    });
+     it('Should return false for Android API 35', async () => {
+      Platform.OS = 'android';
+      Platform.Version = '35';
+
+      const result = await requestSmsPermission();
+      expect(result).toBe(false);
+      expect(Permissions.requestPermission).not.toHaveBeenCalled();
+    });
   });
 
   describe('sendSmsInvite functionality', () => {
