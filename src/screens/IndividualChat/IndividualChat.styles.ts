@@ -19,7 +19,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
       paddingHorizontal: 8,
     },
     blockedMessageContainer: {
-      backgroundColor: theme.secondaryBackground,
+      backgroundColor: '#B2D8D8',
       paddingVertical: 18,
     },
     box: {
