@@ -44,7 +44,7 @@ function getContactScreenOptions(
     return {
         headerShown: true,
         headerStyle: {
-        backgroundColor: '#FFFFF',
+        backgroundColor: theme.primaryBackground,
         },
         headerTitle: '',
         headerLeft: () => (
