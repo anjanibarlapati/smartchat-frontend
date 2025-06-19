@@ -1,6 +1,6 @@
-import {Alert, Linking, Platform} from 'react-native';
-import {requestPermission} from '../permissions/permissions';
+import { Alert, Linking, Platform } from 'react-native';
 import SendSMS from 'react-native-sms';
+import { requestPermission } from '../permissions/permissions';
 
 export const requestSmsPermission = async () => {
   if (Platform.OS === 'android' && Number(Platform.Version) >= 34) {
@@ -45,12 +45,12 @@ export const sendSmsInvite = async (mobileNumber: string) => {
           successTypes: ['sent', 'queued'] as any,
           allowAndroidSendWithoutReadPermission: true,
         },
-        (completed, cancelled, error) => {
+        (completed, cancelled) => {
           if (completed) {
             console.log('SMS Sent Successfully');
           } else if (cancelled) {
             console.log('SMS Sending Cancelled');
-          } else if (error) {
+          } else  {
             console.log('Failed to send SMS');
           }
         },
