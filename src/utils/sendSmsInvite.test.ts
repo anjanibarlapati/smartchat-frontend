@@ -1,8 +1,7 @@
-import {Alert} from 'react-native';
-import * as Permissions from '../permissions/permissions';
+import { Alert } from 'react-native';
 import SendSMS from 'react-native-sms';
-import {requestSmsPermission} from './sendSmsInvite';
-import {sendSmsInvite} from './sendSmsInvite';
+import * as Permissions from '../permissions/permissions';
+import { requestSmsPermission, sendSmsInvite } from './sendSmsInvite';
 
 jest.mock('react-native', () => ({
   Alert: {alert: jest.fn()},
