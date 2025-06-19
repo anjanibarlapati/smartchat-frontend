@@ -90,10 +90,31 @@ jest.mock('../utils/checkToken.ts', () => ({
   checkAccessToken: jest.fn().mockResolvedValue(false),
 }));
 
-jest.mock('../utils/socket.ts', () => ({
-  socketConnection: jest.fn().mockResolvedValue(undefined),
+jest.mock('../hooks/useSocketEventHandlers.ts', () => ({
+  useSocketEventHandlers: jest.fn(),
 }));
 
+const mockSocket = {
+  on: jest.fn(),
+  off: jest.fn(),
+  connect: jest.fn(),
+  disconnect: jest.fn(),
+  emit: jest.fn(),
+  removeAllListeners: jest.fn(),
+  connected: false,
+  id: 'mock-socket-id',
+};
+
+jest.mock('../utils/socket.ts', () => ({
+  socketConnection: jest.fn().mockResolvedValue(undefined),
+  createSocket: jest.fn().mockReturnValue(mockSocket),
+  getSocket: jest.fn().mockReturnValue(mockSocket),
+  socketDisconnect: jest.fn(),
+}));
+
+jest.mock('../hooks/useSocketConnection.ts', () => ({
+  useSocketConnection: jest.fn().mockReturnValue(true),
+}));
 
 jest.mock('@realm/react', () => {
   const actual = jest.requireActual('@realm/react');
