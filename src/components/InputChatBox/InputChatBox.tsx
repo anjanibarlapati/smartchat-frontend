@@ -33,34 +33,32 @@ export function InputChatBox({
   const realm = useRealm();
 
   const handleSend = async () => {
-    if (message.trim() === '') {
-      return;
-    }
     try {
-      const sentAt = new Date().toISOString();
+        const trimmedMessage = message.trim();
+        if (!trimmedMessage){return;}
 
-      let newMessage: Message = {
-        message: message.trim(),
-        sentAt: sentAt,
-        isSender: true,
-        status: MessageStatus.PENDING,
-      };
-      const netState = await NetInfo.fetch();
-      if (!netState.isConnected) {
+        const sentAt = new Date().toISOString();
+        const netState = await NetInfo.fetch();
+        const isSelfChat = receiverMobileNumber === user.mobileNumber;
+        const isConnected = netState.isConnected ? netState.isConnected : false;
+
+        const status: MessageStatus = isConnected ? isSelfChat ? MessageStatus.SEEN : MessageStatus.SENT : MessageStatus.PENDING;
+
+        const newMessage: Message = {
+          message: trimmedMessage,
+          sentAt,
+          isSender: true,
+          status,
+        };
         addNewMessageInRealm(realm, receiverMobileNumber, newMessage);
-        return;
-      }
-      newMessage.status = MessageStatus.SENT;
-      if(receiverMobileNumber === user.mobileNumber && netState.isConnected) {
-        newMessage.status = MessageStatus.SEEN;
-      }
-      addNewMessageInRealm(realm, receiverMobileNumber, newMessage);
-      sendMessage(
-        user.mobileNumber,
-        receiverMobileNumber,
-        newMessage.message,
-        sentAt,
-      );
+        if (isConnected){
+          sendMessage(
+            user.mobileNumber,
+            receiverMobileNumber,
+            newMessage.message,
+            sentAt,
+          );
+        }
     } catch (error) {
       showAlert('Unable to send message', 'error');
     } finally {
@@ -80,6 +78,7 @@ export function InputChatBox({
             multiline
             maxLength={1000}
             scrollEnabled={true}
+            placeholderTextColor={theme.placeholderTextColor}
           />
         </View>
         <TouchableOpacity onPress={handleSend} style={styles.sendButton}>

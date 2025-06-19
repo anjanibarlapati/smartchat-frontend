@@ -20,6 +20,7 @@ export async function initNotifications() {
 
 export async function sendLocalNotification(title: string, body: string, profilePic?: string) {
   try {
+    console.log('kk', profilePic);
     await notifee.displayNotification({
       title,
       body,

@@ -164,7 +164,7 @@ const LoginScreen = () => {
           setSuccessMessage("You've successfully logged in to SmartChat!"),
         );
         await generateAndUploadFcmToken(credentials.mobileNumber);
-        await socketConnection(result.user.mobileNumber);
+        socketConnection(result.user.mobileNumber);
         navigation.reset({
           index: 0,
           routes: [{name: 'Tabs'}],
@@ -205,6 +205,7 @@ const LoginScreen = () => {
                 handleChange('mobileNumber', text)
               }
               style={styles.phoneInput}
+              textStyle={styles.phoneInputText}
               autoFormat
               accessibilityLabel="phone-input"
             />

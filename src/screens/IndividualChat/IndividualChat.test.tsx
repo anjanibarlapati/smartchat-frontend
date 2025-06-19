@@ -141,8 +141,10 @@ describe('IndividualChat', () => {
   });
   test('should render messages from the FlatList', async() => {
     (useQuery as jest.Mock).mockReturnValue({
-      filtered: jest.fn().mockReturnValue({
-        sorted: jest.fn().mockReturnValue([seenMessage, unseenMessage]),
+      filtered: () => ({
+        sorted: () => ({
+          snapshot: () => [seenMessage, unseenMessage],
+        }),
       }),
     });
     renderComponent();
@@ -153,8 +155,10 @@ describe('IndividualChat', () => {
   });
   test('should not render messages when there are no messages', async() => {
     (useQuery as jest.Mock).mockReturnValue({
-      filtered: jest.fn().mockReturnValue({
-        sorted: jest.fn().mockReturnValue([]),
+      filtered: () => ({
+        sorted: () => ({
+          snapshot: () => [],
+        }),
       }),
     });
     const {queryByText} = renderComponent();
@@ -164,8 +168,10 @@ describe('IndividualChat', () => {
   });
   test('should render the InputChatBox', async() => {
     (useQuery as jest.Mock).mockReturnValue({
-      filtered: jest.fn().mockReturnValue({
-        sorted: jest.fn().mockReturnValue([seenMessage]),
+      filtered: () => ({
+        sorted: () => ({
+          snapshot: () => [seenMessage],
+        }),
       }),
     });
     renderComponent();
@@ -176,8 +182,10 @@ describe('IndividualChat', () => {
   });
   test('should render the menu icon (send icon)', async() => {
     (useQuery as jest.Mock).mockReturnValue({
-      filtered: jest.fn().mockReturnValue({
-        sorted: jest.fn().mockReturnValue([seenMessage]),
+      filtered: () => ({
+        sorted: () => ({
+          snapshot: () => [seenMessage],
+        }),
       }),
     });
     renderComponent();
@@ -188,8 +196,10 @@ describe('IndividualChat', () => {
   });
   test('should call navigation.setOptions twice', async() => {
     (useQuery as jest.Mock).mockReturnValue({
-      filtered: jest.fn().mockReturnValue({
-        sorted: jest.fn().mockReturnValue([seenMessage]),
+      filtered: () => ({
+        sorted: () => ({
+          snapshot: () => [seenMessage],
+        }),
       }),
     });
     renderComponent();
@@ -204,8 +214,10 @@ describe('IndividualChat', () => {
       emit: mockEmit,
     });
     (useQuery as jest.Mock).mockReturnValue({
-      filtered: jest.fn().mockReturnValue({
-        sorted: jest.fn().mockReturnValue([unseenMessage]),
+      filtered: () => ({
+        sorted: () => ({
+          snapshot: () => [unseenMessage],
+        }),
       }),
     });
     renderComponent();
@@ -224,8 +236,10 @@ describe('IndividualChat', () => {
       },
     });
     (useQuery as jest.Mock).mockReturnValue({
-      filtered: jest.fn().mockReturnValue({
-        sorted: jest.fn().mockReturnValue([unseenMessage]),
+      filtered: () => ({
+        sorted: () => ({
+          snapshot: () => [unseenMessage],
+        }),
       }),
     });
     renderComponent();
@@ -239,24 +253,29 @@ describe('IndividualChat', () => {
       emit: mockEmit,
     });
     (useQuery as jest.Mock).mockReturnValue({
-      filtered: jest.fn().mockReturnValue({
-        sorted: jest.fn().mockReturnValue([seenMessage, unseenMessage]),
+      filtered: () => ({
+        sorted: () => ({
+          snapshot: () => [seenMessage, unseenMessage],
+        }),
       }),
     });
     (updateMessageStatusInRealm as jest.Mock).mockReturnValue({});
     renderComponent();
     await waitFor(() => {
-      expect(mockEmit).toHaveBeenCalledWith('isAccountDeleted', {
-        senderMobileNumber: '',
-        receiverMobileNumber: '+91 86395 23822',
-      });
-    });
-
-    await waitFor(() => {
-      expect(mockEmit).toHaveBeenCalledWith('messageRead', {
-        sentAt,
-        chatId: '+91 86395 23822',
-      });
+      expect(mockEmit.mock.calls[0]).toEqual([
+        'isAccountDeleted',
+        {
+          senderMobileNumber: '',
+          receiverMobileNumber: '+91 86395 23822',
+        },
+      ]);
+      expect(mockEmit.mock.calls[1]).toEqual([
+        'messageRead',
+        {
+          sentAt: new Date(sentAt),
+          chatId: '+91 86395 23822',
+        },
+      ]);
     });
   });
   test('should create a new Chat if chat does not exist in Realm', async() => {
@@ -279,8 +298,10 @@ describe('IndividualChat', () => {
       publicKey: null,
     });
     (useQuery as jest.Mock).mockReturnValue({
-      filtered: jest.fn().mockReturnValue({
-        sorted: jest.fn().mockReturnValue([]),
+      filtered: () => ({
+        sorted: () => ({
+          snapshot: () => [],
+        }),
       }),
     });
     const {getByText} = renderComponent();
@@ -297,9 +318,11 @@ describe('IndividualChat', () => {
       publicKey: null,
     });
     (useQuery as jest.Mock).mockReturnValue({
-       filtered: jest.fn().mockReturnValue({
-      sorted: jest.fn().mockReturnValue([]),
-    }),
+      filtered: () => ({
+        sorted: () => ({
+          snapshot: () => [],
+        }),
+      }),
     });
 
     const { getByText } = renderComponent();
@@ -317,11 +340,12 @@ describe('IndividualChat', () => {
     });
 
     (useQuery as jest.Mock).mockReturnValue({
-       filtered: jest.fn().mockReturnValue({
-      sorted: jest.fn().mockReturnValue([]),
-    }),
+      filtered: () => ({
+        sorted: () => ({
+          snapshot: () => [],
+        }),
+      }),
     });
-
     const { getByText } = renderComponent();
         await waitFor(() => {
     expect(getByText(/This user has deleted their account/i)).toBeTruthy();

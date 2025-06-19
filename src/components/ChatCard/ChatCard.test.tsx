@@ -53,6 +53,18 @@ describe('ChatCard Component', () => {
       uri: chatDetails.contact.profilePicture,
     });
   });
+  test('Should appends (You) to contact name when contact is current user', () => {
+    const { getByText } = renderChatCard(
+      <ChatCard
+        {...chatDetails}
+        contact={{
+          ...chatDetails.contact,
+          mobileNumber: '',
+        }}
+      />
+    );
+    expect(getByText(`${chatDetails.contact.name} (You)`)).toBeTruthy();
+  });
 
   test('Should show unread badge when unreadCount is greater than 0', () => {
     const { getByText } = renderChatCard(<ChatCard {...chatDetails} />);

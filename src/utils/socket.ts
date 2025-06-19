@@ -1,92 +1,19 @@
-import { Platform } from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { io, Socket } from 'socket.io-client';
-import { getRealmInstance } from '../realm-database/connection';
-import { addNewMessageInRealm } from '../realm-database/operations/addNewMessage';
-import { updateMessageStatusInRealm } from '../realm-database/operations/updateMessageStatus';
-import { updateUserAccountStatusInRealm } from '../realm-database/operations/updateUserAccountStatus';
-import { clearSuccessMessage } from '../redux/reducers/auth.reducer';
-import { store } from '../redux/store';
-import { Message, MessageStatus } from '../types/message';
 import { BASE_URL } from './constants';
-import { decryptMessage } from './decryptMessage';
-import { handleIncomingMessageNotification } from './handleIncomingNotification';
 
-let socket: Socket<DefaultEventsMap, DefaultEventsMap> | null = null;
+let socket: Socket | null = null;
 
-export const socketConnection = async (mobileNumber: string) => {
-  try {
-    const token = await EncryptedStorage.getItem(mobileNumber);
-    if (!token) {
-      return;
-    }
-    const tokenData = JSON.parse(token);
-    socketDisconnect();
-
-    if (tokenData.access_token) {
-      socket = io(BASE_URL, { transports: ['websocket'] });
-
-      socket.on('connect', () => {
-        socket?.emit('register', mobileNumber);
-      });
-
-      socket.on('newMessage', async data => {
-        try{
-          const actualMessage = await decryptMessage(
-            data.chatId,
-            data.message,
-            data.nonce,
-            tokenData.access_token
-          );
-          const structuredMessage: Message = {
-            message: actualMessage,
-            sentAt: data.sentAt,
-            isSender: false,
-            status: data.status,
-          };
-          const realm = getRealmInstance();
-          addNewMessageInRealm(realm, data.chatId, structuredMessage);
-        } catch (error) {
-          console.error('Error in newMessage handler:', error);
-        }
-      });
-
-      socket.on('triggerLocalNotification', async (data) => {
-        if(Platform.OS === 'ios') {
-          await handleIncomingMessageNotification({...data, from: 'socket'});
-        }
-      });
-
-      socket.on('messageDelivered', async data => {
-        const { sentAt, receiverMobileNumber, messageIds, messagesCountToupdate } = data;
-        updateMessageStatusInRealm( {chatId: receiverMobileNumber, sentAt: sentAt, status: MessageStatus.DELIVERED, updateAllBeforeSentAt: messagesCountToupdate, messageIds: messageIds});
-      });
-
-      socket.on('messageRead', data => {
-        const { sentAt, chatId, updatedCount, messageIds } = data;
-        updateMessageStatusInRealm( {chatId: chatId, sentAt: sentAt, messageIds: messageIds, status: MessageStatus.SEEN, updateAllBeforeSentAt: updatedCount > 1});
-      });
-
-      socket.on('isAccountDeleted', data => {
-        const { isAccountDeleted, chatId} = data;
-        updateUserAccountStatusInRealm(chatId, isAccountDeleted);
-      });
-
-      socket.on('force-logout', () => {
-        store.dispatch(clearSuccessMessage());
-      });
-
-      socket.on('disconnect', () => {
-        console.log('Socket disconnected');
-      });
-    }
-  } catch (error) {
-    throw new Error('Unable to establish socket connection');
+export const createSocket = (): Socket => {
+  if (!socket) {
+    socket = io(BASE_URL, {
+      transports: ['websocket'],
+      autoConnect: true,
+    });
   }
+  return socket;
 };
 
-export const socketDisconnect = () => {
+export const socketDisconnect = (): void => {
   if (socket) {
     socket.removeAllListeners();
     socket.disconnect();
@@ -95,4 +22,24 @@ export const socketDisconnect = () => {
   }
 };
 
-export const getSocket = () => socket;
+export const socketConnection = (mobileNumber: string): void => {
+  socket = createSocket();
+
+  if (!socket) {return;}
+
+  const register = () => {
+    if (socket && socket.connected) {
+      socket.emit('register', mobileNumber);
+      console.log(`User ${mobileNumber} registered with socket ${socket.id}`);
+    }
+  };
+
+  socket.off('connect', register);
+  socket.on('connect', register);
+
+  if (socket.connected) {
+    register();
+  }
+};
+
+export const getSocket = (): Socket | null => socket;

@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '../../utils/themes';
 
-export const getStyles = (theme: Theme) => StyleSheet.create({
+export const getStyles = (theme: Theme, width: number) => StyleSheet.create({
     container: {
       padding: 10,
       width: '80%',
@@ -15,6 +15,7 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
       paddingHorizontal: 10,
       fontFamily:'Nunito-Regular',
       color: theme.primaryTextColor,
+      fontSize: width > 600 ? 16 : 14,
     },
     errorText: {
       color: theme.primaryErrorText,

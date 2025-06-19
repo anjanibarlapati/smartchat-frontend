@@ -93,6 +93,12 @@ describe('Tests related to the ChatOptionsModal', () => {
     fireEvent.press(screen.getByLabelText('overlay'));
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
+  it('Should not display block option if user has deleted their account', () => {
+    mockObjectForPrimaryKey.mockReturnValue({ isAccountDeleted: false });
+    const myNumber = store.getState().user.mobileNumber;
+    renderChatOptionsModal({ receiverMobileNumber: myNumber });
+    expect(screen.queryByText('Block')).toBeNull();
+  });
 
   it('Should apply correct paddingTop for Android', () => {
     Platform.OS = 'android';

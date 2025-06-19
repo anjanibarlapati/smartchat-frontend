@@ -25,6 +25,9 @@ export const storePendingMessages = async (
   }
   const messagesToSend: MessageToSend[] = [];
   const tokens = await getTokens(senderMobileNumber);
+  if (!tokens) {
+      return;
+  }
   for (const message of pendingMessages) {
     if (message.chat) {
       const {ciphertext, nonce} = await encryptMessage(
@@ -40,11 +43,12 @@ export const storePendingMessages = async (
       });
     }
   }
-  const response = await unsendMessages(senderMobileNumber, messagesToSend);
+  const response = await unsendMessages(senderMobileNumber, messagesToSend, tokens.access_token);
 
   if (response.ok) {
     realm.write(() => {
       pendingMessages.forEach(msg => {
+        if(!msg.chat) {return;}
         if(senderMobileNumber === msg.chat.chatId){
           msg.status = MessageStatus.SEEN;
         } else{

@@ -39,11 +39,10 @@ jest.mock('i18next', () => ({
   use: jest.fn().mockReturnThis(),
   init: jest.fn(),
 }));
-
 jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn(),
+  addEventListener: jest.fn(() => jest.fn()),
 }));
-
 jest.mock('react-native-device-info', () => ({
   getDeviceId: jest.fn(),
 }));

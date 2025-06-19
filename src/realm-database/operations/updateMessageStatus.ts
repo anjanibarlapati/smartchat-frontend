@@ -5,53 +5,37 @@ import { Message } from '../schemas/Message';
 
 type UpdateMessageStatusParams = {
   chatId: string;
-  sentAt: string;
   status: MessageStatus
-  updateAllBeforeSentAt?: boolean;
   messageIds?: string[];
 };
 
 export const updateMessageStatusInRealm = async ({
   chatId,
-  sentAt,
   status,
-  updateAllBeforeSentAt,
   messageIds,
 }: UpdateMessageStatusParams) => {
   const realm = getRealmInstance();
-
-
   try {
     realm.write(() => {
-      const messages = realm.objects<Message>('Message').filtered('chat.chatId == $0', chatId).sorted('sentAt');
 
-      if (updateAllBeforeSentAt) {
-        for (let index = messages.length - 1; index >= 0; index--) {
-          const message = messages[index];
-          const requiredMessage = (message.isSender === true && messageIds?.includes(message.sentAt)) || !message.isSender;
-          if (!requiredMessage) {
-            continue;
-          }
-          if (requiredMessage && message.sentAt <= sentAt) {
-            const currentStatusRank = STATUS_ORDER[message.status];
-            const newStatusRank = STATUS_ORDER[status];
-            if (newStatusRank > currentStatusRank) {
-              message.status = status;
-            } else {
-              break;
-
-            }
-          }
+      const messages = realm.objects<Message>('Message').filtered('chat.chatId == $0', chatId).sorted('sentAt', true);
+      for (const message of messages) {
+        let requiredMessage = false;
+        if(messageIds) {
+          requiredMessage = messageIds.includes(message.sentAt) && message.isSender === true;
+        } else{
+          requiredMessage = message.isSender === false;
         }
-      } else {
-        const message = messages.filtered('sentAt == $0', sentAt)[0];
-        if (message) {
-          const currentStatusRank = STATUS_ORDER[message.status];
-          const newStatusRank = STATUS_ORDER[status];
+        if(!requiredMessage){continue;}
 
-          if (newStatusRank > currentStatusRank) {
-            message.status = status;
-          }
+        const currentStatusRank = STATUS_ORDER[message.status];
+        const newStatusRank = STATUS_ORDER[status];
+
+        if (newStatusRank > currentStatusRank) {
+
+          message.status = status;
+        } else {
+          break;
         }
       }
     });

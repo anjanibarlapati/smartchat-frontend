@@ -15,8 +15,6 @@ export type UserMessage = {
   status: MessageStatus,
 };
 
-export type UserChatData = Record<string, UserMessage[]>;
-
 export interface Messages {
   [chatId: string]: Message[];
 }
@@ -32,3 +30,4 @@ export enum MessageStatus {
   SEEN = 'seen',
   PENDING = 'pending'
 }
+

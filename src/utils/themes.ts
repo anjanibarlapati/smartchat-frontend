@@ -26,6 +26,7 @@ export const LightTheme = {
    changePasswordModalTitleColor: 'black',
    changePasswordModalPlaceholderColor: 'rgb(176, 169, 169)',
    ChangePasswordModalInputColor:'black',
+  placeholderTextColor:'rgb(128, 128, 128)',
   images: {
     camera: require('../../assets/icons/camera-icon.png'),
     gallery: require('../../assets/icons/gallery-icon.png'),
@@ -81,6 +82,7 @@ export const DarkTheme = {
   changePasswordModalTitleColor: 'white',
   changePasswordModalPlaceholderColor: 'rgb(126, 122, 122)',
   ChangePasswordModalInputColor:'white',
+  placeholderTextColor:'rgb(183, 181, 181)',
   images: {
     camera: require('../../assets/icons/camera-icon-dark-theme.png'),
     gallery: require('../../assets/icons/gallery-icon-dark-theme.png'),

@@ -23,7 +23,7 @@ describe('Tests related to the ChatHeader component', () => {
     const renderChatHeader = () => {
         return render(
             <Provider store={store}>
-                <ChatHeader name={contact.name} originalNumber={contact.originalNumber} profilePic={null}/>
+                <ChatHeader name={contact.name} originalNumber={contact.originalNumber} profilePic={null} isSelfChat={false}/>
             </Provider>
         );
     };
@@ -40,10 +40,29 @@ describe('Tests related to the ChatHeader component', () => {
     it('Should render the contact profile Image', () => {
         render(
             <Provider store={store}>
-                <ChatHeader name={contact.name} originalNumber={contact.originalNumber} profilePic={contact.profilePic}/>
+                <ChatHeader name={contact.name} originalNumber={contact.originalNumber} profilePic={contact.profilePic} isSelfChat={false}/>
             </Provider>
         );
         expect(screen.getByLabelText('Profile-Image').props.source).toEqual({uri: contact.profilePic});
+    });
+
+    it('Should append (You) to contact name for self chat', () => {
+        render(
+            <Provider store={store}>
+                <ChatHeader name={contact.name} originalNumber={contact.originalNumber} profilePic={contact.profilePic} isSelfChat={true}/>
+            </Provider>
+        );
+        expect(screen.getByText(contact.name + ' (You)')).toBeTruthy();
+
+    });
+    it('Should not render contact number for unsaved contacts', () => {
+        render(
+            <Provider store={store}>
+                <ChatHeader name={'+91 86395 38322'} originalNumber={'+91 86395 38322'} profilePic={contact.profilePic} isSelfChat={false}/>
+            </Provider>
+        );
+        expect(screen.getByText('+91 86395 38322')).toBeTruthy();
+
     });
 
     it('Should call navigation.goBack when back button is pressed', () => {
