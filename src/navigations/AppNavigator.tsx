@@ -76,17 +76,13 @@ export function AppNavigator(): React.JSX.Element {
     }, [dispatch, realm, showAlert]);
 
     useEffect(() => {
-    const syncDataIfConnected = NetInfo.addEventListener(async state => {
-      console.log('Network state changed:', state.isConnected);
-      console.log(wasConnected.current);
+    const unsubscribe = NetInfo.addEventListener(async state => {
       if(!state.isConnected && wasConnected.current === true) {
         wasConnected.current = false;
       }
-      console.log(isSocketConnected);
       if (state.isConnected && userData.mobileNumber && wasConnected.current === false && isSocketConnected) {
         wasConnected.current = true;
         try {
-          console.log('Syncing data...');
           await syncPendingActions(realm);
           await storeMessages(userData.mobileNumber, realm);
           await storePendingMessages(userData.mobileNumber, realm);
@@ -97,7 +93,7 @@ export function AppNavigator(): React.JSX.Element {
       }
     });
     return () => {
-      syncDataIfConnected();
+      unsubscribe();
     };
   }, [isSocketConnected, realm, userData]);
 

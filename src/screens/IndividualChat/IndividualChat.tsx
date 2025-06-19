@@ -1,7 +1,7 @@
 import NetInfo from '@react-native-community/netinfo';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
-import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AlertModal } from '../../components/AlertModal/AlertModal';
@@ -36,6 +36,7 @@ import { getSocket } from '../../utils/socket';
 import { SyncActionType } from '../../utils/syncPendingActions';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './IndividualChat.styles';
+import { useSocketConnection } from '../../hooks/useSocketConnection';
 export type IndividualChatRouteProp = RouteProp<
   HomeStackParamList,
   'IndividualChat'
@@ -56,7 +57,9 @@ export const IndividualChat = () => {
   const realm = useRealm();
   const chat = realm.objectForPrimaryKey<Chat>('Chat', mobileNumber);
   const flatListRef = useRef<FlatList>(null);
-  const [isConnectedToInternet,setIsConnectedToInternet] = useState(false);
+  const [isConnectedToInternet,setIsConnectedToInternet] = useState<boolean>(false);
+  const {isConnected} = useSocketConnection();
+
   const dispatch = useDispatch();
   const { groupedMessages: messages } = useGroupedMessages(mobileNumber);
 
@@ -123,7 +126,7 @@ export const IndividualChat = () => {
         receiverMobileNumber: mobileNumber,
       });
     }
-  }, [userChat.exists, userChat.isAccountDeleted, mobileNumber, userMobileNumber]);
+  }, [userChat.exists, userChat.isAccountDeleted, mobileNumber, userMobileNumber, isConnected]);
 
   useEffect(() => {
     const socket = getSocket();
@@ -148,7 +151,7 @@ export const IndividualChat = () => {
         addUserAction(realm, SyncActionType.MESSAGE_SEEN, {sentAt: latestUnseenMessageSentAt});
     }
 
-  }, [latestUnseenMessageSentAt, mobileNumber, realm, userMobileNumber]);
+  }, [latestUnseenMessageSentAt, mobileNumber, realm, userMobileNumber, isConnected]);
 
   const renderChatHeader = useCallback(
     () => (

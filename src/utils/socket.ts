@@ -23,9 +23,14 @@ export const socketDisconnect = (): void => {
 };
 
 export const socketConnection = (mobileNumber: string): void => {
-  socket = createSocket();
+  const existingSocket = getSocket();
 
-  if (!socket) {return;}
+  if (existingSocket && existingSocket.connected) {
+    console.log('Socket already connected, skipping re-connection');
+    return;
+  }
+
+  socket = createSocket();
 
   const register = () => {
     if (socket && socket.connected) {
