@@ -7,7 +7,7 @@ import {Platform, Linking} from 'react-native';
 
 jest.mock('react-native', () => ({
   Alert: {alert: jest.fn()},
-  Platform: {OS: 'android'},
+  Platform: {OS: 'android', Version: '33'},
   Linking: {openURL: jest.fn(() => Promise.resolve())},
 }));
 
