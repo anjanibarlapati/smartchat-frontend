@@ -3,6 +3,7 @@ import * as Permissions from '../permissions/permissions';
 import SendSMS from 'react-native-sms';
 import {requestSmsPermission} from './sendSmsInvite';
 import {sendSmsInvite} from './sendSmsInvite';
+import {Platform, Linking} from 'react-native';
 
 jest.mock('react-native', () => ({
   Alert: {alert: jest.fn()},
@@ -91,7 +92,6 @@ describe('send SMS', () => {
       logSpy.mockRestore();
     });
     it('uses Linking.openURL on iOS', async () => {
-      const {Platform, Linking} = require('react-native');
       Platform.OS = 'ios';
 
       (Permissions.requestPermission as jest.Mock).mockResolvedValue(true);
