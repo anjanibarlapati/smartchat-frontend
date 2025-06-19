@@ -24,6 +24,8 @@ const mobileNumber = '9832145610';
 describe('send SMS', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    Platform.OS = 'android';
+    Platform.Version = '33';
   });
 
   describe('requestSmsPermission', () => {
