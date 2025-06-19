@@ -120,5 +120,37 @@ describe('send SMS', () => {
         expect.stringContaining('sms:'),
       );
     });
+    it('Should use SendSMS.send on android API<34', async () => {
+      Platform.OS = 'android';
+      Platform.Version = '33';
+
+      (Permissions.requestPermission as jest.Mock).mockResolvedValue(true);
+      (SendSMS.send as jest.Mock).mockImplementation((_config, callback) => {
+        callback(true, false, null);
+      });
+
+      await sendSmsInvite(mobileNumber);
+
+      expect(SendSMS.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          body: expect.stringContaining("Let's chat on SmartChat!"),
+          recipients: [mobileNumber],
+        }),
+        expect.any(Function),
+      );
+      expect(Linking.openURL).not.toHaveBeenCalled();
+    });
+    it('Should uses Linking.openURL for Android API 34+', async () => {
+      Platform.OS = 'android';
+      Platform.Version = '34';
+
+      await sendSmsInvite(mobileNumber);
+
+      expect(Linking.openURL).toHaveBeenCalledWith(
+        expect.stringContaining('sms:9832145610?body='),
+      );
+      expect(Permissions.requestPermission).not.toHaveBeenCalled();
+      expect(SendSMS.send).not.toHaveBeenCalled();
+    });
   });
 });
