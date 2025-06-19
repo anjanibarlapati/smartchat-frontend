@@ -1,8 +1,8 @@
-import { Alert } from 'react-native';
+import {Alert} from 'react-native';
 import SendSMS from 'react-native-sms';
 import * as Permissions from '../permissions/permissions';
-import { requestSmsPermission, sendSmsInvite } from './sendSmsInvite';
-import { Platform, Linking } from 'react-native';
+import {requestSmsPermission, sendSmsInvite} from './sendSmsInvite';
+import {Platform, Linking} from 'react-native';
 
 jest.mock('react-native', () => ({
   Alert: {alert: jest.fn()},
@@ -38,6 +38,22 @@ describe('send SMS', () => {
       (Permissions.requestPermission as jest.Mock).mockResolvedValue(false);
       const result = await requestSmsPermission();
       expect(result).toBe(false);
+    });
+    it('Should return false for Android API 34+', async () => {
+      Platform.OS = 'android';
+      Platform.Version = '34';
+
+      const result = await requestSmsPermission();
+      expect(result).toBe(false);
+      expect(Permissions.requestPermission).not.toHaveBeenCalled();
+    });
+    it('Should return false for Android API 35', async () => {
+      Platform.OS = 'android';
+      Platform.Version = '35';
+
+      const result = await requestSmsPermission();
+      expect(result).toBe(false);
+      expect(Permissions.requestPermission).not.toHaveBeenCalled();
     });
   });
 
