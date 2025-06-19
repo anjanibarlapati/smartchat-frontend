@@ -58,7 +58,7 @@ export const DarkTheme = {
   primaryTextColor: '#ffffff',
   secondaryTextColor: 'rgb(114, 113, 113)',
   primaryInputBackground: 'rgb(33, 40, 43)',
-  secondaryBackgroundColor: '',
+  secondaryBackgroundColor: 'rgb(10, 16, 20)',
   primaryErrorText: 'rgb(224, 92, 92)',
   tabBackgroundColor: 'rgba(101, 225, 225, 0.5)',
   badgeBackground: '#008b8b',
