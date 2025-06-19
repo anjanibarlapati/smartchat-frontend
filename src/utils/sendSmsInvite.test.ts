@@ -185,5 +185,26 @@ describe('send SMS', () => {
 
       consoleSpy.mockRestore();
     });
+    it('Should do nothing when platform is not iOS or Android', async () => {
+      Platform.OS = 'web';
+      await sendSmsInvite(mobileNumber);
+
+      expect(Permissions.requestPermission).not.toHaveBeenCalled();
+      expect(SendSMS.send).not.toHaveBeenCalled();
+      expect(Linking.openURL).not.toHaveBeenCalled();
+    });
+    it('Should use correct URL format for iOS', async () => {
+      Platform.OS = 'ios';
+
+      await sendSmsInvite(mobileNumber);
+
+      const expectedMessage =
+        "Let's chat on SmartChat! It's a fast, simple, and secure app we can use to message each other for free.";
+      const expectedUrl = `sms:${mobileNumber}&body=${encodeURIComponent(
+        expectedMessage,
+      )}`;
+
+      expect(Linking.openURL).toHaveBeenCalledWith(expectedUrl);
+    });
   });
 });
