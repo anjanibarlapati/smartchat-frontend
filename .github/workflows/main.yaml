@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - fix/app-theme-bg-colour
   pull_request:
     branches:
       - main
