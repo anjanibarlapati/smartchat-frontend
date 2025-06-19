@@ -164,5 +164,19 @@ describe('send SMS', () => {
       expect(Permissions.requestPermission).not.toHaveBeenCalled();
       expect(SendSMS.send).not.toHaveBeenCalled();
     });
+     it('Should handle Linking.openURL error for Android API 34+', async () => {
+      Platform.OS = 'android';
+      Platform.Version = '34';
+
+      const mockError = new Error('SMS error');
+      (Linking.openURL as jest.Mock).mockRejectedValue(mockError);
+
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      await sendSmsInvite(mobileNumber);
+
+      expect(consoleSpy).toHaveBeenCalledWith('SMS error:', mockError);
+      consoleSpy.mockRestore();
+    });
   });
 });
