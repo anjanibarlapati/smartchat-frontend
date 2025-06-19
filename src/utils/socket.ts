@@ -1,87 +1,19 @@
-import EncryptedStorage from 'react-native-encrypted-storage';
 import { io, Socket } from 'socket.io-client';
-import { DefaultEventsMap } from '@socket.io/component-emitter';
-import { getRealmInstance } from '../realm-database/connection';
-import { addNewMessageInRealm } from '../realm-database/operations/addNewMessage';
-import { updateMessageStatusInRealm } from '../realm-database/operations/updateMessageStatus';
-import { updateUserAccountStatusInRealm } from '../realm-database/operations/updateUserAccountStatus';
-import { clearSuccessMessage } from '../redux/reducers/auth.reducer';
-import { store } from '../redux/store';
-import { Message, MessageStatus } from '../types/message';
 import { BASE_URL } from './constants';
-import { decryptMessage } from './decryptMessage';
 
-let socket: Socket<DefaultEventsMap, DefaultEventsMap> | null = null;
+let socket: Socket | null = null;
 
-export const socketConnection = async (mobileNumber: string) => {
-  try {
-    const token = await EncryptedStorage.getItem(mobileNumber);
-    if (!token) {
-      return;
-    }
-    const tokenData = JSON.parse(token);
-    socketDisconnect();
-
-    if (tokenData.access_token) {
-      socket = io(BASE_URL, { transports: ['websocket']});
-
-      socket.on('connect', () => {
-        socket?.emit('register', mobileNumber);
-        console.log('Socket connected with mobile number:', mobileNumber);
-      });
-
-      socket.on('newMessage', async data => {
-        // console.log('New message received:', data);
-        try{
-          const actualMessage = await decryptMessage(
-            data.chatId,
-            data.message,
-            data.nonce,
-            tokenData.access_token
-          );
-          const structuredMessage: Message = {
-            message: actualMessage,
-            sentAt: data.sentAt,
-            isSender: false,
-            status: data.status,
-          };
-          const realm = getRealmInstance();
-          addNewMessageInRealm(realm, data.chatId, structuredMessage);
-        } catch (error) {
-          console.error('Error in newMessage handler:', error);
-        }
-      });
-
-      socket.on('messageDelivered', async data => {
-        // console.log('Message delivered:', data);
-        const { receiverMobileNumber, messageIds } = data;
-        updateMessageStatusInRealm( {chatId: receiverMobileNumber, status: MessageStatus.DELIVERED, messageIds: messageIds});
-      });
-
-      socket.on('messageRead', data => {
-        const { receiverMobileNumber, messageIds } = data;
-        updateMessageStatusInRealm( {chatId: receiverMobileNumber, messageIds: messageIds, status: MessageStatus.SEEN});
-      });
-
-      socket.on('isAccountDeleted', data => {
-        const { isAccountDeleted, chatId} = data;
-        updateUserAccountStatusInRealm(chatId, isAccountDeleted);
-      });
-
-      socket.on('force-logout', () => {
-        store.dispatch(clearSuccessMessage());
-      });
-
-      socket.on('disconnect', () => {
-        console.log('Socket disconnected', new Date().toLocaleTimeString());
-      });
-    }
-  } catch (error) {
-    throw new Error('Unable to establish socket connection');
+export const createSocket = (): Socket => {
+  if (!socket) {
+    socket = io(BASE_URL, {
+      transports: ['websocket'],
+      autoConnect: true,
+    });
   }
+  return socket;
 };
 
-export const socketDisconnect = () => {
+export const socketDisconnect = (): void => {
   if (socket) {
     socket.removeAllListeners();
     socket.disconnect();
@@ -90,4 +22,24 @@ export const socketDisconnect = () => {
   }
 };
 
-export const getSocket = () => socket;
+export const socketConnection = (mobileNumber: string): void => {
+  socket = createSocket();
+
+  if (!socket) {return;}
+
+  const register = () => {
+    if (socket && socket.connected) {
+      socket.emit('register', mobileNumber);
+      console.log(`User ${mobileNumber} registered with socket ${socket.id}`);
+    }
+  };
+
+  socket.off('connect', register);
+  socket.on('connect', register);
+
+  if (socket.connected) {
+    register();
+  }
+};
+
+export const getSocket = (): Socket | null => socket;
