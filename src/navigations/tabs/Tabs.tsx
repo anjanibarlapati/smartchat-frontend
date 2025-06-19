@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
+import { Image, Pressable, Text, View, ViewStyle } from 'react-native';
 import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Badge } from '../../components/Badge/Badge';
 import { useAppTheme } from '../../hooks/appTheme';
@@ -68,19 +68,23 @@ const TabBarIcon = ({ routeName, focused}: tabBarIconProps): React.JSX.Element =
   );
 };
 
+export const baseTabBarStyle = (theme: Theme): ViewStyle => ({
+  backgroundColor: theme.primaryBackground,
+  height: '12%',
+  shadowColor: theme.primaryShadowColor,
+  shadowOffset: { width: 1, height: 0.4 },
+  position: 'absolute',
+  bottom: 0,
+  shadowOpacity: 0.1,
+  shadowRadius: 2,
+  elevation: 1,
+});
+
 const getScreenOptions = (route: { name: string }, theme: Theme): BottomTabNavigationOptions => {
 
   return {
     headerShown: false,
-    tabBarStyle: {
-      backgroundColor: theme.primaryBackground,
-      height: '12%',
-      shadowColor: theme.primaryShadowColor,
-      shadowOffset: { width: 1, height: 0.4 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
-      elevation: 1,
-    },
+    tabBarStyle: baseTabBarStyle(theme),
     tabBarLabel: '',
     tabBarIcon: (props: { focused: boolean }) => (
       <TabBarIcon routeName={route.name} focused={props.focused} />
@@ -96,7 +100,7 @@ const getScreenOptions = (route: { name: string }, theme: Theme): BottomTabNavig
 export function Tabs(): React.JSX.Element {
   const theme: Theme = useAppTheme();
   return (
-    <Tab.Navigator screenOptions={({ route }) => getScreenOptions(route, theme)}>
+    <Tab.Navigator screenOptions={({ route }) => ({ ...getScreenOptions(route, theme),tabBarHideOnKeyboard: true })}>
      <Tab.Screen
         name="AllChatsTab"
         children={() => <HomeStack showUnread={false} />}

@@ -14,6 +14,7 @@ export const getStyles = (theme: Theme, width: number, height:number) => StyleSh
     padding: width > 600 ? 40 : 10,
     gap: 10,
     paddingTop: height > 700 ? 30 : 50,
+    paddingBottom: height * 0.15,
   },
   profileImageBox: {
     position: 'relative',

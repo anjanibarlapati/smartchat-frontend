@@ -1,6 +1,6 @@
 import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Image, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { AlertModal } from '../../components/AlertModal/AlertModal';
@@ -21,6 +21,7 @@ import { socketDisconnect } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { deleteAccount, logout, removeProfilePic, updateProfilePic } from './Profile.services';
 import { getStyles } from './Profile.styles';
+import { baseTabBarStyle } from '../../navigations/tabs/Tabs';
 
 
 export const Profile = (): React.JSX.Element => {
@@ -57,6 +58,31 @@ export const Profile = (): React.JSX.Element => {
       headerStyle: styles.headerBackgroundColor,
     });
   }, [navigation, styles.headerBackgroundColor, styles.headerTitleStyle]);
+
+useEffect(() => {
+  const baseStyle = baseTabBarStyle(theme);
+  const show = Keyboard.addListener(
+    Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+    () => {
+      navigation.setOptions({
+        tabBarStyle: { ...baseStyle, display: 'none' },
+      });
+    }
+  );
+
+  const hide = Keyboard.addListener(
+    Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+    () => {
+      navigation.setOptions({
+        tabBarStyle: { ...baseStyle, display: 'flex' },
+      });
+    }
+  );
+  return () => {
+    show.remove();
+    hide.remove();
+  };
+}, [navigation, theme]);
 
   useFocusEffect(
     useCallback(() => {
@@ -198,7 +224,8 @@ export const Profile = (): React.JSX.Element => {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}>
       <ScrollView
         contentContainerStyle={styles.body}
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}>
         <View style={styles.profileImg}>
           <Image
             source={

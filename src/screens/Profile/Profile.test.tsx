@@ -31,6 +31,14 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
 }));
 
+jest.mock('@react-native-community/netinfo', () => ({
+  fetch: jest.fn(),
+}));
+
+jest.mock('../../permissions/permissions.ts', () => ({
+  requestPermission: jest.fn(),
+}));
+
 jest.mock('react-native-libsodium', () => ({
   crypto_box_seal: jest.fn().mockReturnValue('mockEncryptedMessage'),
   crypto_secretbox_easy: jest.fn().mockReturnValue('mockEncryptedMessage'),
