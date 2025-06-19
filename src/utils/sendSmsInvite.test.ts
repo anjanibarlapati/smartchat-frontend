@@ -140,5 +140,17 @@ describe('send SMS', () => {
       );
       expect(Linking.openURL).not.toHaveBeenCalled();
     });
+    it('Should uses Linking.openURL for Android API 34+', async () => {
+      Platform.OS = 'android';
+      Platform.Version = '34';
+
+      await sendSmsInvite(mobileNumber);
+
+      expect(Linking.openURL).toHaveBeenCalledWith(
+        expect.stringContaining('sms:9832145610?body='),
+      );
+      expect(Permissions.requestPermission).not.toHaveBeenCalled();
+      expect(SendSMS.send).not.toHaveBeenCalled();
+    });
   });
 });
