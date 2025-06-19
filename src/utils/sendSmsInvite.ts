@@ -16,11 +16,6 @@ export const requestSmsPermission = async () => {
 export const sendSmsInvite = async (mobileNumber: string) => {
   const inviteMessage =
     "Let's chat on SmartChat! It's a fast, simple, and secure app we can use to message each other for free.";
-  // const granted = await requestSmsPermission();
-  // if (!granted) {
-  //     Alert.alert('Permission denied', 'SMS permission is required to send invites.');
-  //     return;
-  // }
   if (Platform.OS === 'ios') {
     const url = `sms:${mobileNumber}&body=${encodeURIComponent(inviteMessage)}`;
     Linking.openURL(url).catch(err => console.error('SMS error:', err));
