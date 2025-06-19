@@ -2,10 +2,11 @@ import { Alert } from 'react-native';
 import SendSMS from 'react-native-sms';
 import * as Permissions from '../permissions/permissions';
 import { requestSmsPermission, sendSmsInvite } from './sendSmsInvite';
+import { Platform, Linking } from 'react-native';
 
 jest.mock('react-native', () => ({
   Alert: {alert: jest.fn()},
-  Platform: {OS: 'android'},
+  Platform: {OS: 'android', Version: '33'},
   Linking: {openURL: jest.fn(() => Promise.resolve())},
 }));
 
@@ -22,6 +23,8 @@ const mobileNumber = '9832145610';
 describe('send SMS', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    Platform.OS = 'android';
+    Platform.Version = '33';
   });
 
   describe('requestSmsPermission', () => {
