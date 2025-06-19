@@ -1,6 +1,6 @@
-import {Alert, Linking, Platform} from 'react-native';
-import {requestPermission} from '../permissions/permissions';
+import { Alert, Linking, Platform } from 'react-native';
 import SendSMS from 'react-native-sms';
+import { requestPermission } from '../permissions/permissions';
 
 export const requestSmsPermission = async () => {
   if (Platform.OS === 'android' && Number(Platform.Version) >= 34) {
