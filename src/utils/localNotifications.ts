@@ -7,7 +7,6 @@ import notifee, {
 
 export async function initNotifications() {
   try {
-    await notifee.requestPermission();
     await notifee.createChannel({
       id: 'messages',
       name: 'Messages Channel',

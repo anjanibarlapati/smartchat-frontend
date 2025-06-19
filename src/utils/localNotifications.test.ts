@@ -4,7 +4,6 @@ import notifee from '@notifee/react-native';
 jest.mock('@notifee/react-native', () => ({
   __esModule: true,
   default: {
-    requestPermission: jest.fn(),
     createChannel: jest.fn(),
     displayNotification: jest.fn(),
     createTriggerNotification: jest.fn(),
@@ -26,7 +25,6 @@ describe('Tests related to the localNotification', () => {
   describe('Tests related to the initNotifications', () => {
     it('Should initialize notifications successfully', async () => {
       await notifications.initNotifications();
-      expect(notifee.requestPermission).toHaveBeenCalled();
       expect(notifee.createChannel).toHaveBeenCalledWith({
         id: 'messages',
         name: 'Messages Channel',
@@ -36,7 +34,7 @@ describe('Tests related to the localNotification', () => {
     });
 
     it('Should handle errors during initialization', async () => {
-      (notifee.requestPermission as jest.Mock).mockRejectedValueOnce('init-error');
+      (notifee.createChannel as jest.Mock).mockRejectedValueOnce('init-error');
       await notifications.initNotifications();
       expect(mockConsoleError).toHaveBeenCalledWith('Notification init error:', 'init-error');
     });

@@ -55,6 +55,8 @@ const getStyles = (theme: Theme, unreadCount: number) => StyleSheet.create({
     },
     messageContainer:{
         display:'flex',
+        position: 'static',
+        width: '90%',
         flexDirection:'row',
         gap:5,
         alignItems:'center',
