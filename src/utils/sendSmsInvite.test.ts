@@ -109,7 +109,6 @@ describe('send SMS', () => {
       logSpy.mockRestore();
     });
     it('uses Linking.openURL on iOS', async () => {
-      const {Platform, Linking} = require('react-native');
       Platform.OS = 'ios';
 
       (Permissions.requestPermission as jest.Mock).mockResolvedValue(true);
