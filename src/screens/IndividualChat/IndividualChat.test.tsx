@@ -27,6 +27,10 @@ jest.mock('@react-native-community/netinfo', () => ({
 }));
 
 
+jest.mock('../../hooks/useSocketConnection.ts', () => ({
+  useSocketConnection: jest.fn().mockReturnValue(true),
+}));
+
 jest.mock('../../realm-database/operations/updateMessageStatus', () => ({
   updateMessageStatusInRealm: jest.fn(),
 }));

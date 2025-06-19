@@ -1,7 +1,7 @@
 import NetInfo from '@react-native-community/netinfo';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
-import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AlertModal } from '../../components/AlertModal/AlertModal';
@@ -36,6 +36,7 @@ import { getSocket } from '../../utils/socket';
 import { SyncActionType } from '../../utils/syncPendingActions';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './IndividualChat.styles';
+import { useSocketConnection } from '../../hooks/useSocketConnection';
 export type IndividualChatRouteProp = RouteProp<
   HomeStackParamList,
   'IndividualChat'
@@ -56,10 +57,12 @@ export const IndividualChat = () => {
   const realm = useRealm();
   const chat = realm.objectForPrimaryKey<Chat>('Chat', mobileNumber);
   const flatListRef = useRef<FlatList>(null);
-  const [isConnectedToInternet,setIsConnectedToInternet] = useState(false);
+  const [isConnectedToInternet,setIsConnectedToInternet] = useState< boolean | null>(false);
+  const {isConnected} = useSocketConnection();
 
   const dispatch = useDispatch();
   const { groupedMessages: messages } = useGroupedMessages(mobileNumber);
+
 
   useEffect(()=> {
     const networkStatus = async() => {
@@ -124,7 +127,7 @@ export const IndividualChat = () => {
         receiverMobileNumber: mobileNumber,
       });
     }
-  }, [userChat.exists, userChat.isAccountDeleted, mobileNumber, userMobileNumber]);
+  }, [userChat.exists, userChat.isAccountDeleted, mobileNumber, userMobileNumber, isConnected]);
 
   useEffect(() => {
     const socket = getSocket();
@@ -149,7 +152,7 @@ export const IndividualChat = () => {
         addUserAction(realm, SyncActionType.MESSAGE_SEEN, {sentAt: latestUnseenMessageSentAt});
     }
 
-  }, [latestUnseenMessageSentAt, mobileNumber, realm, userMobileNumber]);
+  }, [latestUnseenMessageSentAt, mobileNumber, realm, userMobileNumber, isConnected]);
 
   const renderChatHeader = useCallback(
     () => (
@@ -198,7 +201,6 @@ export const IndividualChat = () => {
            clearChatInRealm(realm, mobileNumber);
         if(!isConnectedToInternet){
           addUserAction(realm, SyncActionType.CLEAR_CHAT, {senderMobileNumber: userMobileNumber, receiverMobileNumber: mobileNumber, clearedChatAt: new Date()});
-          // showAlert('clear chat action added in local db','info');
         }else{
           const response = await clearUserChat(userMobileNumber, mobileNumber);
          if(!response.ok){
@@ -222,7 +224,6 @@ export const IndividualChat = () => {
         blockContactInRealm(realm, mobileNumber);
         if(!isConnectedToInternet){
           addUserAction(realm,SyncActionType.BLOCK_USER, {senderMobileNumber: userMobileNumber, receiverMobileNumber: mobileNumber, blockedAt: new Date()});
-          // showAlert('block chat action added in local db','info');
         }else{
         const response = await blockUserChat({
           senderMobileNumber: userMobileNumber,
@@ -238,7 +239,6 @@ export const IndividualChat = () => {
         unblockContactInRealm(realm, mobileNumber);
          if(!isConnectedToInternet){
             addUserAction(realm,SyncActionType.UNBLOCK_USER, {senderMobileNumber: userMobileNumber, receiverMobileNumber: mobileNumber, unblockedAt: new Date()});
-            // showAlert('Unblock chat action added in local db', 'info');
 
         }else{
         const response = await unblockUserChat(userMobileNumber, mobileNumber);
