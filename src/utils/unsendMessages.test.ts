@@ -5,6 +5,7 @@ global.fetch = jest.fn();
 
 describe('Check for unsendMessages backend fetch call', () => {
   const senderMobileNumber = '+91 63039 74914';
+  const mockedAccessToken: string = 'anjani';
   const messages: MessageToSend[] = [
     {
       receiverMobileNumber: '+91 95021 47010',
@@ -28,13 +29,16 @@ describe('Check for unsendMessages backend fetch call', () => {
       ok: true,
       json: async () => ({message: 'Successfully updated message'}),
     });
-    await unsendMessages(senderMobileNumber, messages);
+    await unsendMessages(senderMobileNumber, messages, mockedAccessToken);
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(fetch).toHaveBeenCalledWith(
       expect.stringContaining('/user/unsendMessages'),
       expect.objectContaining({
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'smart-chat-token-header-key': `Bearer ${mockedAccessToken}`,
+        },
         body: JSON.stringify({senderMobileNumber, messages}),
       }),
     );
@@ -42,7 +46,7 @@ describe('Check for unsendMessages backend fetch call', () => {
   it('Should throw error when fetch fails', async () => {
     (fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
 
-    await expect(unsendMessages(senderMobileNumber, messages)).rejects.toThrow(
+    await expect(unsendMessages(senderMobileNumber, messages, mockedAccessToken)).rejects.toThrow(
       'Unable to sync messages',
     );
   });
@@ -50,6 +54,6 @@ describe('Check for unsendMessages backend fetch call', () => {
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
     });
-    await unsendMessages(senderMobileNumber, messages);
+    await unsendMessages(senderMobileNumber, messages, mockedAccessToken);
   });
 });
