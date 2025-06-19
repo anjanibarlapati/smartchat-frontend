@@ -177,13 +177,32 @@ describe('send SMS', () => {
       consoleSpy.mockRestore();
     });
 
-    it('should do nothing when platform is not iOS or Android', async () => {
+    it('Should do nothing when platform is not iOS or Android', async () => {
       Platform.OS = 'web';
       await sendSmsInvite(mobileNumber);
 
       expect(Permissions.requestPermission).not.toHaveBeenCalled();
       expect(SendSMS.send).not.toHaveBeenCalled();
       expect(Linking.openURL).not.toHaveBeenCalled();
+    });
+      it('Should handle SendSMS error', async () => {
+      Platform.OS = 'android';
+      Platform.Version = '33';
+
+      (Permissions.requestPermission as jest.Mock).mockResolvedValue(true);
+
+      const errorObj = new Error('SMS failed');
+      (SendSMS.send as jest.Mock).mockImplementation((config, callback) => {
+        callback(false, false, errorObj);
+      });
+
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+
+      await sendSmsInvite(mobileNumber);
+
+      expect(consoleSpy).toHaveBeenCalledWith('Failed to send SMS');
+
+      consoleSpy.mockRestore();
     });
   });
 });
