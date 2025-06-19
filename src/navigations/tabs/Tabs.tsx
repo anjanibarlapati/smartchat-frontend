@@ -95,8 +95,9 @@ const getScreenOptions = (route: { name: string }, theme: Theme): BottomTabNavig
 
 export function Tabs(): React.JSX.Element {
   const theme: Theme = useAppTheme();
+  const themeKey = theme.primaryBackground;
   return (
-    <Tab.Navigator screenOptions={({ route }) => getScreenOptions(route, theme)}>
+    <Tab.Navigator key={themeKey} screenOptions={({ route }) => getScreenOptions(route, theme)}>
      <Tab.Screen
         name="AllChatsTab"
         children={() => <HomeStack showUnread={false} />}
