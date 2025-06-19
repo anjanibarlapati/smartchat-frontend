@@ -1,7 +1,7 @@
-import { Alert, Linking, Platform } from 'react-native';
+import {Alert, Linking, Platform} from 'react-native';
 import SendSMS from 'react-native-sms';
 import * as Permissions from '../permissions/permissions';
-import { requestSmsPermission, sendSmsInvite } from './sendSmsInvite';
+import {requestSmsPermission, sendSmsInvite} from './sendSmsInvite';
 
 jest.mock('react-native', () => ({
   Alert: {alert: jest.fn()},
@@ -150,7 +150,7 @@ describe('send SMS', () => {
       expect(Permissions.requestPermission).not.toHaveBeenCalled();
       expect(SendSMS.send).not.toHaveBeenCalled();
     });
-      it('Should uses Linking.openURL for Android API 35', async () => {
+    it('Should uses Linking.openURL for Android API 35', async () => {
       Platform.OS = 'android';
       Platform.Version = '35';
 
@@ -162,7 +162,7 @@ describe('send SMS', () => {
       expect(Permissions.requestPermission).not.toHaveBeenCalled();
       expect(SendSMS.send).not.toHaveBeenCalled();
     });
-     it('Should handle Linking.openURL error for Android API 34+', async () => {
+    it('Should handle Linking.openURL error for Android API 34+', async () => {
       Platform.OS = 'android';
       Platform.Version = '34';
 
@@ -175,6 +175,15 @@ describe('send SMS', () => {
 
       expect(consoleSpy).toHaveBeenCalledWith('SMS error:', mockError);
       consoleSpy.mockRestore();
+    });
+
+    it('should do nothing when platform is not iOS or Android', async () => {
+      Platform.OS = 'web';
+      await sendSmsInvite(mobileNumber);
+
+      expect(Permissions.requestPermission).not.toHaveBeenCalled();
+      expect(SendSMS.send).not.toHaveBeenCalled();
+      expect(Linking.openURL).not.toHaveBeenCalled();
     });
   });
 });
