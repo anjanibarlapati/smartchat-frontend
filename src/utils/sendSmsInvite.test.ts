@@ -185,7 +185,7 @@ describe('send SMS', () => {
       expect(SendSMS.send).not.toHaveBeenCalled();
       expect(Linking.openURL).not.toHaveBeenCalled();
     });
-      it('Should handle SendSMS error', async () => {
+    it('Should handle SendSMS error', async () => {
       Platform.OS = 'android';
       Platform.Version = '33';
 
@@ -203,6 +203,19 @@ describe('send SMS', () => {
       expect(consoleSpy).toHaveBeenCalledWith('Failed to send SMS');
 
       consoleSpy.mockRestore();
+    });
+    it('Should use correct URL format for iOS', async () => {
+      Platform.OS = 'ios';
+
+      await sendSmsInvite(mobileNumber);
+
+      const expectedMessage =
+        "Let's chat on SmartChat! It's a fast, simple, and secure app we can use to message each other for free.";
+      const expectedUrl = `sms:${mobileNumber}&body=${encodeURIComponent(
+        expectedMessage,
+      )}`;
+
+      expect(Linking.openURL).toHaveBeenCalledWith(expectedUrl);
     });
   });
 });
