@@ -8,7 +8,7 @@ import { Theme } from '../../utils/themes';
 import { getStyles } from './ContactCard.styles';
 
 
-function ContactCard ({contact}: {contact: Contact}):React.JSX.Element {
+function ContactCard ({contact, isSelfContact}: {contact: Contact, isSelfContact: boolean}):React.JSX.Element {
 
     const {width} = useWindowDimensions();
     const theme: Theme = useAppTheme();
@@ -32,7 +32,7 @@ function ContactCard ({contact}: {contact: Contact}):React.JSX.Element {
             />
             <View style={styles.contactContainer} accessibilityLabel="contact-container">
                 <View style={styles.nameInviteContainer}>
-                    <Text numberOfLines={1} ellipsizeMode="tail" style={styles.contactName}>{contact.name}</Text>
+                    <Text numberOfLines={1} ellipsizeMode="tail" style={styles.contactName}>{`${contact.name}${isSelfContact ? ' (You)' : ''}`}</Text>
                     { !contact.doesHaveAccount && <Pressable onPress= {()=> sendSmsInvite(contact.originalNumber)}>
                         <Text style={styles.inviteText}>Invite</Text>
                     </Pressable> }

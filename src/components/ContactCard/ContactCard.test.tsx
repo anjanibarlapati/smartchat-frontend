@@ -10,10 +10,10 @@ jest.mock('../../permissions/permissions.ts', () => ({
   requestPermission: jest.fn(),
 }));
 
-const renderContactCard = (contact: Contact) => {
+const renderContactCard = (contact: Contact, isSelfContact: boolean) => {
   return render(
     <Provider store={store}>
-      <ContactCard contact={contact} />
+      <ContactCard contact={contact} isSelfContact={isSelfContact}/>
     </Provider>,
   );
 };
@@ -45,7 +45,7 @@ describe('Contact Card Component', () => {
   });
 
   test('Should render the elements correctly', () => {
-    const {getByLabelText, getByText} = renderContactCard(contact);
+    const {getByLabelText, getByText} = renderContactCard(contact, false);
     expect(getByLabelText('profile-image').props.source).toEqual({
       uri: contact.profilePicture,
     });
@@ -58,7 +58,7 @@ describe('Contact Card Component', () => {
     const {getByLabelText, getByText} = renderContactCard({
       ...contact,
       profilePicture: null,
-    });
+    }, false);
     expect(getByLabelText('profile-image').props.source).toEqual(
       require('../../../assets/images/profileImage.png'),
     );
@@ -68,7 +68,7 @@ describe('Contact Card Component', () => {
   });
 
   test('should send sms invite on clicking invite button', async () => {
-    const {getByText} = renderContactCard(contact);
+    const {getByText} = renderContactCard(contact, false);
     const inviteButton = getByText(/invite/i);
     expect(inviteButton).toBeTruthy();
     fireEvent.press(inviteButton);
@@ -76,7 +76,7 @@ describe('Contact Card Component', () => {
   });
 
   test('Should send sms invite on clicking contact who are not on app', async () => {
-    const {getByLabelText} = renderContactCard(contact);
+    const {getByLabelText} = renderContactCard(contact, false);
     const contactCard = getByLabelText(/contact-card/i);
     fireEvent.press(contactCard);
     expect(sendSmsInvite).toHaveBeenCalledWith(contact.originalNumber);
@@ -87,7 +87,7 @@ describe('Contact Card Component', () => {
       ...contact,
       doesHaveAccount: true,
     };
-    const {getByLabelText} = renderContactCard(contactWithAccount);
+    const {getByLabelText} = renderContactCard(contactWithAccount, false);
     const contactCard = getByLabelText(/contact-card/i);
     fireEvent.press(contactCard);
     expect(mockReplace).toHaveBeenCalledWith('IndividualChat', {
@@ -104,7 +104,7 @@ describe('Contact Card Component', () => {
       doesHaveAccount: true,
       profilePicture: null,
     };
-    const {getByLabelText} = renderContactCard(contactWithEmptyPic);
+    const {getByLabelText} = renderContactCard(contactWithEmptyPic, false);
     const contactCard = getByLabelText(/contact-card/i);
     fireEvent.press(contactCard);
     expect(mockReplace).toHaveBeenCalledWith('IndividualChat', {
@@ -114,14 +114,19 @@ describe('Contact Card Component', () => {
       profilePic: null,
     });
   });
+
+  test('Should append (You) for self contact', () => {
+    const {getByText} = renderContactCard(contact, true);
+    expect(getByText(`${contact.name} (You)`)).toBeTruthy();
+  });
   test('Should apply styles based on the width of the screen', () => {
-    const {getByLabelText} = renderContactCard(contact);
+    const {getByLabelText} = renderContactCard(contact, false);
     const contactName = getByLabelText('contact-container').parent;
     expect(contactName?.props.style.width).toBe('85%');
     jest
       .spyOn(require('react-native'), 'useWindowDimensions')
       .mockReturnValue({width: 10, height: 100});
-    renderContactCard(contact);
+    renderContactCard(contact, false);
     const smallScreenContactName =
       screen.getByLabelText('contact-container').parent;
     expect(smallScreenContactName?.props.style.width).toBe('80%');
