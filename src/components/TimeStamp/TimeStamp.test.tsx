@@ -18,6 +18,21 @@ describe('TimeStamp Component', ()=> {
     const { getByText } = renderTimeStamp('chat-card', date);
     const expected = format(date, 'hh:mm a');
     expect(getByText(expected)).toBeTruthy();
+    expect(getByText(expected).props.style.fontFamily).toBe('Nunito-SemiBold');
+
+  });
+
+  test('Should display time in hh:mm a format for today when from chart-card in bold when unread count > 0', () => {
+    const date = new Date();
+
+    const {getByText} = render(
+        <Provider store={store}>
+            <TimeStamp from={'chat-card'} date={date} isUnreadChat={true} />
+        </Provider>
+    );
+    const expected = format(date, 'hh:mm a');
+    expect(getByText(expected)).toBeTruthy();
+    expect(getByText(expected).props.style.color).toBe('#008080');
   });
 
   test('Should display "Today" for today when from chat-screen', () => {
