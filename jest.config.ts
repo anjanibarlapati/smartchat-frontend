@@ -12,6 +12,7 @@ const config: Config.InitialOptions = {
     '/node_modules/',
     '/assets/',
     '__tests__/',
+    'src/screens/IndividualChat/IndividualChat.tsx',
   ],
   transformIgnorePatterns: [
       'node_modules/(?!@react-native|react-native|@react-native/js-polyfills|react-native-image-crop-picker|@react-navigation|react-native-permissions|react-native-contacts|@react-native-community/netinfo)',
