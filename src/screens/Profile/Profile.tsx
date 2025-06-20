@@ -21,7 +21,6 @@ import { socketDisconnect } from '../../utils/socket';
 import { Theme } from '../../utils/themes';
 import { deleteAccount, logout, removeProfilePic, updateProfilePic } from './Profile.services';
 import { getStyles } from './Profile.styles';
-// import { baseTabBarStyle } from '../../navigations/tabs/Tabs';
 
 
 export const Profile = (): React.JSX.Element => {
@@ -59,30 +58,6 @@ export const Profile = (): React.JSX.Element => {
     });
   }, [navigation, styles.headerBackgroundColor, styles.headerTitleStyle]);
 
-// useEffect(() => {
-//   const baseStyle = baseTabBarStyle(theme);
-//   const show = Keyboard.addListener(
-//     Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
-//     () => {
-//       navigation.setOptions({
-//         tabBarStyle: { ...baseStyle, display: 'none' },
-//       });
-//     }
-//   );
-
-//   const hide = Keyboard.addListener(
-//     Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-//     () => {
-//       navigation.setOptions({
-//         tabBarStyle: { ...baseStyle, display: 'flex' },
-//       });
-//     }
-//   );
-//   return () => {
-//     show.remove();
-//     hide.remove();
-//   };
-// }, [navigation, theme]);
 
   useFocusEffect(
     useCallback(() => {
