@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import { createSocket, socketDisconnect, getSocket } from './socket';
+import { createSocket, socketDisconnect, getSocket, socketConnection } from './socket';
 
 jest.mock('socket.io-client', () => ({
   io: jest.fn(),
@@ -64,50 +64,50 @@ describe('Socket Utility Tests', () => {
     });
   });
 
-  // describe('socketConnection', () => {
-  //   it('should register connect event and emit register if already connected', () => {
-  //     mockSocket.connected = true;
+  describe('socketConnection', () => {
+    it('should register connect event and emit register if already connected', () => {
+      mockSocket.connected = true;
 
-  //     const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-  //     createSocket();
-  //     socketConnection('9876543210');
+      const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+      createSocket();
+      socketConnection('9876543210');
 
-  //     const registerCallback = mockOn.mock.calls.find(call => call[0] === 'connect')?.[1];
-  //     registerCallback?.();
+      const registerCallback = mockOn.mock.calls.find(call => call[0] === 'connect')?.[1];
+      registerCallback?.();
 
-  //     expect(mockOff).toHaveBeenCalledWith('connect', expect.any(Function));
-  //     expect(mockOn).toHaveBeenCalledWith('connect', expect.any(Function));
-  //     expect(mockEmit).toHaveBeenCalledWith('register', '9876543210');
-  //     expect(logSpy).toHaveBeenCalledWith(
-  //       'User 9876543210 registered with socket mock-socket-id'
-  //     );
+      expect(mockOff).toHaveBeenCalledWith('connect', expect.any(Function));
+      expect(mockOn).toHaveBeenCalledWith('connect', expect.any(Function));
+      expect(mockEmit).toHaveBeenCalledWith('register', '9876543210');
+      expect(logSpy).toHaveBeenCalledWith(
+        'User 9876543210 registered with socket mock-socket-id'
+      );
 
-  //     logSpy.mockRestore();
-  //   });
+      logSpy.mockRestore();
+    });
 
-  //   it('should not emit register if not connected initially', () => {
-  //     mockSocket.connected = false;
+    it('should not emit register if not connected initially', () => {
+      mockSocket.connected = false;
 
-  //     const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-  //     createSocket();
-  //     socketConnection('1234567890');
+      const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+      createSocket();
+      socketConnection('1234567890');
 
-  //     expect(mockEmit).not.toHaveBeenCalled();
-  //     expect(logSpy).not.toHaveBeenCalledWith(
-  //       'User 1234567890 registered with socket mock-socket-id'
-  //     );
+      expect(mockEmit).not.toHaveBeenCalled();
+      expect(logSpy).not.toHaveBeenCalledWith(
+        'User 1234567890 registered with socket mock-socket-id'
+      );
 
-  //     logSpy.mockRestore();
-  //   });
-  //   it('should return early and not register events if socket is null after disconnect', () => {
-  //       (io as jest.Mock).mockReturnValue(null);
+      logSpy.mockRestore();
+    });
+    it('should return early and not register events if socket is null after disconnect', () => {
+        (io as jest.Mock).mockReturnValue(null);
 
-  //       socketConnection('9876543210');
+        socketConnection('9876543210');
 
-  //       expect(mockOn).not.toHaveBeenCalled();
-  //       expect(mockEmit).not.toHaveBeenCalled();
-  //   });
-  // });
+        expect(mockOn).not.toHaveBeenCalled();
+        expect(mockEmit).not.toHaveBeenCalled();
+    });
+  });
 
   describe('getSocket', () => {
     it('should return current socket instance', () => {
