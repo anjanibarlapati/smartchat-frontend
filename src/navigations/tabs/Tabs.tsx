@@ -1,15 +1,21 @@
-import React, { memo } from 'react';
-import { Image, Pressable, Text, View, ViewStyle } from 'react-native';
+import React, { memo, useEffect } from 'react';
+import { Image, Pressable, Text, View } from 'react-native';
 import { BottomTabNavigationOptions, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Badge } from '../../components/Badge/Badge';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useUnreadChatsCount } from '../../hooks/unreadChatsCount';
 import { Profile } from '../../screens/Profile/Profile';
-import { BottomTabParamList, tabBarIconProps } from '../../types/Navigations';
+import { BottomTabParamList, tabBarIconProps, WelcomeScreenNavigationProps } from '../../types/Navigations';
 import { Theme } from '../../utils/themes';
 import { HomeStack } from '../stacks/HomeStack';
 import { getStyles } from './Tabs.styles';
 import { useSocketEventHandlers } from '../../hooks/useSocketEventHandlers';
+import { useNavigation } from '@react-navigation/native';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { useDispatch, useSelector } from 'react-redux';
+import { useRealmReset } from '../../contexts/RealmContext';
+import { resetUser } from '../../redux/reducers/user.reducer';
+import { storeState } from '../../redux/store';
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -69,23 +75,19 @@ const TabBarIcon = ({ routeName, focused}: tabBarIconProps): React.JSX.Element =
   );
 };
 
-export const baseTabBarStyle = (theme: Theme): ViewStyle => ({
-  backgroundColor: theme.primaryBackground,
-  height: '12%',
-  shadowColor: theme.primaryShadowColor,
-  shadowOffset: { width: 1, height: 0.4 },
-  position: 'absolute',
-  bottom: 0,
-  shadowOpacity: 0.1,
-  shadowRadius: 2,
-  elevation: 1,
-});
-
 const getScreenOptions = (route: { name: string }, theme: Theme): BottomTabNavigationOptions => {
 
   return {
     headerShown: false,
-    tabBarStyle: baseTabBarStyle(theme),
+    tabBarStyle: {
+      backgroundColor: theme.primaryBackground,
+      height: '12%',
+      shadowColor: theme.primaryShadowColor,
+      shadowOffset: { width: 1, height: 0.4 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+      elevation: 1,
+    },
     tabBarLabel: '',
     tabBarIcon: (props: { focused: boolean }) => (
       <TabBarIcon routeName={route.name} focused={props.focused} />
@@ -101,6 +103,26 @@ const getScreenOptions = (route: { name: string }, theme: Theme): BottomTabNavig
 export function Tabs(): React.JSX.Element {
   const theme: Theme = useAppTheme();
   useSocketEventHandlers();
+
+  const dispatch = useDispatch();
+  const {resetRealm} = useRealmReset();
+  const welcomeNavigation = useNavigation<WelcomeScreenNavigationProps>();
+  const successMessage = useSelector((state: storeState) => state.auth.successMessage);
+
+  useEffect(() => {
+    const forceLogout = async() => {
+      dispatch(resetUser());
+      await EncryptedStorage.clear();
+      resetRealm();
+      welcomeNavigation.navigate('WelcomeScreen');
+    };
+    if(successMessage === 'logged-out'){
+      forceLogout();
+    }
+  }, [dispatch, welcomeNavigation, successMessage, resetRealm]);
+
+
+
 
   return (
     <Tab.Navigator screenOptions={({ route }) => ({ ...getScreenOptions(route, theme),tabBarHideOnKeyboard: true })}>
