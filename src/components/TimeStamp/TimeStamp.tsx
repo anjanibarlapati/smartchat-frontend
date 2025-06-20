@@ -4,7 +4,7 @@ import { useAppTheme } from '../../hooks/appTheme';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './TimeStamp.styles';
 
-export function TimeStamp({from, date }: {from: 'chat-card' | 'chat-screen', date: Date | string}): React.JSX.Element {
+export function TimeStamp({from, date, isUnreadChat }: {from: 'chat-card' | 'chat-screen', date: Date | string, isUnreadChat?: boolean;}): React.JSX.Element {
     const theme: Theme = useAppTheme();
     const styles = getStyles(theme);
 
@@ -36,7 +36,7 @@ export function TimeStamp({from, date }: {from: 'chat-card' | 'chat-screen', dat
 
     return(
         <View >
-            <Text style={from === 'chat-card' ? styles.timeStamp : styles.timeStampBold}>{displayTime}</Text>
+            <Text style={(from === 'chat-card' ? ( isUnreadChat ? styles.unreadTimeTesxt : styles.timeText) : styles.timeStampBold)}>{displayTime}</Text>
         </View>
     );
 }
