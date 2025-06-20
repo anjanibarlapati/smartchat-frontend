@@ -147,7 +147,7 @@ const filteredContacts = useMemo(() => {
               keyExtractor={item => `${item.originalNumber}+${item.name}`}
               contentContainerStyle={styles.contactsBody}
               initialNumToRender={10}
-              renderItem={({item}) => <ContactCard contact={item} />}
+              renderItem={({item}) => <ContactCard contact={item} isSelfContact={user.mobileNumber === item.mobileNumber} />}
             />
           )}
         </View>
