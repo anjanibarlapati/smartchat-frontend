@@ -1,18 +1,15 @@
-import React, { useEffect } from 'react';
-import { Alert, FlatList, Image, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import { FlatList, Image, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { ChatCard } from '../../components/ChatCard/ChatCard';
 import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
-import { useRealmReset } from '../../contexts/RealmContext';
 import { useAppTheme } from '../../hooks/appTheme';
 import { HomeChats, useHomeChats } from '../../hooks/homechats';
 import { useAlertModal } from '../../hooks/useAlertModal';
 import { setSuccessMessage } from '../../redux/reducers/auth.reducer';
-import { resetUser } from '../../redux/reducers/user.reducer';
 import { storeState } from '../../redux/store';
-import { HomeScreenNavigationProps, WelcomeScreenNavigationProps } from '../../types/Navigations';
+import { HomeScreenNavigationProps } from '../../types/Navigations';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './Home.styles';
 
@@ -21,12 +18,10 @@ export function Home(): React.JSX.Element {
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme, width);
   const navigation = useNavigation<HomeScreenNavigationProps>();
-  const welcomeNavigation = useNavigation<WelcomeScreenNavigationProps>();
   const { alertMessage, alertType, alertVisible, hideAlert, showAlert } = useAlertModal();
   const successMessage = useSelector((state: storeState) => state.auth.successMessage);
   const dispatch = useDispatch();
   const homeChats: HomeChats[] = useHomeChats();
-  const {resetRealm} = useRealmReset();
 
   useEffect(() => {
     if (successMessage === 'You\'ve successfully logged in to SmartChat!') {
@@ -34,18 +29,6 @@ export function Home(): React.JSX.Element {
       dispatch(setSuccessMessage('loggedIn'));
     }
   }, [dispatch, showAlert, successMessage]);
-
-  useEffect(() => {
-    const forceLogout = async() => {
-      dispatch(resetUser());
-      await EncryptedStorage.clear();
-      resetRealm();
-      Alert.alert('You have been logged out due to another device login.');
-    };
-    if(successMessage === null){
-      forceLogout();
-    }
-  }, [dispatch, welcomeNavigation, successMessage, resetRealm]);
 
   return (
     <View style={styles.container}>
