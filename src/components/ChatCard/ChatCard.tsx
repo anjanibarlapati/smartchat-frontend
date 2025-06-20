@@ -17,7 +17,7 @@ export const ChatCard = ({
   unreadCount = 0,
 }: ChatCardProps): React.JSX.Element => {
   const theme: Theme = useAppTheme();
-  const styles = getStyles(theme, unreadCount);
+  const styles = getStyles(theme);
   const navigation = useNavigation<HomeScreenNavigationProps>();
   const user = useSelector((state: storeState) => state.user);
 
@@ -39,7 +39,7 @@ export const ChatCard = ({
             style={styles.personName}>
             {`${contact.name}${contact.mobileNumber === user.mobileNumber ? ' (You)' : ''}`}
           </Text>
-          <TimeStamp from="chat-card" date={message.sentAt}/>
+          <TimeStamp from="chat-card" date={message.sentAt} isUnreadChat={unreadCount > 0}/>
         </View>
         <View style={styles.textContainer}>
             <View style={styles.messageContainer}>
