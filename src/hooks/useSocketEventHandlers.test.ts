@@ -4,7 +4,7 @@ import { getRealmInstance } from '../realm-database/connection';
 import { addNewMessageInRealm } from '../realm-database/operations/addNewMessage';
 import { updateMessageStatusInRealm } from '../realm-database/operations/updateMessageStatus';
 import { updateUserAccountStatusInRealm } from '../realm-database/operations/updateUserAccountStatus';
-import { clearSuccessMessage } from '../redux/reducers/auth.reducer';
+import { setSuccessMessage } from '../redux/reducers/auth.reducer';
 import { store } from '../redux/store';
 import { MessageStatus } from '../types/message';
 import { decryptMessage } from '../utils/decryptMessage';
@@ -23,6 +23,12 @@ jest.mock('../realm-database/connection');
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
   setItem: jest.fn(),
+}));
+
+jest.mock('react-native-libsodium', () => ({
+  crypto_box_seal: jest.fn().mockReturnValue('mockEncryptedMessage'),
+  crypto_secretbox_easy: jest.fn().mockReturnValue('mockEncryptedMessage'),
+  randombytes_buf: jest.fn().mockReturnValue('mockNonce'),
 }));
 
 jest.mock('@notifee/react-native', () => ({
@@ -170,7 +176,7 @@ describe('useSocketEventHandlers', () => {
 
     await eventHandlers['force-logout']();
 
-    expect(store.dispatch).toHaveBeenCalledWith(clearSuccessMessage());
+    expect(store.dispatch).toHaveBeenCalledWith(setSuccessMessage('logged-out'));
   });
 
   test('should handle disconnect event', async () => {
