@@ -339,7 +339,7 @@ const Registration = () => {
               handleChange('confirmPassword', text);
             }}
             placeholder="Confirm Password"
-            secureTextEntry={!showPassword}
+            secureTextEntry
             error={inputErrors.confirmPassword}
             required
           />
