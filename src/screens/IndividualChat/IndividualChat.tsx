@@ -346,7 +346,7 @@ export const IndividualChat = () => {
             ref={flatListRef}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
-            onContentSizeChange={()=>flatListRef.current?.scrollToEnd({ animated: true })}
+            onContentSizeChange={()=>flatListRef.current?.scrollToEnd({ animated: false })}
             onLayout={()=>flatListRef.current?.scrollToEnd({ animated: false })}
           />
         </View>
