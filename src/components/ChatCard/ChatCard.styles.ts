@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '../../utils/themes';
 
-const getStyles = (theme: Theme, unreadCount: number) => StyleSheet.create({
+const getStyles = (theme: Theme) => StyleSheet.create({
     cardContainer: {
         display:'flex',
         width:'100%',
@@ -43,11 +43,6 @@ const getStyles = (theme: Theme, unreadCount: number) => StyleSheet.create({
         fontSize: 15,
         overflow: 'hidden',
         fontFamily:'Nunito-SemiBold',
-    },
-    timeText: {
-        fontSize: 12,
-        color: (unreadCount > 0) ? '#008080' : theme.secondaryTextColor,
-        fontFamily:(unreadCount > 0) ? 'Nunito-Bold' : 'Nunito-SemiBold',
     },
     tickIcon: {
       width: 16,
