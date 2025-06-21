@@ -32,6 +32,15 @@ describe('Input Field Component', () => {
     expect(getByText('Email is required')).toBeTruthy();
   });
 
+  it('shows password toggle icon if `showToggle` is true', () => {
+    const { getByLabelText } = render(
+        <Provider store={store}>
+            <InputField value={''} placeholder={'Password'} onChangeText={() => {}} showPassword={false} showToggle={true} togglePasswordVisibility={jest.fn()} />,
+        </Provider>
+    );
+    expect(getByLabelText('eye-icon')).toBeTruthy();
+  });
+
   it('Should apply styles based on the width of the screen', async () => {
       const {getByPlaceholderText} = renderInputField('', 'First Name');
       const placeHolder = getByPlaceholderText('First Name');
