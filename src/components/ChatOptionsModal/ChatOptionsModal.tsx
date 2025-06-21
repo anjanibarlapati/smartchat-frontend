@@ -52,10 +52,10 @@ export const ChatOptionsModal = ({
             }
             accessibilityLabel="overlay">
             <View style={styles.modalContainer}>
-              <TouchableOpacity onPress={() => {onClearChat();}}>
+              <TouchableOpacity onPress={() => {onClearChat();}} style={styles.textContainer}>
                 <Text style={styles.text}>Clear Chat</Text>
               </TouchableOpacity>
-              {user.mobileNumber !== receiverMobileNumber && !chat?.isAccountDeleted && <TouchableOpacity onPress={() => {onBlockAndUnblock();}}>
+              {user.mobileNumber !== receiverMobileNumber && !chat?.isAccountDeleted && <TouchableOpacity onPress={() => {onBlockAndUnblock();}} style={styles.textContainer}>
                   <Text style={styles.text}>
                     {chat?.isBlocked ? 'Unblock' : 'Block'}
                   </Text>

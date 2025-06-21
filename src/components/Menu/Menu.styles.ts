@@ -9,5 +9,7 @@ export const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        padding:5,
+        right:8,
     },
 });

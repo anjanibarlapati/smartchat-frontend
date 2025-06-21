@@ -20,10 +20,13 @@ export const getStyles = (theme:Theme)=> StyleSheet.create({
       borderRadius: 10,
       paddingLeft: 15,
       paddingRight:50,
-      paddingVertical: 15,
+      paddingVertical: 5,
       elevation:5,
       justifyContent:'center',
-      gap:10,
+      gap:1,
+    },
+    textContainer:{
+      paddingVertical:8,
     },
     text: {
       fontFamily: 'Nunito-SemiBold',

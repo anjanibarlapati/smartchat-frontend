@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {Platform, StyleSheet} from 'react-native';
 import {Theme} from '../../utils/themes';
 
 export const ChatInputStyles = (theme: Theme) =>
@@ -8,7 +8,8 @@ export const ChatInputStyles = (theme: Theme) =>
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: 12,
-      paddingVertical: 5,
+      paddingBottom: Platform.OS === 'ios' ? 18 : 5 ,
+      paddingTop: 2,
       gap:10,
     },
     container: {

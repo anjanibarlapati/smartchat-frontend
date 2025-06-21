@@ -47,5 +47,6 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        paddingLeft:15,
     },
 });
