@@ -11,6 +11,7 @@ import { getTokens } from '../../utils/getTokens';
 import { Theme } from '../../utils/themes';
 import { CustomAlert } from '../CustomAlert/CustomAlert';
 import { getStyles } from './ChangePasswordModal.styles';
+import { EyeIcon } from '../EyeIcon/EyeIcon';
 
 interface ChangePasswordModalProps {
   visible: boolean;
@@ -29,6 +30,9 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
   const [errors, setErrors] = useState<{
     oldPassword?: string;
     newPassword?: string;
@@ -113,10 +117,10 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
         showAlert('Old password is incorrect', 'error');
       } else {
         const result = await response.json();
-        showAlert(result.message || 'Failed to update password', 'error');
+        showAlert(result.message || 'Failed to update password. Please try again later', 'error');
       }
     } catch (error) {
-      showAlert('Something went wrong', 'error');
+      showAlert('Something went wrong. Please try again later', 'error');
     }
   };
 
@@ -142,45 +146,49 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
             {errors.allFields ? (
               <Text style={styles.allFields}>{errors.allFields}</Text>
             ) : null}
-
-            <TextInput
-              placeholder="Old Password"
-              placeholderTextColor={theme.changePasswordModalPlaceholderColor}
-              style={styles.input}
-              secureTextEntry
-              value={oldPassword}
-              onChangeText={text => {
-                setOldPassword(text);
-                if (errors.oldPassword || errors.allFields) {
-                  setErrors(prev => ({
-                    ...prev,
-                    oldPassword: '',
-                    allFields: '',
-                  }));
-                }
-              }}
-            />
+            <View style={styles.inputContainer}>
+              <TextInput
+                placeholder="Old Password"
+                placeholderTextColor={theme.changePasswordModalPlaceholderColor}
+                style={styles.input}
+                secureTextEntry={!showOldPassword}
+                value={oldPassword}
+                onChangeText={text => {
+                  setOldPassword(text);
+                  if (errors.oldPassword || errors.allFields) {
+                    setErrors(prev => ({
+                      ...prev,
+                      oldPassword: '',
+                      allFields: '',
+                    }));
+                  }
+                }}
+              />
+              <EyeIcon showPassword={showOldPassword} togglePasswordVisibility={()=>setShowOldPassword(prev => !prev)}/>
+            </View>
             {errors.oldPassword && (
               <Text style={styles.error}>{errors.oldPassword}</Text>
             )}
-
-            <TextInput
-              placeholder="New Password"
-              placeholderTextColor={theme.changePasswordModalPlaceholderColor}
-              style={styles.input}
-              secureTextEntry
-              value={newPassword}
-              onChangeText={text => {
-                setNewPassword(text);
-                if (errors.newPassword || errors.allFields) {
-                  setErrors(prev => ({
-                    ...prev,
-                    newPassword: '',
-                    allFields: '',
-                  }));
-                }
-              }}
-            />
+            <View style={styles.inputContainer}>
+              <TextInput
+                placeholder="New Password"
+                placeholderTextColor={theme.changePasswordModalPlaceholderColor}
+                style={styles.input}
+                secureTextEntry={!showNewPassword}
+                value={newPassword}
+                onChangeText={text => {
+                  setNewPassword(text);
+                  if (errors.newPassword || errors.allFields) {
+                    setErrors(prev => ({
+                      ...prev,
+                      newPassword: '',
+                      allFields: '',
+                    }));
+                  }
+                }}
+              />
+              <EyeIcon showPassword={showNewPassword} togglePasswordVisibility={()=>setShowNewPassword(prev => !prev)}/>
+            </View>
             {errors.newPassword && (
               <Text style={styles.error}>{errors.newPassword}</Text>
             )}
@@ -188,7 +196,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
             <TextInput
               placeholder="Confirm Password"
               placeholderTextColor={theme.changePasswordModalPlaceholderColor}
-              style={styles.input}
+              style={styles.confirmPasswordinput}
               secureTextEntry
               value={confirmPassword}
               onChangeText={text => {

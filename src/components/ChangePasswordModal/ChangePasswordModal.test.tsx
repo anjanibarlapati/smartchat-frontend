@@ -1,7 +1,7 @@
 import React from 'react';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Provider } from 'react-redux';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { store } from '../../redux/store';
 import * as profileService from '../../screens/Profile/Profile.services';
 import * as tokens from '../../utils/getTokens';
@@ -75,6 +75,28 @@ describe(' Check for ChangePasswordModal', () => {
     const saveBtn = getByText('Save');
     fireEvent.press(saveBtn);
     expect(getByText('All fields are required')).toBeTruthy();
+  });
+
+  it('should toggle password visibility when EyeIcon is pressed', () => {
+    const { getByPlaceholderText, getAllByLabelText } = renderChangePasswordModal();
+
+    const oldPasswordInput = getByPlaceholderText('Old Password');
+    const newPasswordInput = getByPlaceholderText('New Password');
+
+    const eyeIcons = getAllByLabelText('eye-icon');
+
+    expect(oldPasswordInput.props.secureTextEntry).toBe(true);
+    expect(newPasswordInput.props.secureTextEntry).toBe(true);
+
+    fireEvent.press(eyeIcons[0]);
+
+    const updatedOldPasswordInput = getByPlaceholderText('Old Password');
+    expect(updatedOldPasswordInput.props.secureTextEntry).toBe(false);
+
+    fireEvent.press(eyeIcons[1]);
+
+    const updatedNewPasswordInput = getByPlaceholderText('New Password');
+    expect(updatedNewPasswordInput.props.secureTextEntry).toBe(false);
   });
   it('Should show error for new password when it does not match the conditions', () => {
     const {getByPlaceholderText, getByText, queryByText} =
@@ -290,7 +312,7 @@ describe(' Check for ChangePasswordModal', () => {
 
     await waitFor(() => {
       expect(mockShowAlert).toHaveBeenCalledWith(
-        'Failed to update password',
+        'Failed to update password. Please try again later',
         'error',
       );
     });
@@ -314,9 +336,20 @@ describe(' Check for ChangePasswordModal', () => {
 
     await waitFor(() => {
       expect(mockShowAlert).toHaveBeenCalledWith(
-        'Something went wrong',
+        'Something went wrong. Please try again later',
         'error',
       );
     });
   });
+    it('Should apply styles based on the width of the screen', async () => {
+    const { getByText} = renderChangePasswordModal();
+
+      const  modalContainer = getByText('Change Password').parent?.parent;
+      expect(modalContainer?.props.style.width).toBe('70%');
+      jest
+        .spyOn(require('react-native'), 'useWindowDimensions')
+        .mockReturnValue({width: 500, height: 100});
+      renderChangePasswordModal();
+      expect(screen.getByText('Change Password').parent?.parent?.props.style.width).toBe('84%');
+    });
 });
