@@ -6,16 +6,22 @@ export const getStyles = (theme: Theme, width: number) => StyleSheet.create({
       padding: 10,
       width: '80%',
     },
-    input: {
-      height: 40,
+    inputWrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
       borderColor: theme.primaryInputBackground,
       backgroundColor: theme.primaryInputBackground,
       borderWidth: 1,
       borderRadius: 5,
       paddingHorizontal: 10,
-      fontFamily:'Nunito-Regular',
-      color: theme.primaryTextColor,
+      height: 40,
+    },
+    input: {
+      flex: 1,
+      height: '100%',
+      fontFamily: 'Nunito-Regular',
       fontSize: width > 600 ? 16 : 14,
+      color: theme.primaryTextColor,
     },
     errorText: {
       color: theme.primaryErrorText,
