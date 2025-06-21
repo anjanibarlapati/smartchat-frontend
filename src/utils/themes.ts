@@ -50,7 +50,7 @@ export const LightTheme = {
     readTick : require('../../assets/images/readTick.png'),
     pendingTick : require('../../assets/images/pending.png'),
     eyeIcon: require('../../assets/images/eyeIcon.png'),
-    eyeoffIcon : require('../../assets/images/eyeoffIcon.png'),
+    eyeOffIcon : require('../../assets/images/eyeoffIcon.png'),
   },
 };
 
@@ -106,7 +106,7 @@ export const DarkTheme = {
     readTick : require('../../assets/images/seenTick.png'),
     pendingTick : require('../../assets/images/pendingIconDarkTheme.png'),
     eyeIcon: require('../../assets/images/eyeIcon.png'),
-    eyeoffIcon : require('../../assets/images/eyeoffIcon.png'),
+    eyeOffIcon : require('../../assets/images/eyeoffIcon.png'),
   },
 };
 
