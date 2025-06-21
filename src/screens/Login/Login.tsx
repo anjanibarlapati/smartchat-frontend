@@ -171,7 +171,7 @@ const LoginScreen = () => {
         });
         return;
       }
-      showAlert(result.message, 'warning');
+      showAlert(result.message || 'Login failed. Please try again later', 'warning');
       clearFields();
     } catch (error) {
       showAlert('Something went wrong. Please try again', 'error');
@@ -219,20 +219,10 @@ const LoginScreen = () => {
             placeholder="Password"
             secureTextEntry={!showPassword}
             error={errors.password}
+            showToggle
+            showPassword={showPassword}
+            togglePasswordVisibility={() => setShowPassword(prev => !prev)}
           />
-          <View style={styles.showPasswordView}>
-            <TouchableOpacity onPress={() => setShowPassword(prev => !prev)}>
-              <Image
-                style={styles.eyeImage}
-                source={
-                  showPassword
-                    ? theme.images.eyeoffIcon
-                    : theme.images.eyeIcon
-                }
-
-              />
-            </TouchableOpacity>
-          </View>
         </View>
         <Button label="Login" onPress={handleLogin} />
         <LoadingIndicator visible={isLoading} />
