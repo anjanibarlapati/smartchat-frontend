@@ -228,7 +228,7 @@ const Registration = () => {
         });
         return;
       }
-      showAlert(result.message, 'warning');
+      showAlert(result.message || 'Registration failed. Please try again', 'warning');
       clearFields();
     } catch (error) {
       showAlert('Something went wrong. Please try again', 'error');
@@ -322,17 +322,10 @@ const Registration = () => {
             secureTextEntry={!showPassword}
             error={inputErrors.password}
             required
+            showToggle
+            showPassword={showPassword}
+            togglePasswordVisibility={() => setShowPassword(prev => !prev)}
           />
-          <View style={styles.showPasswordView}>
-            <TouchableOpacity onPress={() => setShowPassword(prev => !prev)}>
-              <Image
-                style={styles.eyeImage}
-                source={
-                  showPassword ? theme.images.eyeoffIcon : theme.images.eyeIcon
-                }
-              />
-            </TouchableOpacity>
-          </View>
           <InputField
             value={user.confirmPassword}
             onChangeText={text => {
