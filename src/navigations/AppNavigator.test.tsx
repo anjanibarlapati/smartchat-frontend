@@ -334,7 +334,7 @@ describe('render AppNavigator', () => {
       });
     });
   test('should reset user and clear storage if not authenticated and offline', async () => {
-    (NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: false });
+    (NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: true });
     (checkAccessToken as jest.Mock).mockResolvedValue(false);
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
 

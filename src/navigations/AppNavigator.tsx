@@ -49,7 +49,7 @@ export function AppNavigator(): React.JSX.Element {
       const loadUser = async () => {
         try {
           const netState = await NetInfo.fetch();
-            if(!netState.isConnected) {
+            if(netState.isConnected) {
               const isAuthenticated = await checkAccessToken();
               if(!isAuthenticated) {
                 await EncryptedStorage.clear();
