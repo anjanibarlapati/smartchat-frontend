@@ -204,10 +204,10 @@ export const IndividualChat = () => {
           const response = await clearUserChat(userMobileNumber, mobileNumber);
          if(!response.ok){
              const result = await response.json();
-             showAlert(result.message, 'warning');
+             showAlert(result.message || 'Failed to clear chat', 'warning');
         }}
       } catch (error) {
-          showAlert('Unable to Clear Chat', 'error');
+          showAlert('Failed to Clear Chat. Please try again later', 'error');
        }
         finally {
           setTimeout(() => {
@@ -231,7 +231,7 @@ export const IndividualChat = () => {
         if (!response.ok) {
           unblockContactInRealm(realm, mobileNumber);
           const result = await response.json();
-          showAlert(result.message, 'warning');
+          showAlert(result.message || 'Failed to block the contact. Please try again', 'warning');
         }
       }
       } else {
@@ -244,7 +244,7 @@ export const IndividualChat = () => {
         if (!response.ok) {
           blockContactInRealm(realm, mobileNumber);
           const result = await response.json();
-          showAlert(result.message, 'warning');
+          showAlert(result.message || 'Failed to unblock the contact. Please try again', 'warning');
         }
       }}
     } catch (error) {

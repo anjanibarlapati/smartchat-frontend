@@ -500,7 +500,7 @@ describe('Tests related to the Profile Screen', () => {
     fireEvent.press(screen.getByText('Gallery'));
     await waitFor(() => {
       expect(
-        screen.getByText('Profile upload failed. Please try again later'),
+        screen.getByText('Updating profile picture failed. Please try again later'),
       ).toBeTruthy();
     });
   });

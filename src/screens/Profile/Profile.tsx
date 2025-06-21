@@ -98,10 +98,10 @@ export const Profile = (): React.JSX.Element => {
             await EncryptedStorage.setItem('User Data', JSON.stringify(updatedUser));
             showAlert('Profile picture updated', 'success');
           } else {
-            showAlert(result.message || 'Failed to upload profile picture', 'error');
+            showAlert(result.message || 'Updating profile picture failed. Please try again later', 'warning');
           }
         } catch (error) {
-          showAlert('Profile upload failed. Please try again later', 'error');
+          showAlert('Updating profile picture failed. Please try again later', 'error');
         } finally {
           setUploadImage(null);
           setLoading(false);
@@ -130,7 +130,7 @@ export const Profile = (): React.JSX.Element => {
       }
       else {
         const result = await response.json();
-        showAlert(result.message, 'warning');
+        showAlert(result.message || 'Signout failed. Please try again.', 'warning');
       }
     } catch (error) {
       showAlert('Something went wrong while signing out. Please try again', 'error');

@@ -309,6 +309,33 @@ describe('Registration Screen check', () => {
     });
   });
 
+    it('Should give an alert with warning if the API gives an error with no response message', async () => {
+    const response = {
+      ok: false,
+      json: async () => ({}),
+    };
+    mockRegister.mockResolvedValue(response);
+
+    const {getByLabelText, getByPlaceholderText, getByText} =
+      renderRegistrationScreen();
+
+    fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
+    fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
+    fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
+    fireEvent.changeText(getByPlaceholderText('Password *'), 'Anjaligogu18@');
+    fireEvent.changeText(
+      getByPlaceholderText('Confirm Password *'),
+      'Anjaligogu18@',
+    );
+    await act(async () => {
+      fireEvent.press(getByText('Register'));
+    });
+    await waitFor(() => {
+      expect(getByText('Registration failed. Please try again')).toBeTruthy();
+    });
+  });
+
   it('Should give an alert with Something went wrong. Please try again message if API throws an error', async () => {
     mockRegister.mockRejectedValue(new Error('Internal server error'));
 
