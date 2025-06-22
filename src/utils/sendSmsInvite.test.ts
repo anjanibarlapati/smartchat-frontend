@@ -162,7 +162,7 @@ describe('send SMS', () => {
 
       await sendSmsInvite(mobileNumber);
 
-      expect(consoleSpy).toHaveBeenCalledWith('SMS error:', mockError);
+      expect(consoleSpy).toHaveBeenCalledWith('Failed to send SMS');
       consoleSpy.mockRestore();
     });
      it('Should handle SendSMS error', async () => {

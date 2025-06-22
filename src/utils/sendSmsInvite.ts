@@ -18,7 +18,7 @@ export const sendSmsInvite = async (mobileNumber: string) => {
     "Let's chat on SmartChat! It's a fast, simple, and secure app we can use to message each other for free.";
   if (Platform.OS === 'ios') {
     const url = `sms:${mobileNumber}&body=${encodeURIComponent(inviteMessage)}`;
-    Linking.openURL(url).catch(err => console.error('SMS error:', err));
+    Linking.openURL(url).catch(() => console.error('Failed to send SMS'));
     return;
   }
   if (Platform.OS === 'android') {
@@ -26,7 +26,7 @@ export const sendSmsInvite = async (mobileNumber: string) => {
       const url = `sms:${mobileNumber}?body=${encodeURIComponent(
         inviteMessage,
       )}`;
-      Linking.openURL(url).catch(err => console.error('SMS error:', err));
+      Linking.openURL(url).catch(() => console.error('Failed to send SMS'));
       return;
     } else {
       const granted = await requestSmsPermission();
