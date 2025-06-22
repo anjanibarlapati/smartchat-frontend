@@ -4,7 +4,8 @@ import { Tabs } from './Tabs';
 import { store } from '../../redux/store';
 import { NavigationContainer } from '@react-navigation/native';
 import { RealmProvider } from '@realm/react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { syncContacts } from '../../utils/syncContacts';
 
 jest.mock('@notifee/react-native', () => ({
   __esModule: true,
@@ -16,6 +17,10 @@ jest.mock('@notifee/react-native', () => ({
   },
   AndroidImportance: { HIGH: 'high' },
   TriggerType: { TIMESTAMP: 'timestamp' },
+}));
+
+jest.mock('../../utils/syncContacts', ()=>({
+  syncContacts: jest.fn(),
 }));
 
 jest.mock('@react-native-community/netinfo', () => ({
@@ -141,6 +146,33 @@ describe('Tabs Navigation', () => {
 
     const profileLabel = await findAllByText(/Profile/i);
     expect(profileLabel.length).toBeGreaterThan(0);
+  });
+
+  it('should render CustomAlert when sync contacts throws error', async () => {
+    (syncContacts as jest.Mock).mockRejectedValue(new Error(''));
+    mockUseUnreadChatsCount.mockReturnValue(0);
+
+    const { getByText } = renderWithProviders(<Tabs />);
+    await waitFor(() => {
+      expect(getByText('Failed to sync contacts')).toBeTruthy();
+    });
+  });
+
+  // it('should sync contacts on load and show no warning if permission granted', async () => {
+  //   (syncContacts as jest.Mock).mockResolvedValue({});
+  //   mockUseUnreadChatsCount.mockReturnValue(0);
+
+  //   renderWithProviders(<Tabs />);
+  //   expect()
+
+  // });
+
+  it('should show alert if contact permission denied', async () => {
+    (syncContacts as jest.Mock).mockResolvedValue(false);
+    const { getByText } = renderWithProviders(<Tabs />);
+    await waitFor(() => {
+      expect(getByText('Permission for contacts was denied')).toBeTruthy();
+    });
   });
 
 });
