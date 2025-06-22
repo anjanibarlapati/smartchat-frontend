@@ -16,6 +16,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useRealmReset } from '../../contexts/RealmContext';
 import { resetUser } from '../../redux/reducers/user.reducer';
 import { storeState } from '../../redux/store';
+import { syncContacts } from '../../utils/syncContacts';
+import { useAlertModal } from '../../hooks/useAlertModal';
+import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -109,6 +112,10 @@ export function Tabs(): React.JSX.Element {
   const {resetRealm} = useRealmReset();
   const welcomeNavigation = useNavigation<WelcomeScreenNavigationProps>();
   const successMessage = useSelector((state: storeState) => state.auth.successMessage);
+  const user = useSelector((state: storeState) => state.user);
+  const {
+      alertVisible, alertMessage, alertType, showAlert, hideAlert,
+    } = useAlertModal();
 
   useEffect(() => {
     const forceLogout = async() => {
@@ -122,21 +129,36 @@ export function Tabs(): React.JSX.Element {
     }
   }, [dispatch, welcomeNavigation, successMessage, resetRealm]);
 
-
+  useEffect(()=>{
+    const syncUserContacts = async() =>{
+      try{
+        const result = await syncContacts(user.mobileNumber);
+        if(result === false) {
+          showAlert('Permission for contacts was denied', 'warning');
+        }
+      } catch(error){
+        showAlert('Failed to sync contacts', 'error');
+      }
+    };
+    syncUserContacts();
+  }, [showAlert, user.mobileNumber]);
 
 
   return (
-    <Tab.Navigator key={themeKey} screenOptions={({ route }) => ({ ...getScreenOptions(route, theme),tabBarHideOnKeyboard: true })}>
-     <Tab.Screen
-        name="AllChatsTab"
-        children={() => <HomeStack showUnread={false} />}
-      />
+    <>
+      <Tab.Navigator key={themeKey} screenOptions={({ route }) => ({ ...getScreenOptions(route, theme),tabBarHideOnKeyboard: true })}>
       <Tab.Screen
-        name="UnreadTab"
-        children={() => <HomeStack showUnread={true} />}
-      />
-      <Tab.Screen name="ProfileScreen" component={Profile} options={{headerShown: true}} />
-    </Tab.Navigator>
+          name="AllChatsTab"
+          children={() => <HomeStack showUnread={false} />}
+        />
+        <Tab.Screen
+          name="UnreadTab"
+          children={() => <HomeStack showUnread={true} />}
+        />
+        <Tab.Screen name="ProfileScreen" component={Profile} options={{headerShown: true}} />
+      </Tab.Navigator>
+      <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
+    </>
   );
 }
 
