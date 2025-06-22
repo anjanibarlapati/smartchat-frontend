@@ -22,6 +22,7 @@
     "@reduxjs/toolkit": "^2.8.1",
     "date-fns": "^4.1.0",
     "i18next": "^25.1.2",
+    "js-sha256": "^0.11.1",
     "libphonenumber-js": "^1.12.8",
     "lottie-react-native": "^7.2.2",
     "react": "19.0.0",
