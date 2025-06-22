@@ -1,12 +1,9 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import { configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { useHomeChats } from '../../hooks/homechats';
 import * as useAlertModalHook from '../../hooks/useAlertModal';
-import { authReducer } from '../../redux/reducers/auth.reducer';
-import { themeReducer } from '../../redux/reducers/theme.reducer';
 import { store } from '../../redux/store';
 import { Home } from './Home';
 import { MessageStatus } from '../../types/message';
@@ -78,28 +75,6 @@ describe('Home Screen', () => {
     expect(mockNavigate).toHaveBeenCalledWith('Contact');
   });
 
-  it('should show alert if successMessage exists in the store', () => {
-    const storeWithSuccessMessage = configureStore({
-      reducer: {
-        auth: authReducer,
-        theme: themeReducer,
-      },
-      preloadedState: {
-        auth: {
-          successMessage: "You've successfully logged in to SmartChat!",
-        },
-      },
-    });
-    render(
-      <Provider store={storeWithSuccessMessage}>
-        <Home />
-      </Provider>,
-    );
-    expect(showAlertMock).toHaveBeenCalledWith(
-      "You've successfully logged in to SmartChat!",
-      'success',
-    );
-  });
   test('Should render the home image properly', () => {
     const {getByLabelText} = renderHomeScreen();
     expect(getByLabelText('home-image')).toBeTruthy();
