@@ -1,12 +1,17 @@
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Provider } from 'react-redux';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { store } from '../../redux/store';
-import { User } from '../../types/User';
+import {Provider} from 'react-redux';
+import {store} from '../../redux/store';
+import {User} from '../../types/User';
 import * as tokenUtil from '../../utils/getTokens';
-import { openPhotoLibrary } from '../../utils/openPhotoLibrary';
-import { Profile } from './Profile';
+import {openPhotoLibrary} from '../../utils/openPhotoLibrary';
+import {Profile} from './Profile';
 import * as ProfileServices from './Profile.services';
 
 jest.mock('@notifee/react-native', () => ({
@@ -17,8 +22,8 @@ jest.mock('@notifee/react-native', () => ({
     displayNotification: jest.fn(),
     createTriggerNotification: jest.fn(),
   },
-  AndroidImportance: { HIGH: 'high' },
-  TriggerType: { TIMESTAMP: 'timestamp' },
+  AndroidImportance: {HIGH: 'high'},
+  TriggerType: {TIMESTAMP: 'timestamp'},
 }));
 
 jest.mock('react-native-encrypted-storage', () => ({
@@ -78,7 +83,6 @@ jest.mock('react-redux', () => ({
   useSelector: () => mockUser,
   useDispatch: () => mockDispatch,
 }));
-
 
 describe('Tests related to the Profile Screen', () => {
   const RenderProfileScreen = () => {
@@ -241,7 +245,9 @@ describe('Tests related to the Profile Screen', () => {
   });
 
   it('Should display an alert when error occurs while signing out', async () => {
-    (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
+    (tokenUtil.getTokens as jest.Mock).mockResolvedValue({
+      access_token: 'RGUKT BASAR',
+    });
     (EncryptedStorage.clear as jest.Mock).mockRejectedValue(
       new Error('Failed'),
     );
@@ -264,7 +270,9 @@ describe('Tests related to the Profile Screen', () => {
   });
 
   it('Should clear encrypted storage and stack and navigate to welcome screen upon clicking on sign out', async () => {
-    (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
+    (tokenUtil.getTokens as jest.Mock).mockResolvedValue({
+      access_token: 'RGUKT BASAR',
+    });
     (ProfileServices.logout as jest.Mock).mockResolvedValue({ok: true});
     RenderProfileScreen();
     await waitFor(async () => {
@@ -278,34 +286,39 @@ describe('Tests related to the Profile Screen', () => {
     });
   });
 
-      it('Should navigate to Welcome screen, if tokens are invalid', async() => {
-        (tokenUtil.getTokens as jest.Mock).mockResolvedValue(null);
-        RenderProfileScreen();
-        await waitFor(async() => {
-            fireEvent.press(await screen.findByText('Sign out'));
-        });
-        await waitFor(async() => {
-            fireEvent.press(await screen.findByText('Yes'));
-        });
-        await waitFor(() => {
-            expect(EncryptedStorage.clear).toHaveBeenCalled();
-        });
+  it('Should navigate to Welcome screen, if tokens are invalid', async () => {
+    (tokenUtil.getTokens as jest.Mock).mockResolvedValue(null);
+    RenderProfileScreen();
+    await waitFor(async () => {
+      fireEvent.press(await screen.findByText('Sign out'));
     });
+    await waitFor(async () => {
+      fireEvent.press(await screen.findByText('Yes'));
+    });
+    await waitFor(() => {
+      expect(EncryptedStorage.clear).toHaveBeenCalled();
+    });
+  });
 
-    it('Should give an alert if response is not ok during logout', async() => {
-        (tokenUtil.getTokens as jest.Mock).mockResolvedValue({ access_token: 'RGUKT BASAR' });
-        (ProfileServices.logout as jest.Mock).mockResolvedValue({ok: false, json: async () => ({ message: 'Something went wrong' })});
-        RenderProfileScreen();
-        await waitFor(async() => {
-            fireEvent.press(await screen.findByText('Sign out'));
-        });
-        await waitFor(async() => {
-            fireEvent.press(await screen.findByText('Yes'));
-        });
-        await waitFor(() => {
-            expect(screen.getByText('Something went wrong')).toBeTruthy();
-        });
+  it('Should give an alert if response is not ok during logout', async () => {
+    (tokenUtil.getTokens as jest.Mock).mockResolvedValue({
+      access_token: 'RGUKT BASAR',
     });
+    (ProfileServices.logout as jest.Mock).mockResolvedValue({
+      ok: false,
+      json: async () => ({message: 'Something went wrong'}),
+    });
+    RenderProfileScreen();
+    await waitFor(async () => {
+      fireEvent.press(await screen.findByText('Sign out'));
+    });
+    await waitFor(async () => {
+      fireEvent.press(await screen.findByText('Yes'));
+    });
+    await waitFor(() => {
+      expect(screen.getByText('Something went wrong')).toBeTruthy();
+    });
+  });
 
   it('Should go back to profile screen when clicks on Cancel in signout modal', async () => {
     RenderProfileScreen();
@@ -500,23 +513,49 @@ describe('Tests related to the Profile Screen', () => {
     fireEvent.press(screen.getByText('Gallery'));
     await waitFor(() => {
       expect(
-        screen.getByText('Updating profile picture failed. Please try again later'),
+        screen.getByText(
+          'Updating profile picture failed. Please try again later',
+        ),
       ).toBeTruthy();
     });
   });
-
   it('Should apply styles based on the width of the screen', () => {
-    const {getByLabelText} = RenderProfileScreen();
-    const profilePicture =
-      getByLabelText('ProfilePicture').parent?.parent?.parent;
+    const rn = require('react-native');
 
-    expect(profilePicture?.props.style.borderRadius).toBe(60);
+    jest
+      .spyOn(rn, 'useWindowDimensions')
+      .mockReturnValue({width: 700, height: 800});
+    const {getByLabelText, unmount} = RenderProfileScreen();
+    const profilePicture = getByLabelText('ProfilePicture');
+
+    expect(profilePicture.props.style.borderRadius).toBe(60);
+
+    unmount();
+    jest
+      .spyOn(rn, 'useWindowDimensions')
+      .mockReturnValue({width: 10, height: 100});
+    const {getByLabelText: getByLabelTextSmall} = RenderProfileScreen();
+    const profilePictureSmall = getByLabelTextSmall('ProfilePicture');
+
+    expect(profilePictureSmall.props.style.borderRadius).toBe(50);
+  });
+
+  it('Should open modal on profile image press and close it on pressing overlay', async () => {
     jest
       .spyOn(require('react-native'), 'useWindowDimensions')
-      .mockReturnValue({width: 10, height: 100});
-    RenderProfileScreen();
-    const profilePicturee =
-      screen.getByLabelText('ProfilePicture').parent?.parent?.parent;
-    expect(profilePicturee?.props.style.borderRadius).toBe(50);
+      .mockReturnValue({width: 400, height: 800});
+
+    const {getByLabelText, queryByLabelText} = RenderProfileScreen();
+    const profileImage = getByLabelText('ProfilePicture');
+
+    expect(queryByLabelText('ProfileModal')).toBeNull();
+    fireEvent.press(profileImage);
+    await waitFor(() => {
+      expect(getByLabelText('ProfileModal')).toBeTruthy();
+    });
+    fireEvent.press(getByLabelText('ProfileModal'));
+    await waitFor(() => {
+      expect(queryByLabelText('ProfileModal')).toBeNull();
+    });
   });
 });
