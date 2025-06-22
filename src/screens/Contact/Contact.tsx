@@ -1,28 +1,18 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import Contacts from 'react-native-contacts';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import { useSelector } from 'react-redux';
-import NetInfo from '@react-native-community/netinfo';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { ContactCard } from '../../components/ContactCard/ContactCard.tsx';
 import { CustomAlert } from '../../components/CustomAlert/CustomAlert.tsx';
 import LoadingIndicator from '../../components/Loading/Loading.tsx';
-import { useRealmReset } from '../../contexts/RealmContext.tsx';
 import { useAppTheme } from '../../hooks/appTheme';
 import { useAlertModal } from '../../hooks/useAlertModal.ts';
-import { requestPermission } from '../../permissions/permissions.ts';
 import { getRealmInstance } from '../../realm-database/connection.ts';
-import { clearAllContactsInRealm } from '../../realm-database/operations/clearContacts.ts';
 import { getContactsFromRealm } from '../../realm-database/operations/getContacts.ts';
-import { insertContactsInRealm } from '../../realm-database/operations/insertContacts.ts';
 import { storeState } from '../../redux/store.ts';
 import { Contact as ContactType } from '../../types/Contacts.ts';
-import { RootStackParamList } from '../../types/Navigations.ts';
-import { getContactsDetails } from '../../utils/getContactsDetails.ts';
-import { getTokens } from '../../utils/getTokens.ts';
 import { Theme } from '../../utils/themes';
 import { getStyles } from './Contact.styles';
+import { syncContacts } from '../../utils/syncContacts.ts';
 
 
 export function Contact(): React.JSX.Element {
@@ -30,7 +20,6 @@ export function Contact(): React.JSX.Element {
 
   const { width, height} = useWindowDimensions();
   const styles = getStyles(theme, width, height);
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [selectedTab, setSelectedTab] = useState('Contacts');
   const [contacts, setContacts] = useState<ContactType[]>([]);
   const user = useSelector((state: storeState)=> state.user);
@@ -38,51 +27,48 @@ export function Contact(): React.JSX.Element {
       alertVisible, alertMessage, alertType, showAlert, hideAlert,
     } = useAlertModal();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const {resetRealm} = useRealmReset();
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
+  const loadContacts = useCallback(() => {
+      const db = getRealmInstance();
+      const contactsFromDb = getContactsFromRealm(db);
+      setContacts(contactsFromDb);
+  }, []);
+
+  useEffect(()=>{
+    const syncUserContacts = async() =>{
+      try{
+        const result = await syncContacts(user.mobileNumber, true);
+        if(result === false) {
+          showAlert('Permission for contacts was denied', 'warning');
+        } else{
+          loadContacts();
+        }
+      } catch(error){
+        showAlert('Failed to sync contacts', 'error');
+      } finally{
+        setRefreshing(false);
+      }
+    };
+    if(refreshing){
+      syncUserContacts();
+    }
+  }, [loadContacts, refreshing, user.mobileNumber, showAlert]);
+
 
   useEffect(() => {
-    const loadContacts = async () => {
-      const db =  getRealmInstance();
+    const loadInitialContacts = async () => {
       try {
         setIsLoading(true);
-        const hasPermission = await requestPermission('contacts');
-        if (!hasPermission) {
-          showAlert('Permission for contacts was denied', 'warning');
-          return;
-        }
-        const tokens = await getTokens(user.mobileNumber);
-        if (!tokens) {
-          await EncryptedStorage.clear();
-          resetRealm();
-          return;
-        }
-
-        const netState = await NetInfo.fetch();
-        const isOnline = netState.isConnected;
-        if (!isOnline) {
-          const dbContacts = getContactsFromRealm(db);
-          setContacts(dbContacts);
-          return;
-        }
-
-        const deviceContacts = await Contacts.getAll();
-        if (!deviceContacts || deviceContacts.length === 0) {
-          clearAllContactsInRealm(db);
-          setContacts([]);
-          return;
-        }
-        const resultantContacts = await getContactsDetails(deviceContacts, tokens.access_token);
-        clearAllContactsInRealm(db);
-        insertContactsInRealm(db, resultantContacts);
-        setContacts(resultantContacts);
+        loadContacts();
       } catch (error) {
-          showAlert('Something went wrong while fetching contacts details. Please try again', 'error');
-        } finally{
-          setIsLoading(false);
-        }
+        showAlert('Something went wrong while fetching contacts details. Please try again', 'error');
+      } finally {
+        setIsLoading(false);
+      }
     };
-    loadContacts();
-  }, [navigation, resetRealm, showAlert, user.mobileNumber]);
+    loadInitialContacts();
+  }, [loadContacts, showAlert]);
 
 const filteredContacts = useMemo(() => {
   if (contacts.length === 0) {
@@ -148,6 +134,11 @@ const filteredContacts = useMemo(() => {
               contentContainerStyle={styles.contactsBody}
               initialNumToRender={10}
               renderItem={({item}) => <ContactCard contact={item} isSelfContact={user.mobileNumber === item.mobileNumber} />}
+              refreshing={refreshing}
+              onRefresh={() => {
+                setRefreshing(true);
+              }}
+              accessibilityLabel="contacts-list"
             />
           )}
         </View>
