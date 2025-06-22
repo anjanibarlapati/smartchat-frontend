@@ -103,6 +103,7 @@ const getScreenOptions = (route: { name: string }, theme: Theme): BottomTabNavig
 export function Tabs(): React.JSX.Element {
   const theme: Theme = useAppTheme();
   useSocketEventHandlers();
+  const themeKey = theme.primaryBackground;
 
   const dispatch = useDispatch();
   const {resetRealm} = useRealmReset();
@@ -125,7 +126,7 @@ export function Tabs(): React.JSX.Element {
 
 
   return (
-    <Tab.Navigator screenOptions={({ route }) => ({ ...getScreenOptions(route, theme),tabBarHideOnKeyboard: true })}>
+    <Tab.Navigator key={themeKey} screenOptions={({ route }) => ({ ...getScreenOptions(route, theme),tabBarHideOnKeyboard: true })}>
      <Tab.Screen
         name="AllChatsTab"
         children={() => <HomeStack showUnread={false} />}
