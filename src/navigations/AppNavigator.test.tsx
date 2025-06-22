@@ -13,6 +13,7 @@ import { AppNavigator } from './AppNavigator';
 import { storeMessages } from '../utils/storeMessages.ts';
 import { storePendingMessages } from '../utils/storePendingMessages.ts';
 import { syncPendingActions } from '../utils/syncPendingActions.ts';
+import { syncMessagesStatusFromRemote } from '../utils/syncMessagesStatusFromRemote.ts';
 
 
 jest.mock('../utils/storeMessages', () => ({
@@ -26,6 +27,10 @@ jest.mock('../utils/storePendingMessages.ts', () => ({
 
 jest.mock('../utils/syncPendingActions.ts', () => ({
   syncPendingActions: jest.fn(),
+}));
+
+jest.mock('../utils/syncMessagesStatusFromRemote.ts', () => ({
+  syncMessagesStatusFromRemote: jest.fn(),
 }));
 
 jest.mock('../hooks/useFcmListener', () => ({
@@ -384,12 +389,13 @@ describe('render AppNavigator', () => {
     (storeMessages as jest.Mock).mockClear();
     (storePendingMessages as jest.Mock).mockClear();
     (syncPendingActions as jest.Mock).mockClear();
-
+    (syncMessagesStatusFromRemote as jest.Mock).mockClear();
     await waitFor(() => netInfoCallback({ isConnected: true, type: 'cellular' }));
 
     expect(storeMessages).not.toHaveBeenCalled();
     expect(storePendingMessages).not.toHaveBeenCalled();
     expect(syncPendingActions).not.toHaveBeenCalled();
+    expect(syncMessagesStatusFromRemote).not.toHaveBeenCalled();
   });
   test('Should log error if syncing messages fails on reconnect', async () => {
     let netInfoCallback: any;
@@ -411,7 +417,7 @@ describe('render AppNavigator', () => {
 
     await waitFor(() => netInfoCallback({ isConnected: true, type: 'wifi' }));
 
-    expect(logSpy).toHaveBeenCalledWith('Failed syncing messages:', expect.any(Error));
+    expect(logSpy).toHaveBeenCalledWith('Failed to sync local and remote dbs');
 
     logSpy.mockRestore();
   });
@@ -435,11 +441,14 @@ describe('render AppNavigator', () => {
     (storeMessages as jest.Mock).mockClear();
     (storePendingMessages as jest.Mock).mockClear();
     (syncPendingActions as jest.Mock).mockClear();
+    (syncPendingActions as jest.Mock).mockClear();
 
     await waitFor(() => netInfoCallback({ isConnected: false, type: 'wifi' }));
     expect(storeMessages).not.toHaveBeenCalled();
     expect(storePendingMessages).not.toHaveBeenCalled();
     expect(syncPendingActions).not.toHaveBeenCalled();
+    expect(syncMessagesStatusFromRemote).not.toHaveBeenCalled();
+
   });
 
   test('should cleanup NetInfo listener on unmount', async () => {
