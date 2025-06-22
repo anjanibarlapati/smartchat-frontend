@@ -32,7 +32,7 @@ export function AppNavigator(): React.JSX.Element {
 
     const [isUserStored, setIsUserStored] = useState<boolean>(false);
     const [isReady, setIsReady] = useState<boolean>(false);
-     const realm = useRealm();
+    const realm = useRealm();
     const dispatch = useDispatch();
     const userData = useSelector((state: storeState) => state.user);
     const wasConnected = useRef<boolean>(false);
@@ -73,7 +73,7 @@ export function AppNavigator(): React.JSX.Element {
         }
       };
       loadUser();
-    }, [dispatch, realm, showAlert]);
+    }, [dispatch, showAlert]);
 
     useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(async state => {
@@ -88,7 +88,7 @@ export function AppNavigator(): React.JSX.Element {
           await storePendingMessages(userData.mobileNumber, realm);
           await syncMessagesStatusFromRemote(userData.mobileNumber, realm);
         } catch (error) {
-          console.log('Failed syncing messages:', error);
+          console.log('Failed to sync local and remote dbs');
         }
       }
     });
