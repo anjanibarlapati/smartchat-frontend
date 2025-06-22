@@ -3,6 +3,8 @@ import { Contact } from 'react-native-contacts';
 import { fetchContacts } from '../screens/Contact/Contact.service';
 import { Contact as ContactType } from '../types/Contacts';
 import { getContactsDetails } from './getContactsDetails';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { sha256 } from 'js-sha256';
 
 jest.mock('../screens/Contact/Contact.service', () => {
   const originalModule = jest.requireActual('../screens/Contact/Contact.service');
@@ -15,6 +17,17 @@ jest.mock('../screens/Contact/Contact.service', () => {
 jest.mock('react-native-localize', () => ({
   getCountry: jest.fn(() => 'IN'),
 }));
+
+jest.mock('react-native-encrypted-storage', () => ({
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+}));
+
+jest.mock('js-sha256', () => ({
+  sha256: jest.fn(),
+}));
+
+const mockedSha256 = sha256 as jest.MockedFunction<typeof sha256>;
 
 const mockFetchContacts = fetchContacts as jest.Mock;
 const mockAccessToken = 'test-access-token';
@@ -149,6 +162,11 @@ describe('getContactsDetails', () => {
   });
 
   it('should return account details and profile picture if contact is registered', async () => {
+
+    const previousHash = 'previous-hash';
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(previousHash);
+    (EncryptedStorage.setItem as jest.Mock).mockResolvedValueOnce(undefined);
+    mockedSha256.mockReturnValue('different-hash');
     mockFetchContacts.mockResolvedValueOnce({
       json: jest.fn().mockResolvedValue(mockResponseData),
     });
@@ -186,6 +204,10 @@ describe('getContactsDetails', () => {
   });
 
   it('should return same values when no match is found in the response', async () => {
+    const previousHash = 'previous-hash';
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(previousHash);
+    (EncryptedStorage.setItem as jest.Mock).mockResolvedValueOnce(undefined);
+    mockedSha256.mockReturnValue('different-hash');
     mockFetchContacts.mockResolvedValueOnce({
       json: jest.fn().mockResolvedValue([]),
     });
@@ -224,6 +246,10 @@ describe('getContactsDetails', () => {
 
   it('Should to take only first number from each contact phone numbers for Android', async()=>{
     Platform.OS = 'android';
+    const previousHash = 'previous-hash';
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(previousHash);
+    (EncryptedStorage.setItem as jest.Mock).mockResolvedValueOnce(undefined);
+    mockedSha256.mockReturnValue('different-hash');
 
     const mockAndroidResponseData = [
       {
@@ -274,4 +300,32 @@ describe('getContactsDetails', () => {
       },
     ]);
   });
+
+  it('should skip syncing if contacts hash has not changed and lastSyncedAt is recent', async () => {
+    const fakeHash = 'same-hash';
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(fakeHash);
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(new Date().toISOString());
+
+    (EncryptedStorage.setItem as jest.Mock).mockResolvedValueOnce(undefined);
+
+    mockedSha256.mockReturnValue('same-hash');
+
+    const result = await getContactsDetails(mockContacts, mockAccessToken);
+    expect(result).toEqual([]);
+    expect(fetchContacts).not.toHaveBeenCalled();
+  });
+
+    it('should sync if shoudlSync is true', async () => {
+      const fakeHash = 'same-hash';
+      (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(fakeHash);
+      (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(Date.now() - 24 * 60 * 60 * 1000);
+      mockedSha256.mockReturnValue('different-hash');
+      mockFetchContacts.mockResolvedValueOnce({
+        json: jest.fn().mockResolvedValue([]),
+      });
+      await getContactsDetails(mockContacts, mockAccessToken, true);
+      expect(fetchContacts).toHaveBeenCalled();
+    });
 });
+
+
