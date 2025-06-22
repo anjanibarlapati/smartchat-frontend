@@ -1,38 +1,55 @@
-import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import {
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useDispatch, useSelector } from 'react-redux';
-import { AlertModal } from '../../components/AlertModal/AlertModal';
-import { ChangePasswordModal } from '../../components/ChangePasswordModal/ChangePasswordModal';
-import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
+import {useDispatch, useSelector} from 'react-redux';
+import {AlertModal} from '../../components/AlertModal/AlertModal';
+import {ChangePasswordModal} from '../../components/ChangePasswordModal/ChangePasswordModal';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
 import LoadingIndicator from '../../components/Loading/Loading';
-import { ProfileInfoTile } from '../../components/ProfileInfoTile/ProfileInfoTile';
-import { ProfilePicturePickerModal } from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
-import { useRealmReset } from '../../contexts/RealmContext';
-import { useAppTheme } from '../../hooks/appTheme';
-import { useAlertModal } from '../../hooks/useAlertModal';
-import { setUserProperty } from '../../redux/reducers/user.reducer';
-import { storeState } from '../../redux/store';
-import { RootStackParamList } from '../../types/Navigations';
-import { UploadImage } from '../../types/UploadImage';
-import { getTokens } from '../../utils/getTokens';
-import { socketDisconnect } from '../../utils/socket';
-import { Theme } from '../../utils/themes';
-import { deleteAccount, logout, removeProfilePic, updateProfilePic } from './Profile.services';
-import { getStyles } from './Profile.styles';
-
+import {ProfileInfoTile} from '../../components/ProfileInfoTile/ProfileInfoTile';
+import {ProfilePicturePickerModal} from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
+import {ProfilePictureViewerModal} from '../../components/ProfilePictureViewer/PofilePictureViewer';
+import {useRealmReset} from '../../contexts/RealmContext';
+import {useAppTheme} from '../../hooks/appTheme';
+import {useAlertModal} from '../../hooks/useAlertModal';
+import {setUserProperty} from '../../redux/reducers/user.reducer';
+import {storeState} from '../../redux/store';
+import {RootStackParamList} from '../../types/Navigations';
+import {UploadImage} from '../../types/UploadImage';
+import {getTokens} from '../../utils/getTokens';
+import {socketDisconnect} from '../../utils/socket';
+import {Theme} from '../../utils/themes';
+import {
+  deleteAccount,
+  logout,
+  removeProfilePic,
+  updateProfilePic,
+} from './Profile.services';
+import {getStyles} from './Profile.styles';
 
 export const Profile = (): React.JSX.Element => {
   const userDetails = useSelector((state: storeState) => state.user);
-  const { width, height } = useWindowDimensions();
+  const {width, height} = useWindowDimensions();
   const theme: Theme = useAppTheme();
   const styles = getStyles(theme, width, height);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useDispatch();
-  const {
-      alertVisible, alertMessage, alertType, showAlert, hideAlert,
-    } = useAlertModal();
+  const {alertVisible, alertMessage, alertType, showAlert, hideAlert} =
+    useAlertModal();
   const [editField, setEditField] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [signoutModal, setSignoutModal] = useState(false);
@@ -46,6 +63,11 @@ export const Profile = (): React.JSX.Element => {
   const [visibleProfilePicModal, setVisibleProfilePicModal] = useState(false);
 
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  const profileImageUri = profilePicUrl
+    ? {uri: profilePicUrl}
+    : require('../../../assets/images/profileImage.png');
 
   const imageUploaded = useRef(false);
   const {resetRealm} = useRealmReset();
@@ -57,7 +79,6 @@ export const Profile = (): React.JSX.Element => {
       headerStyle: styles.headerBackgroundColor,
     });
   }, [navigation, styles.headerBackgroundColor, styles.headerTitleStyle]);
-
 
   useFocusEffect(
     useCallback(() => {
@@ -93,26 +114,37 @@ export const Profile = (): React.JSX.Element => {
             setUserProperty({
               property: 'profilePicture',
               value: result.profilePicture,
-            }));
-            setProfilePicUrl(result.profilePicture);
-            await EncryptedStorage.setItem('User Data', JSON.stringify(updatedUser));
-            showAlert('Profile picture updated', 'success');
-          } else {
-            showAlert(result.message || 'Updating profile picture failed. Please try again later', 'warning');
-          }
-        } catch (error) {
-          showAlert('Updating profile picture failed. Please try again later', 'error');
-        } finally {
-          setUploadImage(null);
-          setLoading(false);
-          imageUploaded.current = false;
+            }),
+          );
+          setProfilePicUrl(result.profilePicture);
+          await EncryptedStorage.setItem(
+            'User Data',
+            JSON.stringify(updatedUser),
+          );
+          showAlert('Profile picture updated', 'success');
+        } else {
+          showAlert(
+            result.message ||
+              'Updating profile picture failed. Please try again later',
+            'warning',
+          );
         }
+      } catch (error) {
+        showAlert(
+          'Updating profile picture failed. Please try again later',
+          'error',
+        );
+      } finally {
+        setUploadImage(null);
+        setLoading(false);
+        imageUploaded.current = false;
+      }
     };
 
     if (uploadImage) {
       handleUploadProfilePic();
     }
-}, [dispatch, navigation, resetRealm, showAlert, uploadImage, userDetails]);
+  }, [dispatch, navigation, resetRealm, showAlert, uploadImage, userDetails]);
 
   const signout = async () => {
     try {
@@ -122,18 +154,26 @@ export const Profile = (): React.JSX.Element => {
         resetRealm();
         return;
       }
-      const response = await logout(userDetails.mobileNumber, tokens.access_token);
-      if(response.ok) {
+      const response = await logout(
+        userDetails.mobileNumber,
+        tokens.access_token,
+      );
+      if (response.ok) {
         socketDisconnect();
         await EncryptedStorage.clear();
         resetRealm();
-      }
-      else {
+      } else {
         const result = await response.json();
-        showAlert(result.message || 'Signout failed. Please try again.', 'warning');
+        showAlert(
+          result.message || 'Signout failed. Please try again.',
+          'warning',
+        );
       }
     } catch (error) {
-      showAlert('Something went wrong while signing out. Please try again', 'error');
+      showAlert(
+        'Something went wrong while signing out. Please try again',
+        'error',
+      );
     }
   };
 
@@ -144,25 +184,37 @@ export const Profile = (): React.JSX.Element => {
       resetRealm();
       return;
     }
-    try{
+    try {
       setLoading(true);
-      const response = await removeProfilePic(profilePicUrl as string, userDetails.mobileNumber, tokens.access_token);
-      if(response.ok) {
-          const updatedUser = {
-              ...userDetails,
-              profilePicture: null,
-          };
-          dispatch(setUserProperty({
-              property: 'profilePicture',
-              value: '',
-          }));
-          await EncryptedStorage.setItem('User Data', JSON.stringify(updatedUser));
-          showAlert('Successfully Removed Profile', 'success');
+      const response = await removeProfilePic(
+        profilePicUrl as string,
+        userDetails.mobileNumber,
+        tokens.access_token,
+      );
+      if (response.ok) {
+        const updatedUser = {
+          ...userDetails,
+          profilePicture: null,
+        };
+        dispatch(
+          setUserProperty({
+            property: 'profilePicture',
+            value: '',
+          }),
+        );
+        await EncryptedStorage.setItem(
+          'User Data',
+          JSON.stringify(updatedUser),
+        );
+        showAlert('Successfully Removed Profile', 'success');
       }
       setProfilePicUrl(null);
       setVisibleProfilePicModal(false);
-    } catch(error) {
-      showAlert('Something went wrong while removing profile picture. Please try again', 'error');
+    } catch (error) {
+      showAlert(
+        'Something went wrong while removing profile picture. Please try again',
+        'error',
+      );
     } finally {
       setLoading(false);
     }
@@ -186,11 +238,13 @@ export const Profile = (): React.JSX.Element => {
       } else {
         showAlert('Failed to delete account', 'error');
       }
-    } catch(error) {
-      showAlert('Something went wrong while deleting account. Please try again', 'error');
+    } catch (error) {
+      showAlert(
+        'Something went wrong while deleting account. Please try again',
+        'error',
+      );
     }
   };
-
 
   return (
     <KeyboardAvoidingView
@@ -202,16 +256,21 @@ export const Profile = (): React.JSX.Element => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}>
         <View style={styles.profileImg}>
-          <Image
-            source={
-              profilePicUrl
-                ? {uri: profilePicUrl}
-                : require('../../../assets/images/profileImage.png')
-            }
-            resizeMode="cover"
-            style={styles.profileImg}
-            accessibilityLabel="ProfilePicture"
+          <TouchableOpacity onPress={() => setShowModal(true)}>
+            <Image
+              source={profileImageUri}
+              style={styles.profileImg}
+              accessibilityLabel="ProfilePicture"
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
+
+          <ProfilePictureViewerModal
+            visible={showModal}
+            imageSource={profileImageUri}
+            onClose={() => setShowModal(false)}
           />
+
           <TouchableOpacity
             style={styles.editProfileImgBox}
             onPress={() => {
@@ -339,8 +398,12 @@ export const Profile = (): React.JSX.Element => {
         onClose={() => setShowChangePasswordModal(false)}
       />
 
-      <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
-
+      <CustomAlert
+        visible={alertVisible}
+        message={alertMessage}
+        type={alertType}
+        onClose={hideAlert}
+      />
     </KeyboardAvoidingView>
   );
 };
