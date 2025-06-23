@@ -77,7 +77,7 @@ describe('Contact Card Component', () => {
 
   test('Should send sms invite on clicking contact who are not on app', async () => {
     const {getByLabelText} = renderContactCard(contact, false);
-    const contactCard = getByLabelText(/contact-card/i);
+    const contactCard = getByLabelText(/contact-container/i);
     fireEvent.press(contactCard);
     expect(sendSmsInvite).toHaveBeenCalledWith(contact.originalNumber);
   });
@@ -88,7 +88,7 @@ describe('Contact Card Component', () => {
       doesHaveAccount: true,
     };
     const {getByLabelText} = renderContactCard(contactWithAccount, false);
-    const contactCard = getByLabelText(/contact-card/i);
+    const contactCard = getByLabelText(/contact-container/i);
     fireEvent.press(contactCard);
     expect(mockReplace).toHaveBeenCalledWith('IndividualChat', {
       name: contact.name,
@@ -96,6 +96,24 @@ describe('Contact Card Component', () => {
       mobileNumber: contact.mobileNumber,
       profilePic: contact.profilePicture,
     });
+  });
+  test('Should display profile picture viewer on clicking contact profile', async () => {
+    const contactWithEmptyPic = {
+      ...contact,
+      doesHaveAccount: true,
+      profilePicture: null,
+    };
+    const {getByLabelText, queryByLabelText} = renderContactCard(contactWithEmptyPic, false);
+
+    expect(queryByLabelText('ProfileModal')).toBeNull();
+
+    fireEvent.press(getByLabelText('profile-image'));
+
+    expect(getByLabelText('ProfileModal')).toBeTruthy();
+
+    fireEvent.press(getByLabelText('ProfileModal'));
+
+    expect(queryByLabelText('ProfileModal')).toBeNull();
   });
 
   test('Should navigate to individual screen with empty profile picture on clicking contact who are on app', async () => {
@@ -105,7 +123,7 @@ describe('Contact Card Component', () => {
       profilePicture: null,
     };
     const {getByLabelText} = renderContactCard(contactWithEmptyPic, false);
-    const contactCard = getByLabelText(/contact-card/i);
+    const contactCard = getByLabelText(/contact-container/i);
     fireEvent.press(contactCard);
     expect(mockReplace).toHaveBeenCalledWith('IndividualChat', {
       name: contact.name,
