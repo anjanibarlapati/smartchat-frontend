@@ -32,6 +32,7 @@ export function Contact(): React.JSX.Element {
   const loadContacts = useCallback(() => {
       const db = getRealmInstance();
       const contactsFromDb = getContactsFromRealm(db);
+      contactsFromDb.sort((a, b) => a.name.localeCompare(b.name));
       setContacts(contactsFromDb);
   }, []);
 
