@@ -38,7 +38,7 @@ export const ProfilePictureViewerModal: React.FC<Props> = ({
             <Image
               source={imageSource}
               style={styles.fullImage}
-              resizeMode="cover"
+              resizeMode="contain"
             />
             {name && (
               <View style={styles.nameContainer}>

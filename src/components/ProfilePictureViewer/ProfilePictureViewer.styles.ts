@@ -21,7 +21,6 @@ export const getStyles = (width: number, height: number) =>
       width: '100%',
       height: '100%',
       borderRadius: 12,
-      objectFit:'fill',
     },
     nameContainer: {
       position: 'absolute',
