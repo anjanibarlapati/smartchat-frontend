@@ -7,9 +7,9 @@ export const setRealmInstance = (realm: Realm) => {
       realmInstance = realm;
 };
 
-export const getRealmInstance = (): Realm => {
-  if (!realmInstance) {
-    throw new Error('Realm instance is not set');
+export const getRealmInstance = async (): Promise<Realm> => {
+  if(!realmInstance || realmInstance.isClosed){
+    realmInstance = await Realm.open(realmConfig);
   }
   return realmInstance;
 };
