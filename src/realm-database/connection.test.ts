@@ -1,5 +1,72 @@
-import Realm from 'realm';
+import { Realm } from 'realm';
 import {  closeRealm, deleteAllRealmData, getRealmInstance, setRealmInstance } from './connection';
+
+jest.mock('realm', () => {
+  const actual = jest.requireActual('realm');
+  return {
+    __esModule: true,
+    ...actual,
+    Realm: {
+      ...actual.Realm,
+      open: jest.fn(),
+      deleteFile: jest.fn(),
+    },
+  };
+});
+
+const mockOpen = Realm.open as jest.Mock;
+
+jest.mock('../contexts/RealmContext', () => ({
+  realmConfig: {},
+}));
+
+
+
+describe('Get realm instance', () => {
+  let mockRealm: Partial<Realm>;
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockRealm = {
+          close: jest.fn(),
+          isClosed: false,
+        };
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  it('should open a new Realm if realmInstance is not set', async () => {
+    mockOpen.mockResolvedValue(mockRealm);
+
+    const instance = await getRealmInstance();
+
+    expect(mockOpen).toHaveBeenCalled();
+    expect(instance).toBe(mockRealm);
+});
+
+
+  it('should open a new Realm if realmInstance is closed', async () => {
+    const closedRealm: Partial<Realm> = {
+      isClosed: true,
+      close: jest.fn(),
+    };
+
+    setRealmInstance(closedRealm as Realm);
+
+    mockOpen.mockResolvedValue(mockRealm);
+
+    const instance = await getRealmInstance();
+
+    expect(mockOpen).toHaveBeenCalled();
+    expect(instance).toBe(mockRealm);
+  });
+
+
+  it('should return the previously set realmInstance', async () => {
+    setRealmInstance(mockRealm as Realm);
+    expect(await getRealmInstance()).toBe(mockRealm);
+  });
+});
+
 
 describe('Set realm instance', () => {
   let mockRealm: Partial<Realm>;
@@ -15,35 +82,13 @@ describe('Set realm instance', () => {
     jest.resetModules();
   });
 
-  it('should set the realmInstance variable', () => {
+  it('should set the realmInstance variable', async () => {
     setRealmInstance(mockRealm as Realm);
-    expect(getRealmInstance()).toBe(mockRealm);
+    expect(await getRealmInstance()).toBe(mockRealm);
   });
 });
 
-describe('Get realm instance', () => {
-  let mockRealm: Partial<Realm>;
-    beforeEach(() => {
-        jest.clearAllMocks();
-        mockRealm = {
-          close: jest.fn(),
-          isClosed: false,
-        };
-  });
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-  it('should throw an error if realmInstance is not set', () => {
-    jest.resetModules();
-    const { getRealmInstance: freshGetRealmInstance } = require('./connection');
-    expect(() => freshGetRealmInstance()).toThrow('Realm instance is not set');
-  });
 
-  it('should return the previously set realmInstance', () => {
-    setRealmInstance(mockRealm as Realm);
-    expect(getRealmInstance()).toBe(mockRealm);
-  });
-});
 
 describe('Close Realm', () => {
   let mockRealm: Partial<Realm>;
