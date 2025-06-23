@@ -12,7 +12,7 @@ export const decryptMessage = async (
   realmInstance?: Realm
 ) => {
   try {
-    const realm = realmInstance ?? getRealmInstance();
+    const realm = realmInstance ?? await getRealmInstance();
     const publicKey = await getUserPublicKey(realm, senderMobileNumber, accessToken);
     const privateKeyRaw = await EncryptedStorage.getItem('privateKey');
 

@@ -42,7 +42,7 @@ export const useSocketEventHandlers = () => {
           status: data.status,
         };
 
-        const realm = getRealmInstance();
+        const realm = await getRealmInstance();
         addNewMessageInRealm(realm, data.chatId, structuredMessage);
       } catch (error) {
         console.error('Error in newMessage handler:', error);
@@ -65,8 +65,8 @@ export const useSocketEventHandlers = () => {
       });
     };
 
-    const handleAccountDeleted = (data: any) => {
-      updateUserAccountStatusInRealm(data.chatId, data.isAccountDeleted);
+    const handleAccountDeleted = async (data: any) => {
+      await updateUserAccountStatusInRealm(data.chatId, data.isAccountDeleted);
     };
 
     const handleForceLogout = () => {

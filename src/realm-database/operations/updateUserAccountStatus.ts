@@ -1,8 +1,8 @@
 import { Chat } from '../schemas/Chat';
 import { getRealmInstance } from '../connection';
 
-export const updateUserAccountStatusInRealm = ( chatId: string, isAccountDeleted: boolean) => {
-  const realm = getRealmInstance();
+export const updateUserAccountStatusInRealm = async ( chatId: string, isAccountDeleted: boolean) => {
+  const realm = await getRealmInstance();
   try {
     realm.write(() => {
     let chat = realm.objectForPrimaryKey<Chat>('Chat', chatId);

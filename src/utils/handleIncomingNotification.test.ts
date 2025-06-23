@@ -48,7 +48,7 @@ describe('Tests related to the handleIncomingMessageNotification method', () => 
   beforeEach(() => {
     jest.clearAllMocks();
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify(mockUserData));
-    (getRealmInstance as jest.Mock).mockReturnValue(mockRealm);
+    (getRealmInstance as jest.Mock).mockResolvedValue(mockRealm);
     (getTokens as jest.Mock).mockResolvedValue({ access_token: 'EVEREST_TOKEN' });
     (decryptMessage as jest.Mock).mockResolvedValue('Hey Man!');
     (store.getState as jest.Mock).mockReturnValue({

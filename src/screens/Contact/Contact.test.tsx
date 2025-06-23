@@ -62,7 +62,7 @@ describe('Contact Screen', () => {
   });
 
   it('displays alert if loading contacts fails', async () => {
-    (getRealmInstance as jest.Mock).mockReturnValue({});
+    (getRealmInstance as jest.Mock).mockResolvedValue({});
     (getContactsFromRealm as jest.Mock).mockImplementation(() => {
       throw new Error('error');
     });
@@ -72,14 +72,14 @@ describe('Contact Screen', () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          'Something went wrong while fetching contacts details. Please try again',
-        ),
+          'Something went wrong while fetching contacts details. Please try again'
+        )
       ).toBeTruthy();
     });
   });
 
   it('loads contacts from DB and renders correctly', async () => {
-    (getRealmInstance as jest.Mock).mockReturnValue({});
+    (getRealmInstance as jest.Mock).mockResolvedValue({});
     (getContactsFromRealm as jest.Mock).mockReturnValue(mockContacts);
 
     renderContactScreen();
@@ -90,7 +90,7 @@ describe('Contact Screen', () => {
   });
 
   it('switches to Invite tab and shows contacts not on app', async () => {
-    (getRealmInstance as jest.Mock).mockReturnValue({});
+    (getRealmInstance as jest.Mock).mockResolvedValue({});
     (getContactsFromRealm as jest.Mock).mockReturnValue(mockContacts);
 
     renderContactScreen();
@@ -106,7 +106,7 @@ describe('Contact Screen', () => {
   });
 
   it('switches to Contacts tab and shows contacts on app', async () => {
-    (getRealmInstance as jest.Mock).mockReturnValue({});
+    (getRealmInstance as jest.Mock).mockResolvedValue({});
     (getContactsFromRealm as jest.Mock).mockReturnValue(mockContacts);
 
     renderContactScreen();
@@ -122,7 +122,7 @@ describe('Contact Screen', () => {
   });
 
   it('shows message when no device contacts are available', async () => {
-    (getRealmInstance as jest.Mock).mockReturnValue({});
+    (getRealmInstance as jest.Mock).mockResolvedValue({});
     (getContactsFromRealm as jest.Mock).mockReturnValue([]);
 
     renderContactScreen();
@@ -135,7 +135,7 @@ describe('Contact Screen', () => {
   });
 
   it('shows message when no contacts are on app in Contacts tab', async () => {
-    (getRealmInstance as jest.Mock).mockReturnValue({});
+    (getRealmInstance as jest.Mock).mockResolvedValue({});
     (getContactsFromRealm as jest.Mock).mockReturnValue([
       mockContacts[1],
     ]);
@@ -152,7 +152,7 @@ describe('Contact Screen', () => {
   });
 
   it('shows message when all contacts are on app in Invite tab', async () => {
-    (getRealmInstance as jest.Mock).mockReturnValue({});
+    (getRealmInstance as jest.Mock).mockResolvedValue({});
     (getContactsFromRealm as jest.Mock).mockReturnValue([
       mockContacts[0],
     ]);

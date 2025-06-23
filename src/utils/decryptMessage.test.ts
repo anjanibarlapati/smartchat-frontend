@@ -43,7 +43,7 @@ describe('Check for decryption of messages', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (getRealmInstance as jest.Mock).mockReturnValue(mockRealmInstance);
+    (getRealmInstance as jest.Mock).mockResolvedValue(mockRealmInstance);
   });
 
   it('Should decrypt a message and return the message', async () => {

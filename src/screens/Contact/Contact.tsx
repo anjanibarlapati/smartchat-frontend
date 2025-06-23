@@ -29,8 +29,8 @@ export function Contact(): React.JSX.Element {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  const loadContacts = useCallback(() => {
-      const db = getRealmInstance();
+  const loadContacts = useCallback(async () => {
+      const db = await getRealmInstance();
       const contactsFromDb = getContactsFromRealm(db);
       contactsFromDb.sort((a, b) => a.name.localeCompare(b.name));
       setContacts(contactsFromDb);
@@ -43,7 +43,7 @@ export function Contact(): React.JSX.Element {
         if(result === false) {
           showAlert('Permission for contacts was denied', 'warning');
         } else{
-          loadContacts();
+          await loadContacts();
         }
       } catch(error){
         showAlert('Failed to sync contacts', 'error');
@@ -61,7 +61,7 @@ export function Contact(): React.JSX.Element {
     const loadInitialContacts = async () => {
       try {
         setIsLoading(true);
-        loadContacts();
+        await loadContacts();
       } catch (error) {
         showAlert('Something went wrong while fetching contacts details. Please try again', 'error');
       } finally {

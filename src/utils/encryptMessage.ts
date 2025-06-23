@@ -9,7 +9,7 @@ export const encryptMessage = async (
   access_token: string,
 ) => {
   try {
-    const realm = getRealmInstance();
+    const realm = await getRealmInstance();
     const publicKey = await getUserPublicKey(realm, receiverMobileNumber, access_token);
     const receiverPublicKeyBase64 = publicKey;
 

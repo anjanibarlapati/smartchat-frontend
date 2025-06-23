@@ -14,7 +14,7 @@ export const updateMessageStatusInRealm = async ({
   status,
   messageIds,
 }: UpdateMessageStatusParams) => {
-  const realm = getRealmInstance();
+  const realm = await getRealmInstance();
   try {
     realm.write(() => {
 

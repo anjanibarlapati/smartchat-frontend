@@ -30,7 +30,7 @@ export const handleIncomingMessageNotification = async ({
     if (from === 'socket' && state.activeChat.currentChatMobileNumber === sender) {
       return;
     }
-    const realm = getRealmInstance();
+    const realm = await getRealmInstance();
     const tokens = await getTokens(user.mobileNumber);
     const decryptedMessage = await decryptMessage(sender, message, nonce, tokens.access_token, realm);
 

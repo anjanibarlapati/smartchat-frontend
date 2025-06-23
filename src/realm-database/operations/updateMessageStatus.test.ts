@@ -25,7 +25,7 @@ describe('updateMessageStatusInRealm', () => {
       sorted: mockSorted,
     });
 
-    (getRealmInstance as jest.Mock).mockReturnValue({
+    (getRealmInstance as jest.Mock).mockResolvedValue({
       write: mockWrite,
       objects: jest.fn().mockReturnValue({
         filtered: mockFiltered,
@@ -101,7 +101,7 @@ describe('updateMessageStatusInRealm', () => {
 
   it('should catch and log errors during realm write', async () => {
     const error = new Error('write failed');
-    (getRealmInstance as jest.Mock).mockReturnValue({
+    (getRealmInstance as jest.Mock).mockResolvedValue({
       write: () => {
         throw error;
       },

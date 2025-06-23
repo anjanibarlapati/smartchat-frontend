@@ -9,7 +9,7 @@ import { getRealmInstance } from '../realm-database/connection';
 
 export const syncContacts = async (mobileNumber: string, shouldSync?: boolean)=>{
     try{
-        const realm =  getRealmInstance();
+        const realm =  await getRealmInstance();
         const hasPermission = await requestPermission('contacts');
         if (!hasPermission) {
           return false;

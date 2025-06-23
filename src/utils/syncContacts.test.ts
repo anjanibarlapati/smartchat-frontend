@@ -29,7 +29,7 @@ jest.mock('react-native-encrypted-storage', () => ({
 }));
 
 const mockRealm = { mocked: 'realm' };
-(getRealmInstance as jest.Mock).mockReturnValue(mockRealm);
+(getRealmInstance as jest.Mock).mockResolvedValue(mockRealm);
 
 describe('Sync Contacts', () => {
   const mobileNumber = '9876543210';

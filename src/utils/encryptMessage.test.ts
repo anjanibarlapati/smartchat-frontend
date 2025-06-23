@@ -42,7 +42,7 @@ describe('Check for encryted messages', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (getRealmInstance as jest.Mock).mockReturnValue(mockRealmInstance);
+    (getRealmInstance as jest.Mock).mockResolvedValue(mockRealmInstance);
   });
 
   it('Should encrypt a message and return ciphertext and nonce', async () => {
