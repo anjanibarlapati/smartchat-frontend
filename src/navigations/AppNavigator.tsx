@@ -24,6 +24,7 @@ import { Tabs } from './tabs/Tabs.tsx';
 import { storeState } from '../redux/store.ts';
 import { useSocketConnection } from '../hooks/useSocketConnection.ts';
 import { syncMessagesStatusFromRemote } from '../utils/syncMessagesStatusFromRemote.ts';
+import { OtpVerification } from '../screens/OTPVerification/OtpVerification.tsx';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -108,6 +109,7 @@ export function AppNavigator(): React.JSX.Element {
                 <Stack.Screen name="WelcomeScreen" component={WelcomeScreen}/>
                 <Stack.Screen name="RegistrationScreen" component={Registration}/>
                 <Stack.Screen name="LoginScreen" component={Login}/>
+                <Stack.Screen name="OTPVerificationScreen" component={OtpVerification}/>
                 </>
             </Stack.Navigator>
             <CustomAlert visible={alertVisible} message={alertMessage} type={alertType} onClose={hideAlert} />
