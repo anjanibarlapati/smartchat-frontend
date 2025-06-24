@@ -98,7 +98,10 @@ const Registration = () => {
       setErrorMessage('lastName', 'Last name is required');
       isValid = false;
     }
-    if (user.email) {
+    if (!user.email) {
+      setErrorMessage('email', 'Email is required');
+      isValid = false;
+    } else {
       const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/;
       if (!emailRegex.test(user.email)) {
         setErrorMessage('email', 'Invalid email address');
@@ -293,6 +296,7 @@ const Registration = () => {
             }}
             placeholder="Email"
             error={inputErrors.email}
+            required
           />
           <View style={styles.phoneInputWrapper}>
             <PhoneInput
