@@ -80,19 +80,6 @@ describe('Tests related to the Profile Info Tile component', () => {
         });
     });
 
-    it('Should show error for invalid email', async () => {
-        renderUI('Email', 'varun@gmail.com', 'Email');
-        const email = screen.getByPlaceholderText('varun@gmail.com');
-        expect(email).toBeTruthy();
-        fireEvent.changeText(email, 'email');
-        fireEvent.press(screen.getByLabelText('edit'));
-        await waitFor(() => {
-            expect(screen.getByText('Invalid email format')).toBeTruthy();
-        });
-        await waitFor(() => {
-            expect(email.props.value).toBe('');
-        });
-    });
 
     it('Should handle token failure', async () => {
         (tokenUtil.getTokens as jest.Mock).mockResolvedValue(null);
@@ -147,6 +134,12 @@ describe('Tests related to the Profile Info Tile component', () => {
     });
     it('Should not enter edit mode for Contact field', () => {
         renderUI('Contact', '+91 9999999999');
+        const editIcon = screen.queryByLabelText('edit-text');
+        expect(editIcon).toBeNull();
+    });
+
+    it('Should not enter edit mode for Email field', () => {
+        renderUI('Email', 'anjanibarlapati@gmail.com');
         const editIcon = screen.queryByLabelText('edit-text');
         expect(editIcon).toBeNull();
     });
@@ -210,16 +203,6 @@ describe('Tests related to the Profile Info Tile component', () => {
         fireEvent.press(screen.getByText(/ok/i));
         await waitFor(() => {
             expect(setEditFieldMock).toHaveBeenCalledWith('');
-        });
-    });
-
-    it('Should display an alert if invalid email is given', async () => {
-        renderUI('Email', 'anjani@gmail.com', 'Email');
-        const emailValue = screen.getByPlaceholderText('anjani@gmail.com');
-        fireEvent.changeText(emailValue, 'Virat');
-        fireEvent.press(screen.getByLabelText('edit'));
-        await waitFor(() => {
-            expect(screen.getByText('Invalid email format')).toBeTruthy();
         });
     });
 
