@@ -5,6 +5,7 @@ export type RootStackParamList = {
     LoadingScreen: undefined;
     RegistrationScreen: undefined;
     LoginScreen: undefined;
+    OTPVerificationScreen : undefined;
     Tabs: undefined;
 };
 
@@ -19,6 +20,7 @@ export type WelcomeScreenNavigationProps = NativeStackNavigationProp<RootStackPa
 export type LogincreenNavigationProps = NativeStackNavigationProp<RootStackParamList, 'LoginScreen'>;
 
 export type RegistrationScreenNavigationProps = NativeStackNavigationProp<RootStackParamList, 'RegistrationScreen'>;
+
 
 export type AllChatsTabScreenNavigationProps=NativeStackNavigationProp<BottomTabParamList, 'AllChatsTab'>
 
