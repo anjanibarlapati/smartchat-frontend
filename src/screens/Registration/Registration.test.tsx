@@ -119,7 +119,7 @@ describe('Registration Screen check', () => {
     expect(image).toBeTruthy();
     expect(getByPlaceholderText('First Name *')).toBeTruthy();
     expect(getByPlaceholderText('Last Name *')).toBeTruthy();
-    expect(getByPlaceholderText('Email')).toBeTruthy();
+    expect(getByPlaceholderText('Email *')).toBeTruthy();
     expect(getByLabelText('phone-input')).toBeTruthy();
     expect(getByPlaceholderText('Password *')).toBeTruthy();
     expect(getByPlaceholderText('Confirm Password *')).toBeTruthy();
@@ -133,6 +133,7 @@ describe('Registration Screen check', () => {
       expect(queryByText('Last name is required')).toBeTruthy();
       expect(queryByText('Mobile number is required')).toBeTruthy();
       expect(queryByText('Password is required')).toBeTruthy();
+      expect(queryByText('Email is required')).toBeTruthy();
     });
   });
   it('Should show validation when password when it doesn`t meet the require conditions ', async () => {
@@ -141,7 +142,7 @@ describe('Registration Screen check', () => {
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Anjali');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Gogu');
-    fireEvent.changeText(getByPlaceholderText('Email'), 'anju415@.com');
+    fireEvent.changeText(getByPlaceholderText('Email *'), 'anju415@.com');
     fireEvent.changeText(getByLabelText('phone-input'), '+91 7702153247');
     fireEvent.changeText(getByPlaceholderText('Password *'), 'anjali');
 
@@ -180,7 +181,7 @@ describe('Registration Screen check', () => {
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Mamatha');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Niyal');
-    fireEvent.changeText(getByPlaceholderText('Email'), 'mamathagmail.com');
+    fireEvent.changeText(getByPlaceholderText('Email *'), 'mamathagmail.com');
     fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
     fireEvent.changeText(getByPlaceholderText('Password *'), 'password123');
     fireEvent.changeText(
@@ -202,7 +203,7 @@ describe('Registration Screen check', () => {
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Mamatha');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Niyal');
-    fireEvent.changeText(getByPlaceholderText('Email'), 'mamathagmail.com');
+    fireEvent.changeText(getByPlaceholderText('Email *'), 'mamathagmail.com');
     fireEvent.changeText(getByLabelText('phone-input'), '+91 34567890');
     fireEvent.changeText(getByPlaceholderText('Password *'), 'password123');
     fireEvent.changeText(
@@ -223,7 +224,7 @@ describe('Registration Screen check', () => {
       renderRegistrationScreen();
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Anjani');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Barlapati');
-    fireEvent.changeText(getByPlaceholderText('Email'), 'anju@gmail.com');
+    fireEvent.changeText(getByPlaceholderText('Email *'), 'anju@gmail.com');
     fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
     fireEvent.changeText(getByPlaceholderText('Password *'), 'Anjaligogu18@');
     fireEvent.changeText(
@@ -266,7 +267,7 @@ describe('Registration Screen check', () => {
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
-    fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
+    fireEvent.changeText(getByPlaceholderText('Email *'), 'varun@gmail.com');
     fireEvent.changeText(getByLabelText('phone-input'), '+91 12345 67890');
     fireEvent.changeText(getByPlaceholderText('Password *'), 'Anjaligogu18@');
     fireEvent.changeText(
@@ -294,7 +295,7 @@ describe('Registration Screen check', () => {
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
-    fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
+    fireEvent.changeText(getByPlaceholderText('Email *'), 'varun@gmail.com');
     fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
     fireEvent.changeText(getByPlaceholderText('Password *'), 'Anjaligogu18@');
     fireEvent.changeText(
@@ -321,7 +322,7 @@ describe('Registration Screen check', () => {
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
-    fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
+    fireEvent.changeText(getByPlaceholderText('Email *'), 'varun@gmail.com');
     fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
     fireEvent.changeText(getByPlaceholderText('Password *'), 'Anjaligogu18@');
     fireEvent.changeText(
@@ -343,7 +344,7 @@ describe('Registration Screen check', () => {
       renderRegistrationScreen();
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
-    fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
+    fireEvent.changeText(getByPlaceholderText('Email *'), 'varun@gmail.com');
     fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
     fireEvent.changeText(getByPlaceholderText('Password *'), 'Anjaligogu18@');
     fireEvent.changeText(
@@ -404,7 +405,7 @@ describe('Registration Screen check', () => {
 
     fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
     fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
-    fireEvent.changeText(getByPlaceholderText('Email'), 'varun@gmail.com');
+    fireEvent.changeText(getByPlaceholderText('Email *'), 'varun@gmail.com');
     fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
     fireEvent.changeText(getByPlaceholderText('Password *'), 'Anjaligogu18@');
     fireEvent.changeText(
