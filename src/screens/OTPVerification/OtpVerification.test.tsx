@@ -1,6 +1,8 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React, { act } from 'react';
 import { OtpVerification } from './OtpVerification';
+import { Provider } from 'react-redux';
+import { store } from '../../redux/store';
 
 jest.mock('../../hooks/appTheme', () => ({
   useAppTheme: () => ({
@@ -10,9 +12,18 @@ jest.mock('../../hooks/appTheme', () => ({
   }),
 }));
 
+const renderOtpVerificationScreen = ()=>{
+  return render(
+    <Provider store={store}>
+     <OtpVerification/>
+    </Provider>
+  );
+};
+
+
 describe('OtpVerification screen check', () => {
   it('Should render verification image correctly', () => {
-    const {getByLabelText} = render(<OtpVerification />);
+    const {getByLabelText} = renderOtpVerificationScreen();
     const verificationImage = getByLabelText('verification-image');
     expect(verificationImage.props.source).toEqual(
       require('../../../assets/images/verification.png'),
@@ -20,7 +31,7 @@ describe('OtpVerification screen check', () => {
   });
 
   it('Should render all the static content of screen', () => {
-    const {getByText} = render(<OtpVerification />);
+    const {getByText} = renderOtpVerificationScreen();
     expect(getByText('Enter Verification Code')).toBeTruthy();
     expect(
       getByText("We've sent you a 6-digit verification code to email"),
@@ -29,9 +40,7 @@ describe('OtpVerification screen check', () => {
   });
 
   it('Should show error and clear OTP when submitting incomplete OTP', async () => {
-    const {getByText, queryByText, getByLabelText} = render(
-      <OtpVerification />,
-    );
+    const {getByText, queryByText, getByLabelText} = renderOtpVerificationScreen();
     const otpInput = getByLabelText('One-Time Password');
     fireEvent.changeText(otpInput, '143');
     fireEvent.press(getByText('Submit'));
@@ -41,9 +50,7 @@ describe('OtpVerification screen check', () => {
   });
 
   it('Should clear error for valid OTP submission', async () => {
-    const {getByText, queryByText, getByLabelText} = render(
-      <OtpVerification />,
-    );
+    const {getByText, queryByText, getByLabelText} = renderOtpVerificationScreen();
     const otpInput = getByLabelText('One-Time Password');
     fireEvent.changeText(otpInput, '123456');
     fireEvent.press(getByText('Submit'));
@@ -54,7 +61,7 @@ describe('OtpVerification screen check', () => {
 
   it('Should enable resend button after timeout and call handler', async () => {
     jest.useFakeTimers();
-    const {getByText} = render(<OtpVerification />);
+    const {getByText} = renderOtpVerificationScreen();
     act(() => {
       jest.advanceTimersByTime(120000);
     });
