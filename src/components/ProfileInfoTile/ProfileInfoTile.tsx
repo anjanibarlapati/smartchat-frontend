@@ -52,11 +52,6 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
       showAlert('Please give a different value', 'info');
       return;
     }
-    if(props.label === 'Email' && !/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/.test(newValue)) {
-      showAlert('Invalid email format', 'warning');
-      setValue('');
-      return;
-    }
     const field = Properties[
       props.label as keyof typeof Properties
     ] as keyof User;
@@ -162,7 +157,7 @@ export const ProfileInfoTile = (props: ProfileInfoTileProps) => {
             </View>
           )}
         </View>
-        {props.label !== 'Contact' && !isEdit && (
+        {props.label !== 'Contact' && props.label !== 'Email' && !isEdit && (
           <TouchableOpacity
             onPress={()=>handleEdit(props.label)}>
             <Image
