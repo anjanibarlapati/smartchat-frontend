@@ -3,6 +3,15 @@ import {Theme} from '../../utils/themes';
 
 export const getStyles = (theme: Theme, width: number) =>
   StyleSheet.create({
+    headerLeft: {
+      display: 'flex',
+      flexDirection: 'row',
+      gap: 10,
+    },
+    backIcon: {
+      height: 30,
+      width:30,
+    },
     screenWindow: {
       flex: 1,
       backgroundColor: theme.primaryBackground,
@@ -51,7 +60,7 @@ export const getStyles = (theme: Theme, width: number) =>
     },
     errorText: {
       color: 'red',
-      fontSize: 13,
+      fontSize: 16,
       marginTop: 12,
       fontFamily: 'Nunito-Regular',
       textAlign: 'center',
