@@ -9,10 +9,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
-import {useDispatch} from 'react-redux';
-import {Dispatch} from 'redux';
 import Button from '../../components/Button/Button';
 import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
 import InputField from '../../components/InputField/InputField';
@@ -20,18 +17,12 @@ import LoadingIndicator from '../../components/Loading/Loading';
 import {ProfilePicturePickerModal} from '../../components/ProfilePicturePickerModal/ProfilePicturePickerModal';
 import {useAppTheme} from '../../hooks/appTheme';
 import {useAlertModal} from '../../hooks/useAlertModal';
-import {setSuccessMessage} from '../../redux/reducers/auth.reducer';
-import {setUserDetails} from '../../redux/reducers/user.reducer';
 import {InputUser} from '../../types/InputUser';
 import {RegistrationScreenNavigationProps} from '../../types/Navigations';
 import {UploadImage} from '../../types/UploadImage';
-import {generateKeyPair, storeKeys} from '../../utils/keyPairs';
-import {decryptPrivateKey, encryptPrivateKey} from '../../utils/privateKey';
-import {socketConnection} from '../../utils/socket';
 import {Theme} from '../../utils/themes';
-import {register} from './Registration.service';
 import {getStyles} from './Registration.styles';
-import {generateAndUploadFcmToken} from '../../utils/fcmService';
+import { verifyUserDetails } from './Registration.service';
 
 const Registration = () => {
   const navigation = useNavigation<RegistrationScreenNavigationProps>();
@@ -54,7 +45,6 @@ const Registration = () => {
     confirmPassword: '',
     profilePic: null,
   });
-  const dispatch: Dispatch = useDispatch();
   const [inputErrors, setInputErrors] = useState<InputUser>({
     firstName: '',
     lastName: '',
@@ -178,65 +168,17 @@ const Registration = () => {
 
     try {
       setLoading(true);
-      const response = await register(formData);
+      const response = await verifyUserDetails(formData);
       const result = await response.json();
       if (response.ok) {
-        clearFields();
-        const keyPair = await generateKeyPair();
-        const encryptedPrivateKey = await encryptPrivateKey(
-          keyPair.privateKey,
-          result.userId,
-        );
-        const keysResponse = await storeKeys(
-          result.user.mobileNumber,
-          keyPair.publicKey,
-          encryptedPrivateKey,
-          result.access_token,
-        );
-
-        if (keysResponse.ok) {
-          const privateKey = await decryptPrivateKey(
-            encryptedPrivateKey.salt,
-            encryptedPrivateKey.nonce,
-            encryptedPrivateKey.privateKey,
-            result.userId,
-          );
-          await EncryptedStorage.setItem(
-            'privateKey',
-            JSON.stringify({
-              privateKey: privateKey,
-            }),
-          );
-        }
-        await EncryptedStorage.setItem(
-          result.user.mobileNumber,
-          JSON.stringify({
-            access_token: result.access_token,
-            refresh_token: result.refresh_token,
-          }),
-        );
-        dispatch(setUserDetails(result.user));
-        dispatch(
-          setSuccessMessage("You've successfully logged in to SmartChat!"),
-        );
-        await EncryptedStorage.setItem(
-          'User Data',
-          JSON.stringify(result.user),
-        );
-        await generateAndUploadFcmToken(result.user.mobileNumber);
-        socketConnection(result.user.mobileNumber);
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Tabs'}],
-        });
+        navigation.navigate('OTPVerificationScreen', {mobileNumber: user.mobileNumber, email: user.email, from: 'registration'});
         return;
       }
-      showAlert(result.message || 'Registration failed. Please try again', 'warning');
-      clearFields();
+      showAlert(result.message || 'Please check your inputs', 'warning');
     } catch (error) {
       showAlert('Something went wrong. Please try again', 'error');
-      clearFields();
     } finally {
+      clearFields();
       setLoading(false);
     }
   };
