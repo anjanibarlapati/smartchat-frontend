@@ -1,70 +1,61 @@
-import { BASE_URL } from '../../utils/constants';
-import { register } from './Registration.service';
-
-global.fetch = jest.fn();
-
-const mockResponse = {
-    ok: true,
-    json: jest.fn().mockResolvedValue({ success: true, message: 'User registered successfully' }),
-};
-
-const mockFormData = new FormData();
-mockFormData.append('firstName', 'Varun');
-mockFormData.append('lastName', 'Kumar');
-mockFormData.append('email', 'varun@gmail.com');
-mockFormData.append('mobileNumber', '6303522765');
-mockFormData.append('password', '1234');
-mockFormData.append('profilePic', {});
+import { getDeviceId } from 'react-native-device-info';
+import { verifyUserDetails } from './Registration.service';
 
 jest.mock('react-native-device-info', () => ({
   getDeviceId: jest.fn(),
 }));
 
-describe('RegistrationHandler', () => {
-    beforeEach(() => {
-        jest.resetAllMocks();
+describe('Verify User Details', () => {
+  const mockDeviceId = 'mock-device-id';
+
+  beforeEach(() => {
+    (getDeviceId as jest.Mock).mockReturnValue(mockDeviceId);
+    global.fetch = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should append deviceId to formData and make POST request', async () => {
+    const formData = new FormData();
+    formData.append('name', 'Mamatha');
+
+    const expectedFormData = new FormData();
+    expectedFormData.append('name', 'Mamatha');
+    expectedFormData.append('deviceId', mockDeviceId);
+
+    const mockResponse = {
+      ok: true,
+      status: 200,
+      json: async () => ({ success: true }),
+    };
+
+    (global.fetch as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+    const response = await verifyUserDetails(formData);
+    const responseData = await response.json();
+
+    expect(getDeviceId).toHaveBeenCalled();
+
+
+    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('verify'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      body: expect.any(FormData),
     });
 
-    it('should call fetch with the correct URL and method', async () => {
-        (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
-        await register(mockFormData);
+    expect(responseData).toEqual({ success: true });
+  });
 
-        expect(fetch).toHaveBeenCalledWith(`${BASE_URL}register`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-            body: mockFormData,
-        });
-    });
+  it('should handle fetch failure', async () => {
+    const formData = new FormData();
+    formData.append('email', 'mamatha@gmail.com');
 
-    it('should return the response from the fetch call', async () => {
-        (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
-        const result = await register(mockFormData);
-        expect(result).toEqual(mockResponse);
-    });
+    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
 
-    it('should handle fetch errors', async () => {
-        const mockError = new Error('Network error');
-        (global.fetch as jest.Mock).mockRejectedValue(mockError);
-        try {
-            await register(mockFormData);
-        } catch (error) {
-            expect(error).toBe(mockError);
-        }
-    });
-
-    it('should handle response errors', async () => {
-        const mockErrorResponse = {
-            ok: false,
-            json: jest.fn().mockResolvedValue({ error: 'User registration failed' }),
-        };
-        (global.fetch as jest.Mock).mockResolvedValue(mockErrorResponse);
-
-        try {
-            await register(mockFormData);
-        } catch (error) {
-            expect(error).toEqual({ error: 'User registration failed' });
-        }
-    });
+    await expect(verifyUserDetails(formData)).rejects.toThrow('Network error');
+  });
 });
