@@ -5,7 +5,11 @@ export type RootStackParamList = {
     LoadingScreen: undefined;
     RegistrationScreen: undefined;
     LoginScreen: undefined;
-    OTPVerificationScreen : undefined;
+    OTPVerificationScreen : {
+        mobileNumber: string,
+        email: string,
+        from: 'registration' | 'login'
+    };
     Tabs: undefined;
 };
 
@@ -47,3 +51,4 @@ export type ContactScreenNavigationProps = NativeStackNavigationProp<HomeStackPa
 
 export type ProfileScreenNavigationProps = NativeStackNavigationProp<BottomTabParamList, 'ProfileScreen'>;
 export type IndividualChatNavigationProps = NativeStackNavigationProp<HomeStackParamList, 'IndividualChat'>;
+export type OTPVerificationNavigationProps = NativeStackNavigationProp<RootStackParamList, 'OTPVerificationScreen'>;
