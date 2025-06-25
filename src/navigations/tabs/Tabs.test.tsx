@@ -158,15 +158,6 @@ describe('Tabs Navigation', () => {
     });
   });
 
-  // it('should sync contacts on load and show no warning if permission granted', async () => {
-  //   (syncContacts as jest.Mock).mockResolvedValue({});
-  //   mockUseUnreadChatsCount.mockReturnValue(0);
-
-  //   renderWithProviders(<Tabs />);
-  //   expect()
-
-  // });
-
   it('should show alert if contact permission denied', async () => {
     (syncContacts as jest.Mock).mockResolvedValue(false);
     const { getByText } = renderWithProviders(<Tabs />);
