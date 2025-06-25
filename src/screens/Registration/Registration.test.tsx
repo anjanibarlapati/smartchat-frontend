@@ -7,25 +7,10 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import { Alert, StyleSheet } from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import { Provider } from 'react-redux';
 import { store } from '../../redux/store';
-import { generateKeyPair, storeKeys } from '../../utils/keyPairs';
-import { decryptPrivateKey, encryptPrivateKey } from '../../utils/privateKey';
 import Registration from './Registration';
 import * as RegistrationHandler from './Registration.service';
-
-jest.mock('@notifee/react-native', () => ({
-  __esModule: true,
-  default: {
-    requestPermission: jest.fn(),
-    createChannel: jest.fn(),
-    displayNotification: jest.fn(),
-    createTriggerNotification: jest.fn(),
-  },
-  AndroidImportance: { HIGH: 'high' },
-  TriggerType: { TIMESTAMP: 'timestamp' },
-}));
 
 jest.mock('../../utils/openCamera', () => ({
   openCamera: jest.fn(),
@@ -35,22 +20,8 @@ jest.mock('../../utils/openPhotoLibrary', () => ({
   openPhotoLibrary: jest.fn(),
 }));
 
-jest.mock('react-native-encrypted-storage', () => ({
-  setItem: jest.fn(),
-  getItem: jest.fn(),
-  removeItem: jest.fn(),
-  getAllKeys: jest.fn(),
-  clear: jest.fn(),
-}));
-
 jest.mock('react-native-device-info', () => ({
   getDeviceId: jest.fn(),
-}));
-
-jest.mock('react-native-libsodium', () => ({
-  crypto_box_seal: jest.fn().mockReturnValue('mockEncryptedMessage'),
-  crypto_secretbox_easy: jest.fn().mockReturnValue('mockEncryptedMessage'),
-  randombytes_buf: jest.fn().mockReturnValue('mockNonce'),
 }));
 
 jest.mock('@react-navigation/native', () => ({
@@ -59,27 +30,6 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
 }));
 
-jest.mock('../../utils/keyPairs', () => ({
-  __esModule: true,
-  generateKeyPair: jest.fn().mockResolvedValue({
-    publicKey: 'mockPublicKey',
-    privateKey: 'mockPrivateKey',
-  }),
-  storeKeys: jest.fn().mockResolvedValue({ok: true}),
-}));
-
-jest.mock('../../utils/privateKey', () => ({
-  encryptPrivateKey: jest.fn().mockResolvedValue({
-    salt: 'mockSalt',
-    nonce: 'mockNonce',
-    privateKey: 'mockEncryptedPrivateKey',
-  }),
-  decryptPrivateKey: jest.fn().mockResolvedValue('mockDecryptedPrivateKey'),
-}));
-
-jest.mock('../../utils/fcmService', () => ({
-  generateAndUploadFcmToken: jest.fn,
-}));
 
 const renderRegistrationScreen = () => {
   return render(
@@ -90,12 +40,12 @@ const renderRegistrationScreen = () => {
 };
 
 describe('Registration Screen check', () => {
-  let mockRegister: jest.SpyInstance;
+  let mockVerifyUserDetails: jest.SpyInstance;
   const mockReplace = jest.fn();
-  const mockReset = jest.fn();
+  const mockNavigate = jest.fn();
 
   beforeAll(() => {
-    mockRegister = jest.spyOn(RegistrationHandler, 'register');
+    mockVerifyUserDetails = jest.spyOn(RegistrationHandler, 'verifyUserDetails');
     jest.clearAllMocks();
   });
 
@@ -103,13 +53,13 @@ describe('Registration Screen check', () => {
     jest.resetAllMocks();
     (useNavigation as jest.Mock).mockReturnValue({
       replace: mockReplace,
-      reset: mockReset,
+      navigate: mockNavigate,
     });
     jest.spyOn(Alert, 'alert').mockImplementation(() => {});
   });
 
   afterAll(() => {
-    mockRegister.mockRestore();
+    mockVerifyUserDetails.mockRestore();
   });
 
   it('Should render the registration screen correctly', () => {
@@ -236,59 +186,12 @@ describe('Registration Screen check', () => {
     });
   });
 
-  it('Should give an alert on successful registration with message', async () => {
-    const response = {
-      ok: true,
-      json: async () => ({
-        user: {},
-        userId: 'anjani123',
-        access_token: 'access_token',
-        refresh_token: 'refresh_token',
-      }),
-    };
-    (generateKeyPair as jest.Mock).mockResolvedValue({
-      publicKey: 'mockPublicKey',
-      privateKey: 'mockPrivateKey',
-    });
-
-    (storeKeys as jest.Mock).mockResolvedValue({ok: true});
-    (encryptPrivateKey as jest.Mock).mockResolvedValue({
-      salt: 'mockSalt',
-      nonce: 'mockNonce',
-      privateKey: 'mockEncryptedPrivateKey',
-    });
-    (decryptPrivateKey as jest.Mock).mockResolvedValue(
-      'mockDecryptedPrivateKey',
-    );
-    mockRegister.mockResolvedValue(response);
-    (EncryptedStorage.setItem as jest.Mock).mockReturnValue(() => {});
-    const {getByLabelText, getByPlaceholderText, getByText} =
-      renderRegistrationScreen();
-
-    fireEvent.changeText(getByPlaceholderText('First Name *'), 'Varun');
-    fireEvent.changeText(getByPlaceholderText('Last Name *'), 'Kumar');
-    fireEvent.changeText(getByPlaceholderText('Email *'), 'varun@gmail.com');
-    fireEvent.changeText(getByLabelText('phone-input'), '+91 12345 67890');
-    fireEvent.changeText(getByPlaceholderText('Password *'), 'Anjaligogu18@');
-    fireEvent.changeText(
-      getByPlaceholderText('Confirm Password *'),
-      'Anjaligogu18@',
-    );
-
-    await act(async () => {
-      fireEvent.press(getByText('Register'));
-    });
-    await waitFor(async () => {
-      expect(EncryptedStorage.setItem).toHaveBeenCalled();
-    });
-  });
-
-  it('Should give an alert with error message if the API gives an error', async () => {
+  it('Should give an alert with error message if response of verifyUserDetails API is not ok', async () => {
     const response = {
       ok: false,
       json: async () => ({message: 'User already exists'}),
     };
-    mockRegister.mockResolvedValue(response);
+    mockVerifyUserDetails.mockResolvedValue(response);
 
     const {getByLabelText, getByPlaceholderText, getByText} =
       renderRegistrationScreen();
@@ -315,7 +218,7 @@ describe('Registration Screen check', () => {
       ok: false,
       json: async () => ({}),
     };
-    mockRegister.mockResolvedValue(response);
+    mockVerifyUserDetails.mockResolvedValue(response);
 
     const {getByLabelText, getByPlaceholderText, getByText} =
       renderRegistrationScreen();
@@ -333,12 +236,12 @@ describe('Registration Screen check', () => {
       fireEvent.press(getByText('Register'));
     });
     await waitFor(() => {
-      expect(getByText('Registration failed. Please try again')).toBeTruthy();
+      expect(getByText('Please check your inputs')).toBeTruthy();
     });
   });
 
   it('Should give an alert with Something went wrong. Please try again message if API throws an error', async () => {
-    mockRegister.mockRejectedValue(new Error('Internal server error'));
+    mockVerifyUserDetails.mockRejectedValue(new Error('Internal server error'));
 
     const {getByLabelText, getByPlaceholderText, getByText} =
       renderRegistrationScreen();
@@ -369,36 +272,11 @@ describe('Registration Screen check', () => {
   it('Should navigate to Home Screen on successful registration and store keys', async () => {
     const response = {
       ok: true,
-      json: async () => ({
-        user: {
-          firstName: 'Varun',
-          lastName: 'Kumar',
-          email: 'varun@gmail.com',
-          mobileNumber: '1234567890',
-        },
-        userId: 'anjani123',
-        access_token: 'access_token',
-        refresh_token: 'refresh_token',
-      }),
+      json: async () => ({}),
     };
 
-    (generateKeyPair as jest.Mock).mockResolvedValue({
-      publicKey: 'mockPublicKey',
-      privateKey: 'mockPrivateKey',
-    });
 
-    (storeKeys as jest.Mock).mockResolvedValue({ok: true});
-    (EncryptedStorage.setItem as jest.Mock).mockResolvedValue(null);
-    (encryptPrivateKey as jest.Mock).mockResolvedValue({
-      salt: 'mockSalt',
-      nonce: 'mockNonce',
-      privateKey: 'mockEncryptedPrivateKey',
-    });
-    (decryptPrivateKey as jest.Mock).mockResolvedValue(
-      'mockDecryptedPrivateKey',
-    );
-
-    (mockRegister as jest.Mock).mockResolvedValue(response);
+    (mockVerifyUserDetails as jest.Mock).mockResolvedValue(response);
 
     const {getByLabelText, getByPlaceholderText, getByText} =
       renderRegistrationScreen();
@@ -418,28 +296,10 @@ describe('Registration Screen check', () => {
     });
 
     await waitFor(() => {
-      expect(generateKeyPair).toHaveBeenCalled();
 
-      expect(storeKeys).toHaveBeenCalledWith(
-        '1234567890',
-        'mockPublicKey',
-        {
-          salt: 'mockSalt',
-          nonce: 'mockNonce',
-          privateKey: 'mockEncryptedPrivateKey',
-        },
-        'access_token',
+      expect(mockNavigate).toHaveBeenCalledWith(
+        'OTPVerificationScreen', {'email': 'varun@gmail.com', 'from': 'registration', 'mobileNumber': '+91 1234 567 890'}
       );
-
-      expect(EncryptedStorage.setItem).toHaveBeenCalledWith(
-        'privateKey',
-        JSON.stringify({privateKey: 'mockDecryptedPrivateKey'}),
-      );
-
-      expect(mockReset).toHaveBeenCalledWith({
-        index: 0,
-        routes: [{name: 'Tabs'}],
-      });
     });
   });
   it('Should open profile picture modal on image press', async () => {
