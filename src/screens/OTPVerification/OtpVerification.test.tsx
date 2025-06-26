@@ -1,12 +1,12 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React, { act } from 'react';
-import { OtpVerification } from './OtpVerification';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import { Provider } from 'react-redux';
 import { store } from '../../redux/store';
-import * as OtpService from './OtpVerification.service';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import { generateKeyPair, storeKeys } from '../../utils/keyPairs';
-import { encryptPrivateKey, decryptPrivateKey } from '../../utils/privateKey';
+import { decryptPrivateKey, encryptPrivateKey } from '../../utils/privateKey';
+import { OtpVerification } from './OtpVerification';
+import * as OtpService from './OtpVerification.service';
 
 jest.mock('../../hooks/appTheme', () => ({
   useAppTheme: () => ({

@@ -12,6 +12,7 @@ import { OtpInput, OtpInputRef } from 'react-native-otp-entry';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
 import Button from '../../components/Button/Button';
+import LoadingIndicator from '../../components/Loading/Loading';
 import { useAppTheme } from '../../hooks/appTheme';
 import { setSuccessMessage } from '../../redux/reducers/auth.reducer';
 import { setUserDetails } from '../../redux/reducers/user.reducer';
@@ -27,7 +28,6 @@ import {
   verifyOTP,
 } from './OtpVerification.service.ts';
 import { getStyles } from './OtpVerification.styles';
-import LoadingIndicator from '../../components/Loading/Loading';
 
 export type OtpVerificationRouteProp = RouteProp<
   RootStackParamList,
