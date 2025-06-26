@@ -269,7 +269,7 @@ describe('Registration Screen check', () => {
     expect(mockReplace).toHaveBeenCalledWith('LoginScreen');
   });
 
-  it('Should navigate to Home Screen on successful registration and store keys', async () => {
+  it('Should navigate to OTPVerification Screen if user details are verified', async () => {
     const response = {
       ok: true,
       json: async () => ({}),
