@@ -97,6 +97,7 @@ jest.mock('../../utils/fcmService', () => ({
 describe('Login Screen check', () => {
   const mockReplace = jest.fn();
   const mockReset = jest.fn();
+  const mockNavigate = jest.fn();
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -104,6 +105,7 @@ describe('Login Screen check', () => {
     (useNavigation as jest.Mock).mockReturnValue({
       replace: mockReplace,
       reset: mockReset,
+      navigate: mockNavigate,
     });
     jest.spyOn(Alert, 'alert').mockImplementation(() => {});
   });
@@ -262,6 +264,32 @@ describe('Login Screen check', () => {
         routes: [{name: 'Tabs'}],
       });
     });
+  });
+
+
+  it('Should navigate to OTP verification screen if user is already logged in to another device', async () => {
+    const response = {
+      status: 206,
+      json: ()=>({data:{email:'anjanibarlapati@gmail.com'}}),
+    };
+
+    (LoginService.login as jest.Mock).mockResolvedValue(response);
+
+    const {getByLabelText, getByPlaceholderText, getByText} =
+      renderLoginScreen();
+
+    fireEvent.changeText(getByLabelText('phone-input'), '+91 1234567890');
+    fireEvent.changeText(getByPlaceholderText('Password'), 'Anjani@123');
+
+    await act(async () => {
+      fireEvent.press(getByText('Login'));
+    });
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith(
+          'OTPVerificationScreen', {'email': 'anjanibarlapati@gmail.com', 'from': 'login', 'mobileNumber': '+91 1234 567 890'}
+      );
+    });
+
   });
   it('Should display alert message if fetching chats fails', async () => {
     const response = {
