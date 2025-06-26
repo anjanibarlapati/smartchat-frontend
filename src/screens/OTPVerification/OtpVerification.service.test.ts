@@ -1,4 +1,4 @@
-import { verifyOTP, generateOTPAndSendMail, createUser } from './OTPVerification.service';
+import { verifyOTP, generateOTPAndSendMail, createUser } from './OtpVerification.service';
 
 
 describe('Check for OTP Verification service functions', () => {
