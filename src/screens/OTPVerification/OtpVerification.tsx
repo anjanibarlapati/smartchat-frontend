@@ -25,9 +25,14 @@ import { Theme } from '../../utils/themes';
 import {
   createUser,
   generateOTPAndSendMail,
+  verifyLogin,
   verifyOTP,
 } from './OtpVerification.service.ts';
 import { getStyles } from './OtpVerification.styles';
+import { storeChats } from '../../realm-database/operations/storeChats.ts';
+import { Chat } from '../../types/message.ts';
+import { fetchChats, formatMessages } from '../Login/Login.service.ts';
+import { useRealm } from '../../contexts/RealmContext.tsx';
 
 export type OtpVerificationRouteProp = RouteProp<
   RootStackParamList,
@@ -40,7 +45,7 @@ export const OtpVerification = () => {
   const styles = getStyles(theme, width);
   const otpRef = useRef<OtpInputRef>(null);
 
-  const [startTime] = useState(Date.now());
+  const [startTime, setStartTime] = useState(Date.now());
   const [seconds, setSeconds] = useState(120);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -49,8 +54,9 @@ export const OtpVerification = () => {
 
   const navigation = useNavigation<OTPVerificationNavigationProps>();
   const route = useRoute<OtpVerificationRouteProp>();
-  const { mobileNumber, email } = route.params;
+  const { mobileNumber, email, from } = route.params;
   const dispatch: Dispatch = useDispatch();
+  const realm = useRealm();
 
     const renderHeaderLeft = useCallback(
       () => (
@@ -92,9 +98,9 @@ export const OtpVerification = () => {
 
   useEffect(() => {
     if (seconds === 0 && resendClicked) {
-      navigation.replace('RegistrationScreen');
+      from === 'registration' ? navigation.replace('RegistrationScreen') : navigation.replace('LoginScreen');
     }
-  }, [seconds, resendClicked, navigation]);
+  }, [seconds, resendClicked, navigation, from]);
 
   const formatTime = (s: number) => {
     const m = Math.floor(s / 60);
@@ -102,7 +108,80 @@ export const OtpVerification = () => {
     return `${m}:${sec < 10 ? '0' : ''}${sec}`;
   };
 
-  const handleSubmit = async () => {
+  const handleLoginSubmit = async () =>{
+    try{
+        const verifyLoginRespone = await verifyLogin(mobileNumber, otp);
+        const result = await verifyLoginRespone.json();
+        if(verifyLoginRespone.ok){
+          const encryptedPrivateKey = result.user.privateKey;
+          const privateKey = await decryptPrivateKey(
+            encryptedPrivateKey.salt,
+            encryptedPrivateKey.nonce,
+            encryptedPrivateKey.privateKey,
+            result.userId,
+          );
+          await EncryptedStorage.setItem(
+            'privateKey',
+            JSON.stringify({
+              privateKey: privateKey,
+            }),
+          );
+            const chats = await fetchChats(
+              result.user.mobileNumber,
+              result.access_token,
+            );
+            const userChats = await chats.json();
+            if (chats.ok) {
+              const formattedMessages = await formatMessages(
+                userChats as Chat[],
+                result.access_token,
+              );
+              storeChats(realm, formattedMessages);
+            } else {
+            setError(userChats.message || 'Unable to fetach user chats');
+            setTimeout(() => {
+              navigation.replace('LoginScreen');
+            }, 3000);
+            return;
+          }
+          await EncryptedStorage.setItem(
+            result.user.mobileNumber,
+            JSON.stringify({
+              access_token: result.access_token,
+              refresh_token: result.refresh_token,
+            }),
+          );
+          dispatch(setUserDetails(result.user));
+          await EncryptedStorage.setItem(
+            'User Data',
+            JSON.stringify(result.user),
+          );
+
+          dispatch(
+            setSuccessMessage("You've successfully logged in to SmartChat!"),
+          );
+          await generateAndUploadFcmToken(mobileNumber);
+          socketConnection(result.user.mobileNumber);
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'Tabs'}],
+          });
+          return;
+        }
+        setError(result.message || 'Verification failed. Please try again later');
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong. Please try again.');
+      setTimeout(() => {
+        navigation.replace('LoginScreen');
+      }, 3000);
+    } finally {
+      setOtp('');
+      otpRef.current?.clear();
+      setLoading(false);
+    }
+  };
+
+  const handleRegisterSubmit = async () => {
     setLoading(true);
     setError('');
     try {
@@ -187,6 +266,7 @@ export const OtpVerification = () => {
     if (seconds === 0 && !resendClicked) {
       setSeconds(120);
       setResendClicked(true);
+      setStartTime(Date.now());
       setError('');
       try {
         await generateOTPAndSendMail(email, mobileNumber);
@@ -209,7 +289,7 @@ export const OtpVerification = () => {
         />
         <Text style={styles.EnterOTPText}>Enter Verification Code</Text>
         <Text style={styles.infoText}>
-          {`We've sent you a 6-digit verification code to ${email}`}
+          We've sent you a 6-digit verification code to <Text style={styles.emailText}>{`${email}`}</Text>
         </Text>
       </View>
 
@@ -245,7 +325,7 @@ export const OtpVerification = () => {
           styles.submitView,
           isOtpValid ? styles.submitViewEnabled : styles.submitViewDisabled,
         ]}>
-        <Button label="Submit" onPress={handleSubmit} />
+        <Button label="Submit" onPress={()=>{from === 'registration' ? handleRegisterSubmit() : handleLoginSubmit();}} />
       </View>
 
       <View style={styles.bottomView}>

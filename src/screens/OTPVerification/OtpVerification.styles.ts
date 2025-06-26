@@ -42,7 +42,9 @@ export const getStyles = (theme: Theme, width: number) =>
       textAlign: 'center',
       marginTop: 8,
     },
-
+    emailText: {
+      color: '#008080',
+    },
     OtpView: {
       marginVertical: 20,
       alignItems: 'center',
@@ -60,7 +62,7 @@ export const getStyles = (theme: Theme, width: number) =>
     },
     errorText: {
       color: 'red',
-      fontSize: 16,
+      fontSize: 14,
       marginTop: 12,
       fontFamily: 'Nunito-Regular',
       textAlign: 'center',
