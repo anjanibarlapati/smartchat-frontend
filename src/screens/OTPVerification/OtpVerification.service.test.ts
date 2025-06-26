@@ -1,5 +1,9 @@
-import { verifyOTP, generateOTPAndSendMail, createUser } from './OtpVerification.service';
+import { getDeviceId } from 'react-native-device-info';
+import { verifyOTP, generateOTPAndSendMail, createUser, verifyLogin } from './OtpVerification.service';
 
+jest.mock('react-native-device-info', () => ({
+  getDeviceId: jest.fn(),
+}));
 
 describe('Check for OTP Verification service functions', () => {
   beforeEach(() => {
@@ -67,6 +71,32 @@ describe('Check for OTP Verification service functions', () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mobileNumber }),
+    });
+    expect(data).toEqual(mockResponse);
+  });
+
+  test('VerifyLogin should make POST request with correct payload including deviceId', async () => {
+    const mockResponse = { loginSuccess: true };
+    const mockDeviceId = 'mock-device-id';
+
+    (getDeviceId as jest.Mock).mockReturnValue(mockDeviceId);
+
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    });
+
+    const mobileNumber = '6303974914';
+    const otp = '123456';
+
+    const response = await verifyLogin(mobileNumber, otp);
+    const data = await response.json();
+
+    expect(getDeviceId).toHaveBeenCalled();
+    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('verifyLogin'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mobileNumber, deviceId: mockDeviceId, otp }),
     });
     expect(data).toEqual(mockResponse);
   });
