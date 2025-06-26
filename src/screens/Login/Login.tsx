@@ -118,6 +118,11 @@ const LoginScreen = () => {
       setLoading(true);
       const response = await login(credentials);
       const result = await response.json();
+      if(response.status === 206){
+        clearFields();
+        navigation.navigate('OTPVerificationScreen', {mobileNumber: credentials.mobileNumber, email: result.data.email, from: 'login'});
+        return;
+      }
       if (response.ok) {
         clearFields();
         const encryptedPrivateKey = result.user.privateKey;
