@@ -54,10 +54,16 @@ jest.mock('../../realm-database/operations/addUserAction', () => ({
 
 
 let mockEmit: jest.Mock = jest.fn();
+const mockOn = jest.fn();
+const mockOff = jest.fn();
+
 jest.mock('../../utils/socket', () => ({
   getSocket: jest.fn(() => ({
     connected: true,
     emit: mockEmit,
+    on: mockOn,
+    off: mockOff,
+
   })),
 }));
 jest.mock('realm', () => ({
@@ -255,6 +261,8 @@ describe('IndividualChat', () => {
     (getSocket as jest.Mock).mockReturnValue({
       connected: true,
       emit: mockEmit,
+      on: mockOn,
+      off : mockOff,
     });
     (useQuery as jest.Mock).mockReturnValue({
       filtered: () => ({
@@ -266,14 +274,14 @@ describe('IndividualChat', () => {
     (updateMessageStatusInRealm as jest.Mock).mockReturnValue({});
     renderComponent();
     await waitFor(() => {
-      expect(mockEmit.mock.calls[0]).toEqual([
+      expect(mockEmit.mock.calls).toContainEqual([
         'isAccountDeleted',
         {
           senderMobileNumber: '',
           receiverMobileNumber: '+91 86395 23822',
         },
       ]);
-      expect(mockEmit.mock.calls[1]).toEqual([
+      expect(mockEmit.mock.calls).toContainEqual([
         'messageRead',
         {
           sentAt: new Date(sentAt),

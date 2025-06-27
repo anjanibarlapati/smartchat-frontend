@@ -49,4 +49,16 @@ export const getStyles = (theme: Theme) => StyleSheet.create({
         alignItems: 'center',
         paddingLeft:15,
     },
+    statusText: {
+        fontSize: 12,
+        marginTop: 0,
+    },
+    onlineStatusText: {
+        color: 'teal',
+        fontFamily: 'Nunito-bold',
+    },
+
 });
+
+
+
