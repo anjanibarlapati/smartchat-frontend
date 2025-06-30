@@ -127,19 +127,22 @@ export const IndividualChat = () => {
       });
     }
   }, [userChat.exists, userChat.isAccountDeleted, mobileNumber, userMobileNumber, isConnected]);
+
   useEffect(() => {
     const socket = getSocket();
-
-    if (mobileNumber === userMobileNumber) {return;}
+    if (!socket || !socket.connected || mobileNumber === userMobileNumber) {
+      return;
+    }
 
     updateMessageStatusInRealm({
       chatId: mobileNumber,
       status: MessageStatus.SEEN,
     });
 
-    if (!latestUnseenMessageSentAt) {return;}
-
-    if (isConnectedToInternet && socket && socket.connected) {
+    if(!latestUnseenMessageSentAt){
+      return;
+    }
+    if(socket){
       socket.emit('messageRead', {
         sentAt: latestUnseenMessageSentAt,
         chatId: mobileNumber,
@@ -147,14 +150,8 @@ export const IndividualChat = () => {
     } else {
       addUserAction(realm, SyncActionType.MESSAGE_SEEN, { sentAt: latestUnseenMessageSentAt });
     }
-  }, [
-    latestUnseenMessageSentAt,
-    mobileNumber,
-    realm,
-    userMobileNumber,
-    isConnectedToInternet,
-  ]);
 
+  }, [latestUnseenMessageSentAt, mobileNumber, realm, userMobileNumber, isConnected]);
 
   const renderChatHeader = useCallback(
     () => (
