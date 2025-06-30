@@ -1,8 +1,8 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
 import Sodium from 'react-native-libsodium';
-import {decryptMessage} from './decryptMessage';
 import { getRealmInstance } from '../realm-database/connection';
-import { getUserPublicKey } from './getUserPrivateKey';
+import { decryptMessage } from './decryptMessage';
+import { getUserPublicKey } from './getUserPublicKey';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -15,7 +15,7 @@ jest.mock('realm', () => ({
   },
 }));
 
-jest.mock('./getUserPrivateKey', ()=>({
+jest.mock('./getUserPublicKey', ()=>({
   getUserPublicKey: jest.fn(),
 }));
 

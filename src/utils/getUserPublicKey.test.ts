@@ -1,6 +1,6 @@
-import { getUserPublicKey } from './getUserPrivateKey';
-import { getPublicKey } from './keyPairs';
 import Realm from 'realm';
+import { getUserPublicKey } from './getUserPublicKey';
+import { getPublicKey } from './keyPairs';
 
 jest.mock('./keyPairs');
 

@@ -15,10 +15,11 @@ export const getUserPublicKey = async (realm: Realm, mobileNumber: string, acces
         publicKey = result.publicKey;
 
         realm.write(() => {
-            if (chat) {
-                chat.publicKey = publicKey;
+            let updatedChat = realm.objectForPrimaryKey<Chat>('Chat', mobileNumber);
+            if (updatedChat) {
+                updatedChat.publicKey = publicKey;
             } else {
-                chat = realm!.create<Chat>('Chat', {
+                updatedChat = realm!.create<Chat>('Chat', {
                     chatId: mobileNumber,
                     isBlocked: false,
                     publicKey,
