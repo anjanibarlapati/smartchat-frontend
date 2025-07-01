@@ -213,10 +213,7 @@ describe('IndividualChat', () => {
             });
   });
   test('should not emit messageRead if socket is not connected', async () => {
-    (getSocket as jest.Mock).mockReturnValue({
-      connected: false,
-      emit: mockEmit,
-    });
+    (getSocket as jest.Mock).mockReturnValue(null);
     (useQuery as jest.Mock).mockReturnValue({
       filtered: () => ({
         sorted: () => ({

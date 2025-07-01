@@ -130,7 +130,7 @@ export const IndividualChat = () => {
 
   useEffect(() => {
     const socket = getSocket();
-    if (!socket || !socket.connected || mobileNumber === userMobileNumber) {
+    if (mobileNumber === userMobileNumber) {
       return;
     }
 
