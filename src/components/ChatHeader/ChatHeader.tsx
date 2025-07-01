@@ -1,5 +1,5 @@
-import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useAppTheme } from '../../hooks/appTheme';
 import { HomeScreenNavigationProps } from '../../types/Navigations';
 import { Theme } from '../../utils/themes';
@@ -9,10 +9,11 @@ interface ChatHeaderProps {
     name: string,
     originalNumber: string,
     profilePic: string | null,
-    isSelfChat: boolean
+    isSelfChat: boolean,
+    isOnline: boolean
 }
 
-export const ChatHeader = ({name, originalNumber, profilePic, isSelfChat}: ChatHeaderProps) => {
+export const ChatHeader = ({name, profilePic, isSelfChat, isOnline}: ChatHeaderProps) => {
     const theme: Theme = useAppTheme();
     const styles = getStyles(theme);
     const navigation = useNavigation<HomeScreenNavigationProps>();
@@ -34,7 +35,12 @@ export const ChatHeader = ({name, originalNumber, profilePic, isSelfChat}: ChatH
                     style={styles.nameText}>
                     {`${name}${isSelfChat ? ' (You)' : ''}`}
                 </Text>
-                {name !== originalNumber && <Text style={styles.numberText}>{originalNumber}</Text>}
+                 {!isSelfChat && (
+                 <Text style={styles.statusText}>
+                     {isOnline ? 'Online' : ''}
+                </Text>
+                )}
+
             </View>
         </View>
     </View>

@@ -60,6 +60,9 @@ export const IndividualChat = () => {
   const [isConnectedToInternet,setIsConnectedToInternet] = useState<boolean>(false);
   const {isConnected} = useSocketConnection();
 
+  const [isUserOnline, setIsUserOnline] = useState(false);
+
+
   const dispatch = useDispatch();
   const { groupedMessages: messages } = useGroupedMessages(mobileNumber);
 
@@ -82,6 +85,41 @@ export const IndividualChat = () => {
   }), [chat]);
 
   const userMobileNumber = useMemo(() => user.mobileNumber, [user.mobileNumber]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket || !socket.connected || mobileNumber === userMobileNumber) {
+      return;
+    }
+
+    socket.emit('check-user-status', mobileNumber, (status: boolean) => {
+      setIsUserOnline(status);
+    });
+    const handleUserOnline = ({
+      mobileNumber: onlineUser,
+    }: {
+      mobileNumber: string;
+    }) => {
+      if (onlineUser === mobileNumber) {
+        setIsUserOnline(true);
+      }
+    };
+    const handleUserOffline = ({
+      mobileNumber: offlineUser,
+    }: {
+      mobileNumber: string;
+    }) => {
+      if (offlineUser === mobileNumber) {
+        setIsUserOnline(false);
+      }
+    };
+    socket.on('user-online', handleUserOnline);
+    socket.on('user-offline', handleUserOffline);
+    return () => {
+      socket.off('user-online', handleUserOnline);
+      socket.off('user-offline', handleUserOffline);
+    };
+  }, [mobileNumber, userMobileNumber]);
 
   const latestUnseenMessageSentAt = useMemo(() => {
     if (!messages.length) {return null;}
@@ -161,11 +199,13 @@ export const IndividualChat = () => {
           originalNumber={originalNumber}
           profilePic={profilePic}
           isSelfChat={mobileNumber === userMobileNumber}
+          isOnline={isUserOnline}
+
         />
         <Menu onClick={() => setOptionsModalVisible(true)} />
       </>
     ),
-    [mobileNumber, name, originalNumber, profilePic, userMobileNumber],
+    [isUserOnline, mobileNumber, name, originalNumber, profilePic, userMobileNumber],
   );
   useEffect(() => {
     const parentNav = navigation.getParent();
